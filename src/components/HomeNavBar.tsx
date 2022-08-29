@@ -10,7 +10,7 @@ const NavBar = styled.nav`
   height: 8vh;
   width: 100%;
   a {
-    color: white;
+    color: #fff5ee;
     text-decoration: none;
     margin-right: 2em;
   }
@@ -22,7 +22,7 @@ const NavBar = styled.nav`
   }
   .app-name {
     margin-left: 1em;
-    color: white;
+    color: #fff5ee;
     h1 {
       font-size: 2rem;
     }
