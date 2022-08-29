@@ -34,7 +34,7 @@ const StyledHome = styled.main`
     flex-direction: column;
   }
   .home-title {
-    color: white;
+    color: #fff5ee;
     h2,
     h1,
     h3,
@@ -62,15 +62,15 @@ const StyledHome = styled.main`
     input {
       background: none;
       border: none;
-      color: #33676c;
+      color: #fff5ee;
       margin-left: 0.5em;
     }
     input::placeholder {
-      color: #33676c;
+      color: #fff5ee;
     }
     .home-get-started {
       background: #16d892;
-      color: white;
+      color: #fff5ee;
       border: none;
       border-radius: 5px;
       margin-right: 0.5em;
