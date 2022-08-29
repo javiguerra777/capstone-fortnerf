@@ -1,4 +1,5 @@
 import React, { FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeNavBar from '../components/HomeNavBar';
 
@@ -90,10 +91,12 @@ const StyledHome = styled.main`
 `;
 
 function HomePage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const toLoginPage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmail('');
+    navigate('/signup');
   };
   return (
     <StyledHome>

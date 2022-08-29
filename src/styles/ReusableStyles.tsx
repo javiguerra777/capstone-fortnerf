@@ -21,11 +21,22 @@ const LoginWrapper = styled.main`
       }
     }
     input {
+      color: #fff5ee;
       background: #222222;
       width: 100%;
       border: none;
       border-radius: 0.5em;
       height: 2.5em;
+    }
+    div {
+      margin-top: 0.5em;
+      margin-bottom: 1em;
+      align-self: center;
+      width: 35em;
+      hr {
+        width: 100%;
+        background-color: #00c399;
+      }
     }
   }
   .main-login {
@@ -88,6 +99,16 @@ const LoginWrapper = styled.main`
     a {
       color: #fff5ee;
     }
+  }
+  .register-acc {
+    align-self: center;
+    background: #62c888;
+    width: 15em;
+    height: 2.5em;
+    border: none;
+    border-radius: 1em;
+    cursor: pointer;
+    font-size: 1.2rem;
   }
 `;
 

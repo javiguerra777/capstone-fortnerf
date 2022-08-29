@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const NavBar = styled.nav`
@@ -39,6 +39,10 @@ const NavBar = styled.nav`
 `;
 
 function HomeNavBar() {
+  const navigate = useNavigate();
+  const navToSignUp = () => {
+    navigate('/signup');
+  };
   return (
     <NavBar>
       <section className="app-name">
@@ -48,7 +52,9 @@ function HomeNavBar() {
         <NavLink to="/about">About</NavLink>
         <NavLink to="/contact">Contact</NavLink>
         <NavLink to="/login">Login</NavLink>
-        <button type="button">Get Started</button>
+        <button type="button" onClick={navToSignUp}>
+          Get Started
+        </button>
       </section>
     </NavBar>
   );
