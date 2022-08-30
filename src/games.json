@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "server": "Narutp",
+    "players": 10,
+    "maxPlayers": 16
+  },
+  {
+    "id": 2,
+    "server": "Tangirl",
+    "players": 5,
+    "maxPlayers": 8
+  },
+  {
+    "id": 3,
+    "server": "CuteHusky",
+    "players": 4,
+    "maxPlayers": 12
+  },
+  {
+    "id": 4,
+    "server": "Bothspy",
+    "players": 2,
+    "maxPlayers": 10
+  },
+  {
+    "id": 4,
+    "server": "Bothspy",
+    "players": 2,
+    "maxPlayers": 10
+  },{
+    "id": 4,
+    "server": "Bothspy",
+    "players": 2,
+    "maxPlayers": 10
+  },{
+    "id": 4,
+    "server": "Bothspy",
+    "players": 2,
+    "maxPlayers": 10
+  },{
+    "id": 4,
+    "server": "Bothspy",
+    "players": 2,
+    "maxPlayers": 10
+  }
+]

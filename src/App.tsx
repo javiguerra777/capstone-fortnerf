@@ -6,6 +6,9 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import Contact from './pages/Contact';
 import About from './pages/About';
+import CreateNewServer from './pages/CreateNewServer';
+import Dashboard from './pages/Dashboard';
+import UserInfo from './pages/UserInfo';
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/userinfo/:id" element={<UserInfo />} />
+        <Route path="/createserver" element={<CreateNewServer />} />
       </Route>
     </Routes>
   );
