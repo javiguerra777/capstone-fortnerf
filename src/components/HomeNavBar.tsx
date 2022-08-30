@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import nerfLogo from '../img/nerf_logo.jpg';
 
 const NavBar = styled.nav`
   display: flex;
@@ -21,10 +22,18 @@ const NavBar = styled.nav`
     cursor: pointer;
   }
   .app-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-left: 1em;
     color: #fff5ee;
     h1 {
       font-size: 2rem;
+      margin-right: 0.5em;
+    }
+    img {
+      height: 95%;
+      width: 3em;
     }
   }
   .navigation {
@@ -47,6 +56,10 @@ function HomeNavBar() {
     <NavBar>
       <section className="app-name">
         <h1>Fort Nerf</h1>
+        <NavLink to="/">
+          {' '}
+          <img src={nerfLogo} alt="nerf-gun-logo" />
+        </NavLink>
       </section>
       <section className="navigation">
         <NavLink to="/about">About</NavLink>
