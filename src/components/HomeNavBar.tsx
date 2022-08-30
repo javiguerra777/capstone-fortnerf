@@ -1,6 +1,7 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import nerfLogo from '../img/nerf_logo.jpg';
 
 const NavBar = styled.nav`
   display: flex;
@@ -21,10 +22,18 @@ const NavBar = styled.nav`
     cursor: pointer;
   }
   .app-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-left: 1em;
     color: #fff5ee;
     h1 {
       font-size: 2rem;
+      margin-right: 0.5em;
+    }
+    img {
+      height: 95%;
+      width: 3em;
     }
   }
   .navigation {
@@ -39,16 +48,24 @@ const NavBar = styled.nav`
 `;
 
 function HomeNavBar() {
+  const navigate = useNavigate();
+  const navToSignUp = () => {
+    navigate('/signup');
+  };
   return (
     <NavBar>
       <section className="app-name">
         <h1>Fort Nerf</h1>
+        <img src={nerfLogo} alt="nerf-gun-logo" />
       </section>
       <section className="navigation">
+        <NavLink to="/">Home</NavLink>
         <NavLink to="/about">About</NavLink>
         <NavLink to="/contact">Contact</NavLink>
         <NavLink to="/login">Login</NavLink>
-        <button type="button">Get Started</button>
+        <button type="button" onClick={navToSignUp}>
+          Get Started
+        </button>
       </section>
     </NavBar>
   );
