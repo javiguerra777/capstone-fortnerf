@@ -1,9 +1,12 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { HiOutlineUsers } from 'react-icons/hi';
 import gameServers from '../games.json';
 import nerfTarget from '../img/nerf_target.png';
+import UserNavBar from '../components/UserNavBar';
 
 const DashboardWrapper = styled.main`
   color: white;
@@ -21,17 +24,17 @@ const DashboardWrapper = styled.main`
     border-radius: 0.5em;
     overflow-y: scroll;
   }
-  .game-details {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 96%;
-    border: solid white 2px;
-    border-radius: 0.5em;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    cursor: pointer;
-  }
+`;
+const GameDetails = styled.section`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 96%;
+  border: solid white 2px;
+  border-radius: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  cursor: pointer;
   #item1 {
     margin-left: 1em;
     display: flex;
@@ -55,13 +58,17 @@ const DashboardWrapper = styled.main`
   }
 `;
 function Dashboard() {
+  const navigate = useNavigate();
+  const navToGame = (gameId: number) => {
+    navigate(`/game/${gameId}`);
+  };
   return (
     <DashboardWrapper>
-      <h1>NavBar</h1>
+      <UserNavBar />
       <section className="active-games">
         <h1>Click to Join a Game</h1>
-        {gameServers.map(({ server, players, maxPlayers }) => (
-          <section className="game-details" key="hello">
+        {gameServers.map(({ server, players, maxPlayers, id }) => (
+          <GameDetails key="hello" onClick={() => navToGame(id)}>
             <section id="item1">
               <p>Fort Nerf</p>
               <img src={nerfTarget} alt="game-logo" />
@@ -75,7 +82,7 @@ function Dashboard() {
               </p>
               <HiOutlineUsers size={28} />
             </section>
-          </section>
+          </GameDetails>
         ))}
       </section>
     </DashboardWrapper>

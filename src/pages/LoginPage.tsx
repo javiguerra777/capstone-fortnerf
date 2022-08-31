@@ -1,16 +1,20 @@
 /* eslint-disable prettier/prettier */
 import React, { FormEvent } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
 import LoginWrapper from '../styles/ReusableStyles';
+import HomeNavBar from '../components/HomeNavBar';
 
 function LoginPage() {
+  const navigate = useNavigate();
   const loginToAccount = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    navigate('/dashboard');
   };
   return (
     <LoginWrapper>
       <section className="main-login">
+        <HomeNavBar />
         <h1>Login to your account</h1>
         <h2>
           Join the world of FortNerf! Play with others, there are

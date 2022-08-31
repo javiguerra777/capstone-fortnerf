@@ -1,9 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import UserNavBar from '../components/UserNavBar';
 
 function UserInfo() {
+  const navigate = useNavigate();
+  const signOut = () => {
+    navigate('/login');
+  };
   return (
     <div>
-      <h1>Hi</h1>
+      <UserNavBar />
+      <button type="button" onClick={signOut}>
+        Sign out
+      </button>
     </div>
   );
 }

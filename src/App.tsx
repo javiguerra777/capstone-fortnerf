@@ -9,6 +9,8 @@ import About from './pages/About';
 import CreateNewServer from './pages/CreateNewServer';
 import Dashboard from './pages/Dashboard';
 import UserInfo from './pages/UserInfo';
+import ValidateEmail from './pages/ValidateEmail';
+import Game from './pages/Game';
 
 function App() {
   return (
@@ -20,8 +22,10 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/userinfo/:id" element={<UserInfo />} />
+        <Route path="/userinfo" element={<UserInfo />} />
         <Route path="/createserver" element={<CreateNewServer />} />
+        <Route path="/emailvalidation" element={<ValidateEmail />} />
+        <Route path="/game/:id" element={<Game />} />
       </Route>
     </Routes>
   );
