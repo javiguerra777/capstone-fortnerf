@@ -1,19 +1,13 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import GameComponent from '../components/GameComponent';
 
-const GameWrapper = styled.main`
-  color: white;
-`;
+const GameWrapper = styled.main``;
 
 function Game() {
-  const { id } = useParams();
   return (
     <GameWrapper>
-      <h1>
-        Game Lobby
-        {id}
-      </h1>
+      <GameComponent />
     </GameWrapper>
   );
 }
