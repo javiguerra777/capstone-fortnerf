@@ -5,12 +5,12 @@ import styled from 'styled-components';
 const NavBarWrapper = styled.nav`
   width: 100vw;
   margin-top: 1em;
-  margin-bottom: 1em;
+  margin-bottom: 2em;
   display: flex;
   flex-direction: row;
   justify-content: center;
   a {
-    color: #fff5ee;
+    color: white;
     text-decoration: none;
     margin-right: 2em;
   }

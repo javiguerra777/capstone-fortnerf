@@ -19,7 +19,7 @@ const DashboardWrapper = styled.main`
     align-items: center;
     width: 75%;
     height: auto;
-    max-height: 30em;
+    max-height: 35em;
     border: solid white 4px;
     border-radius: 0.5em;
     overflow-y: scroll;
