@@ -1,9 +1,12 @@
 import React, { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoginWrapper from '../styles/ReusableStyles';
 
 function SignUpPage() {
+  const navigate = useNavigate();
   const completeRegistration = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    navigate('/dashboard');
   };
   return (
     <LoginWrapper>

@@ -1,9 +1,10 @@
 import React from 'react';
+import UserNavBar from '../components/UserNavBar';
 
 function CreateNewServer() {
   return (
     <div>
-      <h1>Hi</h1>
+      <UserNavBar />
     </div>
   );
 }
