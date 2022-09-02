@@ -1,25 +1,33 @@
 import React, { useEffect } from 'react';
 import Phaser from 'phaser';
-import HelloWorldScene from '../phaser-game/scenes/HelloWorldScene';
+import { GridEngine } from 'grid-engine';
+import FortNerf from '../phaser-game/scenes/FortNerf';
 
 const config = {
   type: Phaser.AUTO,
   // scale: {
   //   mode: Phaser.Scale.ScaleModes.RESIZE,
   //   width: window.innerWidth,
-  //   height: window.innerHeight,
+  //   height: 600,
   // },
-  width: 800,
+  width: window.innerWidth,
   height: 600,
   backgroundColor: '#93cbee',
   physics: {
     default: 'arcade',
-    gravity: { y: 0 },
     debug: false,
   },
+  plugins: {
+    scene: [
+      {
+        key: 'gridEngine',
+        plugin: GridEngine,
+        mapping: 'gridEngine',
+      },
+    ],
+  },
   parent: 'main-game',
-  autoFocus: true,
-  scene: [HelloWorldScene],
+  scene: [FortNerf],
 };
 function GameComponent() {
   useEffect(() => {
