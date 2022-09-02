@@ -59,8 +59,11 @@
       {
         "endOfLine": "auto"
       }
-    ]
-  },
+    ],
+"import/no-import-module-exports": ["error", {
+    "exceptions": ["./webpack/base.ts"]
+}],
+"import/no-extraneous-dependencies": ["error", {"devDependencies": true}]  },
   "settings": {
     "import/resolver": {
       "typescript": {}
