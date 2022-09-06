@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-router-dom": "^5.3.3",
     "grid-engine": "^2.20.0",
+    "nanoid": "^4.0.0",
     "phaser": "^3.55.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

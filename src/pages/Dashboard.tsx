@@ -4,6 +4,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { HiOutlineUsers } from 'react-icons/hi';
+import { nanoid } from 'nanoid';
 import gameServers from '../games.json';
 import nerfTarget from '../img/nerf_target.png';
 import UserNavBar from '../components/UserNavBar';
@@ -68,7 +69,7 @@ function Dashboard() {
       <section className="active-games">
         <h1>Click to Join a Game</h1>
         {gameServers.map(({ server, players, maxPlayers, id }) => (
-          <GameDetails key="hello" onClick={() => navToGame(id)}>
+          <GameDetails key={nanoid()} onClick={() => navToGame(id)}>
             <section id="item1">
               <p>Fort Nerf</p>
               <img src={nerfTarget} alt="game-logo" />
