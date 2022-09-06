@@ -15,6 +15,7 @@ const config = {
   backgroundColor: '#93cbee',
   physics: {
     default: 'arcade',
+    gravity: { y: 0 },
     debug: false,
   },
   plugins: {
