@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Phaser from 'phaser';
-import { GridEngine } from 'grid-engine';
+// import { GridEngine } from 'grid-engine';
 import FortNerf from '../phaser-game/scenes/FortNerf';
 
 const config = {
@@ -12,21 +12,21 @@ const config = {
   // },
   width: window.innerWidth,
   height: 600,
-  backgroundColor: '#93cbee',
+  backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',
     gravity: { y: 0 },
     debug: false,
   },
-  plugins: {
-    scene: [
-      {
-        key: 'gridEngine',
-        plugin: GridEngine,
-        mapping: 'gridEngine',
-      },
-    ],
-  },
+  // plugins: {
+  //   scene: [
+  //     {
+  //       key: 'gridEngine',
+  //       plugin: GridEngine,
+  //       mapping: 'gridEngine',
+  //     },
+  //   ],
+  // },
   parent: 'main-game',
   scene: [FortNerf],
 };

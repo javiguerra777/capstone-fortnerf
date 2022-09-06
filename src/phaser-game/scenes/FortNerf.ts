@@ -2,10 +2,11 @@
 import Phaser from 'phaser';
 
 // let platforms;
+let map: any;
 let player: any;
 let cursors: any;
 // let score = 0;
-// let scoreText: any;
+// let usernameText: any;
 
 class FortNerf extends Phaser.Scene {
   constructor() {
@@ -13,8 +14,8 @@ class FortNerf extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('sky', '/assets/sky.png');
-    // this.load.image('platform', '/assets/platform.png');
+    this.load.image('background', '/assets/sky.png');
+    this.load.image('platform', '/assets/pallet_town.jpg');
     this.load.spritesheet('player', '/assets/spritesheet.png', {
       frameWidth: 48,
       frameHeight: 48,
@@ -22,10 +23,23 @@ class FortNerf extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, 'sky');
-
+    map = this.add
+      .image(0, 0, 'background')
+      .setOrigin(0, 0)
+      .setScale(1.5);
+    this.cameras.main.setBounds(
+      0,
+      0,
+      map.displayWidth,
+      map.displayHeight,
+    );
+    this.physics.world.setBounds(
+      0,
+      0,
+      map.displayWidth,
+      map.displayHeight,
+    );
     // // platforms
-    // platforms = this.physics.add.staticGroup();
 
     // // how to create multiple platforms
     // platforms.create(400, 568, 'platform').setScale(2).refreshBody();
@@ -34,8 +48,8 @@ class FortNerf extends Phaser.Scene {
     // platforms.create(750, 220, 'platform');
 
     // player methods
-    player = this.physics.add.sprite(100, 450, 'player');
-    player.setBounce(0.2);
+    player = this.physics.add.sprite(50, 150, 'player');
+    // player.setBounce(0.2);
     player.setCollideWorldBounds(true);
     player.direction = 'down';
 
@@ -105,11 +119,11 @@ class FortNerf extends Phaser.Scene {
       frames: [{ key: 'player', frame: 7 }],
       frameRate: 20,
     });
-    // this.physics.add.collider(player, platforms);
+    this.physics.add.collider(player, map.displayWidth);
     cursors = this.input.keyboard.createCursorKeys();
 
     // score and text
-    // scoreText = this.add.text(16, 16, 'score: 0', {
+    // this.add.text(player.x, player.y + 10, 'jhoodie777', {
     //   fontSize: '32px',
     // });
     // const gridEngineConfig = {
@@ -126,6 +140,7 @@ class FortNerf extends Phaser.Scene {
   }
 
   update() {
+    this.cameras.main.startFollow(player);
     if (cursors.left.isDown) {
       // update left movement
       player.setVelocityX(-160);
