@@ -5,13 +5,11 @@ import FortNerf from '../phaser-game/scenes/FortNerf';
 
 const config = {
   type: Phaser.AUTO,
-  // scale: {
-  //   mode: Phaser.Scale.ScaleModes.RESIZE,
-  //   width: window.innerWidth,
-  //   height: 600,
-  // },
-  width: window.innerWidth,
-  height: 600,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    width: '100%',
+    height: '100%',
+  },
   backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',
@@ -30,7 +28,10 @@ const config = {
   parent: 'main-game',
   scene: [FortNerf],
 };
-function GameComponent() {
+type killMe = {
+  width: string;
+};
+function GameComponent({ width }: killMe) {
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
     // when component unmounts
@@ -38,7 +39,7 @@ function GameComponent() {
       phaserGame.destroy(true);
     };
   }, []);
-  return <div id="main-game" />;
+  return <div id="main-game" style={{ height: '94vh', width }} />;
 }
 
 export default GameComponent;
