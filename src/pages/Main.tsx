@@ -4,10 +4,10 @@ import GlobalStyles from '../styles/GlobalStyles';
 
 function Main() {
   return (
-    <section>
+    <>
       <GlobalStyles />
       <Outlet />
-    </section>
+    </>
   );
 }
 

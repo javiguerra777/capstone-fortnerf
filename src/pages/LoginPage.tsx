@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { FormEvent } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
@@ -42,13 +41,11 @@ function LoginPage() {
         </form>
         <footer className="login-footer">
           <div>
-            Don&#8217;t have an account? Sign up
-            {' '}
+            Don&#8217;t have an account? Sign up{' '}
             <NavLink to="/signup">Here</NavLink>
           </div>
           <div>
-            Forgot password? Click
-            {' '}
+            Forgot password? Click{' '}
             <NavLink to="/emailvalidation">Here</NavLink>
           </div>
         </footer>

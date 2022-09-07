@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import Phaser from 'phaser';
 
 // let platforms;
@@ -14,7 +13,7 @@ class FortNerf extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('background', '/assets/sky.png');
+    this.load.image('background', '/assets/pallet_town.jpg');
     this.load.image('platform', '/assets/pallet_town.jpg');
     this.load.spritesheet('player', '/assets/spritesheet.png', {
       frameWidth: 48,
@@ -26,7 +25,7 @@ class FortNerf extends Phaser.Scene {
     map = this.add
       .image(0, 0, 'background')
       .setOrigin(0, 0)
-      .setScale(1.5);
+      .setScale(2);
     this.cameras.main.setBounds(
       0,
       0,
@@ -173,10 +172,6 @@ class FortNerf extends Phaser.Scene {
       } else if (player.direction === 'right') {
         player.anims.play('rightstill', true);
       }
-    }
-
-    if (cursors.up.isDown && player.body.touching.down) {
-      player.setVelocityY(-330);
     }
   }
 }
