@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 
 // let platforms;
-let map: any;
+let background: any;
 let player: any;
 let cursors: any;
+let walls: any;
 // let score = 0;
 // let usernameText: any;
 
@@ -13,31 +14,53 @@ class FortNerf extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('background', '/assets/pallet_town.jpg');
+    this.load.image('background', '/assets/sky.png');
     this.load.image('platform', '/assets/pallet_town.jpg');
     this.load.spritesheet('player', '/assets/spritesheet.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
+    this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
+    this.load.image('walls', '/assets/tiles-img/spike.png');
+    this.load.tilemapTiledJSON(
+      'map',
+      '/assets/tile-map/fort-nerf.json',
+    );
   }
 
   create() {
-    map = this.add
+    background = this.add
       .image(0, 0, 'background')
       .setOrigin(0, 0)
       .setScale(2);
     this.cameras.main.setBounds(
       0,
       0,
-      map.displayWidth,
-      map.displayHeight,
+      background.displayWidth,
+      background.displayHeight,
     );
     this.physics.world.setBounds(
       0,
       0,
-      map.displayWidth,
-      map.displayHeight,
+      background.displayWidth,
+      background.displayHeight,
     );
+    const map: any = this.make.tilemap({ key: 'map' });
+    const tileSet = map.addTilesetImage('tilesOne', 'tiles');
+    map.createStaticLayer('Floor', tileSet, 0, 20);
+    walls = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+
+    map.getObjectLayer('Walls').objects.forEach((wall: any) => {
+      const wallSprite = walls
+        .create(wall.x, wall.y - wall.height, 'walls')
+        .setOrigin(0);
+      wallSprite.body
+        .setSize(wall.width, wall.height - 20)
+        .setOffset(0, 20);
+    });
     // // platforms
 
     // // how to create multiple platforms
@@ -118,7 +141,6 @@ class FortNerf extends Phaser.Scene {
       frames: [{ key: 'player', frame: 7 }],
       frameRate: 20,
     });
-    this.physics.add.collider(player, map.displayWidth);
     cursors = this.input.keyboard.createCursorKeys();
 
     // score and text
@@ -142,6 +164,7 @@ class FortNerf extends Phaser.Scene {
     this.cameras.main.startFollow(player);
     if (cursors.left.isDown) {
       // update left movement
+      // console.log(cursors);
       player.setVelocityX(-160);
       player.anims.play('left', true);
       player.direction = 'left';
