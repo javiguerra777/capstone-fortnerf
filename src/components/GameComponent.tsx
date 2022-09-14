@@ -28,10 +28,13 @@ const config = {
   parent: 'main-game',
   scene: [FortNerf],
 };
-type killMe = {
+type styleProps = {
   width: string;
 };
-function GameComponent({ width }: killMe) {
+function GameComponent({ width }: styleProps) {
+  const clickEvent = () => {
+    console.log('hello I am clicked');
+  };
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
     // when component unmounts
@@ -39,7 +42,17 @@ function GameComponent({ width }: killMe) {
       phaserGame.destroy(true);
     };
   }, []);
-  return <div id="main-game" style={{ height: '94vh', width }} />;
+  return (
+    <div
+      id="main-game"
+      style={{ height: '94vh', width }}
+      role="button"
+      onClick={clickEvent}
+      tabIndex={0}
+      onKeyDown={clickEvent}
+      aria-label="canvas element"
+    />
+  );
 }
 
 export default GameComponent;
