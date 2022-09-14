@@ -1,19 +1,25 @@
-import React, { useState, FormEvent } from 'react';
+import React, {
+  useState,
+  FormEvent,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import { nanoid } from 'nanoid';
 import { AiOutlineUser } from 'react-icons/ai';
 import convertToDate from '../utils/functions';
+import { Message } from '../types/AppTypes';
 
 type ChatProps = {
   asideOptions: () => void;
-};
-type Message = {
-  username: string;
-  message: string;
-  date: number;
+  messages: Message[];
+  setMessages: Dispatch<SetStateAction<Message[]>>;
 };
 
-function GameChat({ asideOptions }: ChatProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+function GameChat({
+  asideOptions,
+  messages,
+  setMessages,
+}: ChatProps) {
   const [chatMessage, setChatMessage] = useState('');
   const sendChat = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
