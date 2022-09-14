@@ -5,6 +5,7 @@ let background: any;
 let player: any;
 let cursors: any;
 let walls: any;
+let shootBullet: any;
 // let score = 0;
 // let usernameText: any;
 
@@ -20,6 +21,7 @@ class FortNerf extends Phaser.Scene {
       frameWidth: 48,
       frameHeight: 48,
     });
+    this.load.image('bullet', '/assets/bullets/05.png');
     this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
     this.load.image('walls', '/assets/tiles-img/spike.png');
     this.load.tilemapTiledJSON(
@@ -73,7 +75,9 @@ class FortNerf extends Phaser.Scene {
     player = this.physics.add.sprite(50, 150, 'player');
     player.setCollideWorldBounds(true);
     player.direction = 'down';
-
+    shootBullet = (x: number, y: number) => {
+      this.physics.add.sprite(x, y, 'bullet');
+    };
     // player animations
     // movement animation function
     const createMoveAnimations = (
@@ -190,7 +194,15 @@ class FortNerf extends Phaser.Scene {
       }
     }
     if (cursors.space.isDown) {
-      console.log('hello');
+      if (player.direction === 'right') {
+        shootBullet(player.x + 35, player.y);
+      } else if (player.direction === 'left') {
+        shootBullet(player.x - 35, player.y);
+      } else if (player.direction === 'up') {
+        shootBullet(player.x, player.y - 35);
+      } else if (player.direction === 'down') {
+        shootBullet(player.x, player.y + 35);
+      }
     }
   }
 }
