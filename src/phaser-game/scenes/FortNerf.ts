@@ -47,7 +47,7 @@ class FortNerf extends Phaser.Scene {
     );
     const map: any = this.make.tilemap({ key: 'map' });
     const tileSet = map.addTilesetImage('tilesOne', 'tiles');
-    map.createStaticLayer('Floor', tileSet, 0, 20);
+    map.createLayer('Floor', tileSet, 0, 20);
     walls = this.physics.add.group({
       allowGravity: false,
       immovable: true,
@@ -71,76 +71,59 @@ class FortNerf extends Phaser.Scene {
 
     // player methods
     player = this.physics.add.sprite(50, 150, 'player');
-    // player.setBounce(0.2);
     player.setCollideWorldBounds(true);
     player.direction = 'down';
 
     // player animations
+    // movement animation function
+    const createMoveAnimations = (
+      keyFrame: string,
+      startFrame: number,
+      endFrame: number,
+    ) => {
+      this.anims.create({
+        key: keyFrame,
+        frames: this.anims.generateFrameNumbers('player', {
+          start: startFrame,
+          end: endFrame,
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
+    };
+    // still animation function
+    const createStillAnimation = (
+      keyFrame: string,
+      frameNumber: number,
+    ) => {
+      this.anims.create({
+        key: keyFrame,
+        frames: [{ key: 'player', frame: frameNumber }],
+        frameRate: 20,
+      });
+    };
     // movement animations
-    this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 3,
-        end: 5,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 6,
-        end: 8,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'down',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 0,
-        end: 2,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'up',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 9,
-        end: 11,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
+    createMoveAnimations('left', 3, 5);
+    createMoveAnimations('right', 6, 8);
+    createMoveAnimations('down', 0, 2);
+    createMoveAnimations('up', 9, 11);
 
     // still animations
-    this.anims.create({
-      key: 'downstill',
-      frames: [{ key: 'player', frame: 1 }],
-      frameRate: 20,
-    });
+    createStillAnimation('leftstill', 4);
+    createStillAnimation('rightstill', 7);
+    createStillAnimation('downstill', 1);
+    createStillAnimation('upstill', 10);
 
-    this.anims.create({
-      key: 'upstill',
-      frames: [{ key: 'player', frame: 10 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: 'leftstill',
-      frames: [{ key: 'player', frame: 4 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: 'rightstill',
-      frames: [{ key: 'player', frame: 7 }],
-      frameRate: 20,
-    });
+    function playerHit() {
+      player.setVelocity(0, 0);
+    }
+    this.physics.add.collider(
+      player,
+      walls,
+      playerHit,
+      undefined,
+      this,
+    );
     cursors = this.input.keyboard.createCursorKeys();
 
     // score and text
@@ -163,12 +146,22 @@ class FortNerf extends Phaser.Scene {
   update() {
     this.cameras.main.startFollow(player);
     if (cursors.left.isDown) {
+      if (cursors.down.isDown) {
+        player.setVelocityY(160);
+      } else if (cursors.up.isDown) {
+        player.setVelocityY(-160);
+      }
       // update left movement
       // console.log(cursors);
       player.setVelocityX(-160);
       player.anims.play('left', true);
       player.direction = 'left';
     } else if (cursors.right.isDown) {
+      if (cursors.down.isDown) {
+        player.setVelocityY(160);
+      } else if (cursors.up.isDown) {
+        player.setVelocityY(-160);
+      }
       // update right movement
       player.setVelocityX(160);
       player.anims.play('right', true);
@@ -195,6 +188,9 @@ class FortNerf extends Phaser.Scene {
       } else if (player.direction === 'right') {
         player.anims.play('rightstill', true);
       }
+    }
+    if (cursors.space.isDown) {
+      console.log('hello');
     }
   }
 }
