@@ -157,6 +157,14 @@ const GameWrapper = styled.main`
       border-radius: 0.5em;
     }
   }
+  #videoElement {
+    margin-left: 1em;
+    height: 100%;
+    width: 50px;
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); /* Firefox */
+  }
 `;
 
 export default GameWrapper;
