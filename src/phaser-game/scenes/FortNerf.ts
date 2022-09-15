@@ -150,33 +150,42 @@ class FortNerf extends Phaser.Scene {
   update() {
     this.cameras.main.startFollow(player);
     if (cursors.left.isDown) {
+      // update left movement
       if (cursors.down.isDown) {
         player.setVelocityY(160);
       } else if (cursors.up.isDown) {
         player.setVelocityY(-160);
+      } else if (!cursors.up.isDown || !cursors.down.isDown) {
+        player.setVelocityY(0);
       }
-      // update left movement
-      // console.log(cursors);
       player.setVelocityX(-160);
       player.anims.play('left', true);
       player.direction = 'left';
     } else if (cursors.right.isDown) {
+      // update right movement
       if (cursors.down.isDown) {
         player.setVelocityY(160);
       } else if (cursors.up.isDown) {
         player.setVelocityY(-160);
+      } else if (!cursors.up.isDown || !cursors.down.isDown) {
+        player.setVelocityY(0);
       }
-      // update right movement
-      player.setVelocityX(160);
       player.anims.play('right', true);
+      player.setVelocityX(160);
       player.direction = 'right';
     } else if (cursors.down.isDown) {
       // update the down movement
+      if (!cursors.left.isDown || !cursors.right.isDown) {
+        player.setVelocityX(0);
+      }
       player.setVelocityY(160);
       player.anims.play('down', true);
       player.direction = 'down';
     } else if (cursors.up.isDown) {
       // update the up movement
+      if (!cursors.left.isDown || !cursors.right.isDown) {
+        player.setVelocityX(0);
+      }
       player.setVelocityY(-160);
       player.anims.play('up', true);
       player.direction = 'up';
