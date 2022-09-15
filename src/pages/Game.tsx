@@ -44,7 +44,9 @@ function Game() {
         console.log(videoRef.current);
       })
       .catch((err) => {
-        console.error('error:', err);
+        console.error(err.message);
+        setDisplayVid(false);
+        setAudio(false);
       });
   }, []);
   function toggleVideo() {

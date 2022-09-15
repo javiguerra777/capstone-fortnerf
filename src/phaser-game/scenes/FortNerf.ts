@@ -10,7 +10,6 @@ let shootBullet: any;
 let bullet: any = {};
 // let score = 0;
 // let usernameText: any;
-
 class FortNerf extends Phaser.Scene {
   constructor() {
     super('FortNerf');
@@ -68,7 +67,6 @@ class FortNerf extends Phaser.Scene {
 
     // player methods
     player = this.physics.add.sprite(500, 500, 'player');
-    player.setCollideWorldBounds(true);
     player.direction = 'down';
 
     // bullet methods
@@ -125,14 +123,9 @@ class FortNerf extends Phaser.Scene {
     // bullet animations
     createBulletAnimation();
     // collision
-    function playerHit() {
+    const playerHit = () => {
       player.setVelocity(0, 0);
-    }
-    function bulletHit() {
-      bullet.active = false;
-      bullet.setAlpha(0);
-      console.log('hit wall');
-    }
+    };
     this.physics.add.collider(
       player,
       walls,
@@ -140,13 +133,8 @@ class FortNerf extends Phaser.Scene {
       undefined,
       this,
     );
-    this.physics.add.collider(
-      bullet,
-      walls,
-      bulletHit,
-      undefined,
-      this,
-    );
+    player.setCollideWorldBounds(true);
+    // keyboard methods
     cursors = this.input.keyboard.createCursorKeys();
 
     // this.gridEngine.create(map, gridEngineConfig);
@@ -154,6 +142,26 @@ class FortNerf extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(player);
+    const bulletHit = () => {
+      bullet.destroy();
+      // bullet.setX(50);
+      // bullet.setY(50);
+      // bullet.setAlpha(0);
+      // this.tweens.add({
+      //   targets: bullet,
+      //   alpha: 1,
+      //   duration: 100,
+      //   ease: 'Linear',
+      //   repeat: 1,
+      // });
+    };
+    this.physics.add.collider(
+      bullet,
+      walls,
+      bulletHit,
+      undefined,
+      this,
+    );
     if (cursors.left.isDown) {
       // update left movement
       player.setVelocityX(-160);
