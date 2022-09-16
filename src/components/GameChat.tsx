@@ -33,6 +33,9 @@ function GameChat({
     ]);
     setChatMessage('');
   };
+  const removeKeyBoard = () => {
+    console.log('phaser keyboard removed');
+  };
   return (
     <aside className="chat-bar background-color">
       <header className="chat-header">
@@ -72,6 +75,7 @@ function GameChat({
             placeholder="Message"
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
+            onClick={removeKeyBoard}
           />
         </label>
       </form>

@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable jsx-a11y/media-has-caption */
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineWechat, AiOutlineAudioMuted } from 'react-icons/ai';
@@ -41,10 +39,9 @@ function Game() {
         videoRef.current.autoplay = true;
         videoRef.current.muted = false;
         setmystream(stream);
-        console.log(videoRef.current);
       })
       .catch((err) => {
-        console.error(err.message);
+        console.log(err.message);
         setDisplayVid(false);
         setAudio(false);
       });
