@@ -1,4 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineWechat, AiOutlineAudioMuted } from 'react-icons/ai';
 import {
@@ -12,9 +17,11 @@ import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
+import UserContext from '../context/Context';
 
 function Game() {
   const navigate = useNavigate();
+  const { user }: any = useContext(UserContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
@@ -98,7 +105,7 @@ function Game() {
       <footer className="user-settings background-color">
         <section className="flex-row video-voice">
           <video id="videoElement" ref={videoRef} />
-          <p>jhoodie777</p>
+          <p>{user.username}</p>
           <button type="button" onClick={toggleAudio}>
             {audio ? (
               <FaMicrophoneAlt />

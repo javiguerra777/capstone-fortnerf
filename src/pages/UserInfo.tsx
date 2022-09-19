@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { BiUser } from 'react-icons/bi';
 import UserNavBar from '../components/UserNavBar';
+import UserContext from '../context/Context';
+// import { User } from '../types/AppTypes';
 
 const UserInfoWrapper = styled.main`
   color: white;
@@ -51,6 +53,7 @@ const UserInfoWrapper = styled.main`
 `;
 function UserInfo() {
   const navigate = useNavigate();
+  const { user }: any = useContext(UserContext);
   const signOut = () => {
     navigate('/login');
   };
@@ -62,15 +65,15 @@ function UserInfo() {
         <section className="details">
           <section className="img-name">
             <BiUser size={70} />
-            <p>Javi Guerra</p>
+            <p>{user.name}</p>
           </section>
           <section className="username">
             <h3>Username:</h3>
-            <p>JHoodie777</p>
+            <p>{user.username}</p>
           </section>
           <section className="email">
             <h3>Email:</h3>
-            <p>placeholderemail@u.pacific.edu</p>
+            <p>{user.email}</p>
           </section>
         </section>
         <footer className="user-info-footer">
