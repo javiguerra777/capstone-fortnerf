@@ -1,20 +1,58 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getDocs,
+  collection,
+  where,
+  query,
+} from 'firebase/firestore';
 import LoginWrapper from '../styles/ReusableStyles';
 import HomeNavBar from '../components/HomeNavBar';
+import { db, auth } from '../firebase/FirebaseTS';
+import UserContext from '../context/Context';
 
 function LoginPage() {
+  const { setUser }: any = useContext(UserContext);
   const navigate = useNavigate();
-  const loginToAccount = (e: FormEvent<HTMLFormElement>) => {
+  const userCollection = collection(db, 'users');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  const loginToAccount = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate('/dashboard');
+    try {
+      const login = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      if (login) {
+        const q = query(userCollection, where('email', '==', email));
+
+        const getUserFromDB = async () => {
+          let userData = {};
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            userData = { ...doc.data() };
+          });
+          setUser({ ...userData, loggedIn: true });
+        };
+        await getUserFromDB();
+        navigate('/dashboard');
+      }
+    } catch (err: any) {
+      setMessage(err.message);
+    }
   };
   return (
     <LoginWrapper>
       <section className="main-login">
         <HomeNavBar />
         <h1>Login to your account</h1>
+        {message && <h1 id="error">{message}</h1>}
         <h2>
           Join the world of FortNerf! Play with others, there are
           several servers to choose from.
@@ -22,17 +60,24 @@ function LoginPage() {
         <section className="img-holder">Image placeholder</section>
         <form onSubmit={loginToAccount}>
           <label htmlFor="username">
-            <p>Username:</p>
+            <p>Email:</p>
             <input
-              type="text"
+              type="email"
               name="username"
               id="username"
-              placeholder="ex: Username777"
+              placeholder="ex: johnappleseed@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
           <label htmlFor="password">
             <p>Password:</p>
-            <input type="password" placeholder="Password" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </label>
           <button className="login-btn" type="submit">
             Log In

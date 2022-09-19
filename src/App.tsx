@@ -17,10 +17,10 @@ import ProtectedRoutes from './components/ProtectedRoutes';
 
 function App() {
   const [user, setUser] = useState({
-    username: 'jhoodie777',
-    name: 'Javi Guerra',
-    email: 'javier.guerra1001@gmail.com',
-    loggedIn: true,
+    username: '',
+    name: '',
+    email: '',
+    loggedIn: false,
   });
   return (
     <UserContext.Provider value={{ user, setUser }}>

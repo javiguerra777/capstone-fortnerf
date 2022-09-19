@@ -53,8 +53,9 @@ const UserInfoWrapper = styled.main`
 `;
 function UserInfo() {
   const navigate = useNavigate();
-  const { user }: any = useContext(UserContext);
+  const { user, setUser }: any = useContext(UserContext);
   const signOut = () => {
+    setUser({});
     navigate('/login');
   };
   return (
