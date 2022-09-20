@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
-// import { GridEngine } from 'grid-engine';
-import FortNerf from '../phaser-game/scenes/FortNerf';
+// import FortNerf from '../phaser-game/scenes/FortNerf';
+import SingleMode from '../phaser-game/scenes/SingleMode';
 
 const config = {
   type: Phaser.AUTO,
@@ -16,17 +16,8 @@ const config = {
     gravity: { y: 0 },
     debug: false,
   },
-  // plugins: {
-  //   scene: [
-  //     {
-  //       key: 'gridEngine',
-  //       plugin: GridEngine,
-  //       mapping: 'gridEngine',
-  //     },
-  //   ],
-  // },
   parent: 'main-game',
-  scene: [FortNerf],
+  scene: [SingleMode],
 };
 type styleProps = {
   width: string;

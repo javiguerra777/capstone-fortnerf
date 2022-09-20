@@ -12,15 +12,16 @@ import Dashboard from './pages/Dashboard';
 import UserInfo from './pages/UserInfo';
 import ValidateEmail from './pages/ValidateEmail';
 import Game from './pages/Game';
+import SinglePlayer from './pages/SinglePlayer';
 import UserContext from './context/Context';
 import ProtectedRoutes from './components/ProtectedRoutes';
 
 function App() {
   const [user, setUser] = useState({
-    username: '',
-    name: '',
-    email: '',
-    loggedIn: false,
+    username: 'jhoodie777',
+    name: 'javi guerra',
+    email: 'javier.guerra1001@gmail.com',
+    loggedIn: true,
   });
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -66,6 +67,14 @@ function App() {
             element={
               <ProtectedRoutes loggedIn={user.loggedIn}>
                 <Game />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/singleplayer"
+            element={
+              <ProtectedRoutes loggedIn={user.loggedIn}>
+                <SinglePlayer />
               </ProtectedRoutes>
             }
           />
