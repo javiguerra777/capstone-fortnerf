@@ -26,8 +26,8 @@ function Game() {
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
   const [displayAside, setDisplayAside] = useState(true);
-  const [mystream, setmystream] = useState<any>({});
-  const videoRef = useRef<any>();
+  const [mystream, setmystream] = useState<MediaStream>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const asideOptions = () => {
     if (displayAside) {
       setDisplayAside(false);
@@ -42,10 +42,12 @@ function Game() {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })
       .then((stream) => {
-        videoRef.current.srcObject = stream;
-        videoRef.current.autoplay = true;
-        videoRef.current.muted = false;
-        setmystream(stream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.autoplay = true;
+          videoRef.current.muted = false;
+          setmystream(stream);
+        }
       })
       .catch((err) => {
         console.log(err.message);
@@ -56,14 +58,14 @@ function Game() {
   function toggleVideo() {
     if (displayVid) {
       setDisplayVid(false);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'video') {
           track.enabled = false;
         }
       });
     } else {
       setDisplayVid(true);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'video') {
           track.enabled = true;
         }
@@ -73,14 +75,14 @@ function Game() {
   function toggleAudio() {
     if (audio) {
       setAudio(false);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'audio') {
           track.enabled = false;
         }
       });
     } else {
       setAudio(true);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'audio') {
           track.enabled = true;
         }

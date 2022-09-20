@@ -23,13 +23,12 @@ type styleProps = {
   width: string;
 };
 function GameComponent({ width }: styleProps) {
-  const canvasRef = useRef<any>();
+  const canvasRef = useRef<HTMLDivElement>(null);
   const clickEvent = () => {
-    canvasRef.current.focus();
+    if (canvasRef.current) {
+      canvasRef.current.focus();
+    }
     // window.addEventListener('keydown',);
-  };
-  const keyDownEvent = () => {
-    // something
   };
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
@@ -45,7 +44,7 @@ function GameComponent({ width }: styleProps) {
       role="button"
       onClick={clickEvent}
       tabIndex={0}
-      onKeyDown={keyDownEvent}
+      onKeyDown={() => null}
       aria-label="canvas element"
       ref={canvasRef}
     />

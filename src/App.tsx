@@ -15,16 +15,19 @@ import Game from './pages/Game';
 import SinglePlayer from './pages/SinglePlayer';
 import UserContext from './context/Context';
 import ProtectedRoutes from './components/ProtectedRoutes';
+import { User } from './types/AppTypes';
 
 function App() {
-  const [user, setUser] = useState({
-    username: 'jhoodie777',
-    name: 'javi guerra',
-    email: 'javier.guerra1001@gmail.com',
-    loggedIn: true,
+  const [user, setUser] = useState<User>({
+    username: '',
+    name: '',
+    email: '',
+    loggedIn: false,
   });
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider
+      value={{ user, setUser } as unknown as User}
+    >
       <Routes>
         <Route path="/" element={<Main />}>
           <Route index element={<HomePage />} />
