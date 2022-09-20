@@ -61,6 +61,17 @@ class FortNerf extends Phaser.Scene {
       immovable: true,
     });
 
+
+    map.getObjectLayer('Walls').objects.forEach((wall: any) => {
+      const wallSprite = walls
+        .create(wall.x, wall.y - wall.height, 'walls')
+        .setOrigin(0);
+      wallSprite.body
+        .setSize(wall.width, wall.height - 20)
+        .setOffset(0, 20);
+    });
+    // // platforms
+
     map.getObjectLayer('Walls').objects.forEach((wall: any) => {
       const wallSprite = walls
         .create(wall.x, wall.y - wall.height, 'walls')
@@ -88,6 +99,7 @@ class FortNerf extends Phaser.Scene {
       } else if (direction === 'up') {
         bullet.setVelocityY(-BULLET_MOVEMENT);
       }
+
     };
     // player animations
     // movement animation function
@@ -153,6 +165,7 @@ class FortNerf extends Phaser.Scene {
     this.physics.world.on('collide', (bullet: any, wall: any) => {
       bullet.destroy();
     });
+
   }
 
   update() {
@@ -168,7 +181,9 @@ class FortNerf extends Phaser.Scene {
       this,
     );
     if (leftCursor.isDown) {
+
       // update left movement
+      // console.log(cursors);
       player.setVelocityX(-160);
       player.setVelocityY(0);
       player.anims.play('left', true);
