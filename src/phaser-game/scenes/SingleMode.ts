@@ -185,8 +185,8 @@ class SingleMode extends Phaser.Scene {
 
     // display score of player
     scoreText = this.add.text(
-      player.x,
-      player.y,
+      player.x - 30,
+      player.y + 30,
       `Score: ${score.toString()}`,
       {
         fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
