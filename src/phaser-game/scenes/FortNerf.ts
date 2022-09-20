@@ -1,14 +1,20 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-shadow */
 import Phaser from 'phaser';
+import { BULLET_MOVEMENT, BULLET_OFFSET } from '../utils/constants';
 
-// let platforms;
 let background: any;
 let player: any;
-let cursors: any;
+let upCursor: any;
+let downCursor: any;
+let leftCursor: any;
+let rightCursor: any;
+let spaceBar: any;
 let walls: any;
 let shootBullet: any;
-// let score = 0;
-// let usernameText: any;
-
+let bullet: any = {};
 class FortNerf extends Phaser.Scene {
   constructor() {
     super('FortNerf');
@@ -55,6 +61,7 @@ class FortNerf extends Phaser.Scene {
       immovable: true,
     });
 
+
     map.getObjectLayer('Walls').objects.forEach((wall: any) => {
       const wallSprite = walls
         .create(wall.x, wall.y - wall.height, 'walls')
@@ -65,18 +72,34 @@ class FortNerf extends Phaser.Scene {
     });
     // // platforms
 
-    // // how to create multiple platforms
-    // platforms.create(400, 568, 'platform').setScale(2).refreshBody();
-    // platforms.create(600, 400, 'platform');
-    // platforms.create(50, 250, 'platform');
-    // platforms.create(750, 220, 'platform');
+    map.getObjectLayer('Walls').objects.forEach((wall: any) => {
+      const wallSprite = walls
+        .create(wall.x, wall.y - wall.height, 'walls')
+        .setOrigin(0);
+      wallSprite.body
+        .setSize(wall.width, wall.height - 20)
+        .setOffset(0, 20);
+    });
 
     // player methods
-    player = this.physics.add.sprite(50, 150, 'player');
-    player.setCollideWorldBounds(true);
+    player = this.physics.add.sprite(500, 500, 'player');
     player.direction = 'down';
-    shootBullet = (x: number, y: number) => {
-      this.physics.add.sprite(x, y, 'bullet');
+
+    // bullet methods
+    shootBullet = (x: number, y: number, direction: string) => {
+      bullet = this.physics.add.sprite(x, y, 'bullet');
+      bullet.onCollide = true;
+      bullet.body.onCollide = true;
+      if (direction === 'right') {
+        bullet.setVelocityX(BULLET_MOVEMENT);
+      } else if (direction === 'left') {
+        bullet.setVelocityX(-BULLET_MOVEMENT);
+      } else if (direction === 'down') {
+        bullet.setVelocityY(BULLET_MOVEMENT);
+      } else if (direction === 'up') {
+        bullet.setVelocityY(-BULLET_MOVEMENT);
+      }
+
     };
     // player animations
     // movement animation function
@@ -118,9 +141,12 @@ class FortNerf extends Phaser.Scene {
     createStillAnimation('downstill', 1);
     createStillAnimation('upstill', 10);
 
-    function playerHit() {
+    // bullet animations
+
+    // collision
+    const playerHit = () => {
       player.setVelocity(0, 0);
-    }
+    };
     this.physics.add.collider(
       player,
       walls,
@@ -128,61 +154,60 @@ class FortNerf extends Phaser.Scene {
       undefined,
       this,
     );
-    cursors = this.input.keyboard.createCursorKeys();
+    player.setCollideWorldBounds(true);
+    // keyboard methods
+    upCursor = this.input.keyboard.addKey('UP');
+    leftCursor = this.input.keyboard.addKey('LEFT');
+    rightCursor = this.input.keyboard.addKey('RIGHT');
+    downCursor = this.input.keyboard.addKey('DOWN');
+    spaceBar = this.input.keyboard.addKey('SPACE');
+    // console.log(cursors);
+    this.physics.world.on('collide', (bullet: any, wall: any) => {
+      bullet.destroy();
+    });
 
-    // score and text
-    // this.add.text(player.x, player.y + 10, 'jhoodie777', {
-    //   fontSize: '32px',
-    // });
-    // const gridEngineConfig = {
-    //   characters: [
-    //     {
-    //       id: 'playerOne',
-    //       sprite: playerSprite,
-    //       startPosition: { x: 1, y: 1 },
-    //     },
-    //   ],
-    // };
-
-    // this.gridEngine.create(map, gridEngineConfig);
   }
 
   update() {
     this.cameras.main.startFollow(player);
-    if (cursors.left.isDown) {
-      if (cursors.down.isDown) {
-        player.setVelocityY(160);
-      } else if (cursors.up.isDown) {
-        player.setVelocityY(-160);
-      }
+    const bulletHit = () => {
+      // eslinter comment
+    };
+    this.physics.add.collider(
+      bullet,
+      walls,
+      bulletHit,
+      undefined,
+      this,
+    );
+    if (leftCursor.isDown) {
+
       // update left movement
       // console.log(cursors);
       player.setVelocityX(-160);
+      player.setVelocityY(0);
       player.anims.play('left', true);
       player.direction = 'left';
-    } else if (cursors.right.isDown) {
-      if (cursors.down.isDown) {
-        player.setVelocityY(160);
-      } else if (cursors.up.isDown) {
-        player.setVelocityY(-160);
-      }
+    } else if (rightCursor.isDown) {
       // update right movement
-      player.setVelocityX(160);
       player.anims.play('right', true);
+      player.setVelocityY(0);
+      player.setVelocityX(160);
       player.direction = 'right';
-    } else if (cursors.down.isDown) {
+    } else if (downCursor.isDown) {
       // update the down movement
+      player.setVelocityX(0);
       player.setVelocityY(160);
       player.anims.play('down', true);
       player.direction = 'down';
-    } else if (cursors.up.isDown) {
+    } else if (upCursor.isDown) {
       // update the up movement
+      player.setVelocityX(0);
       player.setVelocityY(-160);
       player.anims.play('up', true);
       player.direction = 'up';
     } else {
-      player.setVelocityX(0);
-      player.setVelocityY(0);
+      player.setVelocity(0);
       if (player.direction === 'up') {
         player.anims.play('upstill', true);
       } else if (player.direction === 'down') {
@@ -193,15 +218,32 @@ class FortNerf extends Phaser.Scene {
         player.anims.play('rightstill', true);
       }
     }
-    if (cursors.space.isDown) {
+    // controls bullet updates on space press
+    if (spaceBar.isDown) {
       if (player.direction === 'right') {
-        shootBullet(player.x + 35, player.y);
+        shootBullet(
+          player.x + BULLET_OFFSET,
+          player.y,
+          player.direction,
+        );
       } else if (player.direction === 'left') {
-        shootBullet(player.x - 35, player.y);
+        shootBullet(
+          player.x - BULLET_OFFSET,
+          player.y,
+          player.direction,
+        );
       } else if (player.direction === 'up') {
-        shootBullet(player.x, player.y - 35);
+        shootBullet(
+          player.x,
+          player.y - BULLET_OFFSET,
+          player.direction,
+        );
       } else if (player.direction === 'down') {
-        shootBullet(player.x, player.y + 35);
+        shootBullet(
+          player.x,
+          player.y + BULLET_OFFSET,
+          player.direction,
+        );
       }
     }
   }

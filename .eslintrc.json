@@ -29,6 +29,8 @@
   ],
   "rules": {
     "linebreak-style": 0,
+    "no-param-reassign": "off",
+    "jsx-a11y/media-has-caption":"off",
     "no-use-before-define": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",

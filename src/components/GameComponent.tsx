@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 // import { GridEngine } from 'grid-engine';
 import FortNerf from '../phaser-game/scenes/FortNerf';
@@ -32,8 +32,13 @@ type styleProps = {
   width: string;
 };
 function GameComponent({ width }: styleProps) {
+  const canvasRef = useRef<any>();
   const clickEvent = () => {
-    console.log('hello I am clicked');
+    canvasRef.current.focus();
+    // window.addEventListener('keydown',);
+  };
+  const keyDownEvent = () => {
+    // something
   };
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
@@ -49,8 +54,9 @@ function GameComponent({ width }: styleProps) {
       role="button"
       onClick={clickEvent}
       tabIndex={0}
-      onKeyDown={clickEvent}
+      onKeyDown={keyDownEvent}
       aria-label="canvas element"
+      ref={canvasRef}
     />
   );
 }
