@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
-// import FortNerf from '../phaser-game/scenes/FortNerf';
-import SingleMode from '../phaser-game/scenes/SingleMode';
+import FortNerf from '../phaser-game/scenes/FortNerf';
+// import SingleMode from '../phaser-game/scenes/SingleMode';
 
 const config = {
   type: Phaser.AUTO,
@@ -17,7 +17,7 @@ const config = {
     debug: false,
   },
   parent: 'main-game',
-  scene: [SingleMode],
+  scene: [FortNerf],
 };
 type styleProps = {
   width: string;
@@ -28,7 +28,6 @@ function GameComponent({ width }: styleProps) {
     if (canvasRef.current) {
       canvasRef.current.focus();
     }
-    // window.addEventListener('keydown',);
   };
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);

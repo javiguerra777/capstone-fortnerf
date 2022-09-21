@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlineWechat, AiOutlineAudioMuted } from 'react-icons/ai';
 import {
   BsPeople,
@@ -18,14 +18,17 @@ import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
 import UserContext from '../context/Context';
+import { socket } from '../App';
 
 function Game() {
   const navigate = useNavigate();
   const { user }: any = useContext(UserContext);
+  const { id } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
   const [displayAside, setDisplayAside] = useState(true);
+  const [message, setMessage] = useState('');
   const [mystream, setmystream] = useState<MediaStream>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const asideOptions = () => {
@@ -50,11 +53,19 @@ function Game() {
         }
       })
       .catch((err) => {
-        console.log(err.message);
+        setMessage(err.message);
         setDisplayVid(false);
         setAudio(false);
       });
   }, []);
+  useEffect(() => {
+    socket.emit('join_room', {
+      room: id,
+    });
+    return () => {
+      socket.emit('leave_room', id);
+    };
+  }, [id]);
   function toggleVideo() {
     if (displayVid) {
       setDisplayVid(false);
@@ -92,8 +103,14 @@ function Game() {
   const navToDashboard = () => {
     navigate('/dashboard');
   };
+  if (message) {
+    setTimeout(() => {
+      setMessage('');
+    }, 1000);
+  }
   return (
     <GameWrapper>
+      {message && <h1 id="error">Camera {message}</h1>}
       <div className="game-chat-container">
         <GameComponent width={displayAside ? width : maxWidth} />
         {displayAside && (

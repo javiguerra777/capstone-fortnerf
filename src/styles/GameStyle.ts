@@ -11,6 +11,13 @@ const GameWrapper = styled.main`
   button {
     cursor: pointer;
   }
+  #error {
+    position: fixed;
+    background: white;
+    color: black;
+    width: auto;
+    left: 25%;
+  }
   .game-chat-container {
     height: 94%;
     width: 100%;

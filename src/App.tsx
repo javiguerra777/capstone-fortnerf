@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import Main from './pages/Main';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -17,12 +18,13 @@ import UserContext from './context/Context';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { User } from './types/AppTypes';
 
+export const socket = io('http://localhost:5000');
 function App() {
   const [user, setUser] = useState<User>({
     username: '',
     name: '',
     email: '',
-    loggedIn: false,
+    loggedIn: true,
   });
   return (
     <UserContext.Provider
