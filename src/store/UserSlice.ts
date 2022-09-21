@@ -18,6 +18,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    // used for signing up user, logging in user, and logging user out of app
     setUser(state, { payload }) {
       state.username = payload.username;
       state.name = payload.name;

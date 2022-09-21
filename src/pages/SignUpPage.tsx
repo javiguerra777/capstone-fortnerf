@@ -52,8 +52,10 @@ function SignUpPage() {
         await getUserFromDB();
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      }
     }
   };
   return (
