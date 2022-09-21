@@ -1,7 +1,7 @@
-/* eslint-disable react/jsx-no-constructed-context-values */
-import React, { useState } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { useSelector } from 'react-redux';
 import Main from './pages/Main';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -14,78 +14,65 @@ import UserInfo from './pages/UserInfo';
 import ValidateEmail from './pages/ValidateEmail';
 import Game from './pages/Game';
 import SinglePlayer from './pages/SinglePlayer';
-import UserContext from './context/Context';
 import ProtectedRoutes from './components/ProtectedRoutes';
-import { User } from './types/AppTypes';
+import { RootState } from './store';
 
 export const socket = io('http://localhost:5000');
 function App() {
-  const [user, setUser] = useState<User>({
-    username: '',
-    name: '',
-    email: '',
-    loggedIn: true,
-  });
+  const { loggedIn } = useSelector((state: RootState) => state.user);
   return (
-    <UserContext.Provider
-      value={{ user, setUser } as unknown as User}
-    >
-      <Routes>
-        <Route path="/" element={<Main />}>
-          <Route index element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-          <Route
-            path="/emailvalidation"
-            element={<ValidateEmail />}
-          />
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoutes loggedIn={user.loggedIn}>
-                <Dashboard />
-              </ProtectedRoutes>
-            }
-          />
+    <Routes>
+      <Route path="/" element={<Main />}>
+        <Route index element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/emailvalidation" element={<ValidateEmail />} />
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoutes loggedIn={loggedIn}>
+              <Dashboard />
+            </ProtectedRoutes>
+          }
+        />
 
-          <Route
-            path="/userinfo"
-            element={
-              <ProtectedRoutes loggedIn={user.loggedIn}>
-                <UserInfo />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/createserver"
-            element={
-              <ProtectedRoutes loggedIn={user.loggedIn}>
-                <CreateNewServer />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/game/:id"
-            element={
-              <ProtectedRoutes loggedIn={user.loggedIn}>
-                <Game />
-              </ProtectedRoutes>
-            }
-          />
-          <Route
-            path="/singleplayer"
-            element={
-              <ProtectedRoutes loggedIn={user.loggedIn}>
-                <SinglePlayer />
-              </ProtectedRoutes>
-            }
-          />
-        </Route>
-      </Routes>
-    </UserContext.Provider>
+        <Route
+          path="/userinfo"
+          element={
+            <ProtectedRoutes loggedIn={loggedIn}>
+              <UserInfo />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/createserver"
+          element={
+            <ProtectedRoutes loggedIn={loggedIn}>
+              <CreateNewServer />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/game/:id"
+          element={
+            <ProtectedRoutes loggedIn={loggedIn}>
+              <Game />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/singleplayer"
+          element={
+            <ProtectedRoutes loggedIn={loggedIn}>
+              <SinglePlayer />
+            </ProtectedRoutes>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 

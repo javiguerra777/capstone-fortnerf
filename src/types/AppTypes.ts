@@ -3,11 +3,5 @@ export type Message = {
   message: string;
   date: number;
 };
-export type User = {
-  username: string;
-  name: string;
-  email: string;
-  loggedIn: boolean;
-};
 
 export default {};

@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlineWechat, AiOutlineAudioMuted } from 'react-icons/ai';
 import {
@@ -13,16 +8,17 @@ import {
 } from 'react-icons/bs';
 import { FaMicrophoneAlt } from 'react-icons/fa';
 import { GiExitDoor } from 'react-icons/gi';
+import { useSelector } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
-import UserContext from '../context/Context';
 import { socket } from '../App';
+import { RootState } from '../store';
 
 function Game() {
+  const { username } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
-  const { user }: any = useContext(UserContext);
   const { id } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [audio, setAudio] = useState(true);
@@ -124,7 +120,7 @@ function Game() {
       <footer className="user-settings background-color">
         <section className="flex-row video-voice">
           <video id="videoElement" ref={videoRef} />
-          <p>{user.username}</p>
+          <p>{username}</p>
           <button type="button" onClick={toggleAudio}>
             {audio ? (
               <FaMicrophoneAlt />
