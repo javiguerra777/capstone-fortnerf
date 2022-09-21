@@ -29,6 +29,7 @@
   ],
   "rules": {
     "linebreak-style": 0,
+    "react/jsx-no-useless-fragment": "off",
     "no-param-reassign": "off",
     "jsx-a11y/media-has-caption":"off",
     "no-use-before-define": "off",
