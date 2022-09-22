@@ -10,13 +10,13 @@ import { socket } from '../../App';
 
 let player: any;
 let playerOneUsername: string;
-let playerText: any;
+let playerText: Phaser.GameObjects.Text;
 let otherPlayer: any;
-let otherPlayerText: any;
+let otherPlayerText: Phaser.GameObjects.Text;
 let shootBullet: any;
 let movePlayer: () => boolean;
 let bullet: any;
-let otherBullet: any;
+let otherBullet;
 let collidableObjects:
   | Phaser.GameObjects.GameObject
   | Phaser.GameObjects.GameObject[]
