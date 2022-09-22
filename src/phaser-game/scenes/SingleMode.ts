@@ -6,7 +6,6 @@ import {
 } from '../utils/constants';
 import npcData from '../../NPC.json';
 
-// let background: any;
 let player: any;
 let cursor: {
   shift: { isDown: boolean };
@@ -21,7 +20,7 @@ let collidableObjects:
   | Phaser.GameObjects.GameObject[]
   | Phaser.GameObjects.Group
   | Phaser.GameObjects.Group[];
-let shootBullet: (x: number, y: number, direction: string) => void;
+let shootBullet: any;
 let bullet;
 let speed: number;
 let score = 0;
@@ -83,7 +82,7 @@ class SingleMode extends Phaser.Scene {
       immovable: true,
     });
 
-    npcData.forEach((anNpc: any) => {
+    npcData.forEach((anNpc) => {
       const npcSprite = npc.create(anNpc.x, anNpc.y, 'npc');
       npcSprite.body.setSize(NPC_DIMENSIONS, NPC_DIMENSIONS);
     });
