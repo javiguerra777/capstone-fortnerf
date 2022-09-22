@@ -66,7 +66,9 @@ function Game() {
     if (displayVid) {
       setDisplayVid(!displayVid);
       mystream?.getTracks().forEach((track: MediaStreamTrack) => {
-        track.enabled = !(track.readyState === 'live' && track.kind === 'video')
+        track.enabled = !(
+          track.readyState === 'live' && track.kind === 'video'
+        );
       });
     } else {
       setDisplayVid(true);
