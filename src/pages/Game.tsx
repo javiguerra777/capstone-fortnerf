@@ -64,11 +64,9 @@ function Game() {
   }, [id]);
   function toggleVideo() {
     if (displayVid) {
-      setDisplayVid(false);
+      setDisplayVid(!displayVid);
       mystream?.getTracks().forEach((track: MediaStreamTrack) => {
-        if (track.readyState === 'live' && track.kind === 'video') {
-          track.enabled = false;
-        }
+        track.enabled = !(track.readyState === 'live' && track.kind === 'video')
       });
     } else {
       setDisplayVid(true);

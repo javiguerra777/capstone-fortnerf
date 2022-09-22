@@ -8,13 +8,24 @@ import npcData from '../../NPC.json';
 
 // let background: any;
 let player: any;
-let cursor: any;
-let collidableObjects: any;
-let shootBullet: any;
-let bullet: any = {};
+let cursor: {
+  shift: { isDown: boolean };
+  left: { isDown: boolean };
+  right: { isDown: boolean };
+  down: { isDown: boolean };
+  up: { isDown: boolean };
+  space: { isDown: boolean };
+};
+let collidableObjects:
+  | Phaser.GameObjects.GameObject
+  | Phaser.GameObjects.GameObject[]
+  | Phaser.GameObjects.Group
+  | Phaser.GameObjects.Group[];
+let shootBullet: (x: number, y: number, direction: string) => void;
+let bullet;
 let speed: number;
 let score = 0;
-let scoreText: any;
+let scoreText: Phaser.GameObjects.Text;
 let npc: any;
 class SingleMode extends Phaser.Scene {
   constructor() {
