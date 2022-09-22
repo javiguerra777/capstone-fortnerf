@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from 'phaser';
+import store from '../../store';
 import {
   SPRITE_DIMENSIONS,
   PLAYER_MOVEMENT,
@@ -11,7 +9,10 @@ import {
 import { socket } from '../../App';
 
 let player: any;
+let playerOneUsername: string;
+let playerText: any;
 let otherPlayer: any;
+let otherPlayerText: any;
 let shootBullet: any;
 let movePlayer: () => boolean;
 let bullet: any;
@@ -27,7 +28,7 @@ let cursor: {
   down: Phaser.Input.Keyboard.Key;
   left: Phaser.Input.Keyboard.Key;
   right: Phaser.Input.Keyboard.Key;
-  space?: Phaser.Input.Keyboard.Key;
+  space: Phaser.Input.Keyboard.Key;
 };
 class FortNerf extends Phaser.Scene {
   constructor() {
@@ -35,6 +36,9 @@ class FortNerf extends Phaser.Scene {
   }
 
   preload() {
+    const state = store.getState();
+    const { username } = state.user;
+    playerOneUsername = username;
     this.load.spritesheet(
       'player',
       '/assets/characters/male_player.png',
@@ -107,24 +111,32 @@ class FortNerf extends Phaser.Scene {
         player.direction = 'up';
         player.setVelocityY(-PLAYER_MOVEMENT * speed);
         player.setVelocityX(0);
+        playerText.setX(player.x - 30);
+        playerText.setY(player.y + 30);
         player.anims.play('up', true);
       } else if (cursor.down.isDown) {
         playerMoved = true;
         player.direction = 'down';
         player.setVelocityY(PLAYER_MOVEMENT * speed);
         player.setVelocityX(0);
+        playerText.setX(player.x - 30);
+        playerText.setY(player.y + 30);
         player.anims.play('down', true);
       } else if (cursor.left.isDown) {
         playerMoved = true;
         player.direction = 'left';
         player.setVelocityX(-PLAYER_MOVEMENT * speed);
         player.setVelocityY(0);
+        playerText.setX(player.x - 30);
+        playerText.setY(player.y + 30);
         player.anims.play('left', true);
       } else if (cursor.right.isDown) {
         playerMoved = true;
         player.direction = 'right';
         player.setVelocityX(PLAYER_MOVEMENT * speed);
         player.setVelocityY(0);
+        playerText.setX(player.x - 30);
+        playerText.setY(player.y + 30);
         player.anims.play('right', true);
       } else {
         playerMoved = false;
@@ -144,7 +156,7 @@ class FortNerf extends Phaser.Scene {
     // bullet methods
     shootBullet = (x: number, y: number, direction: string) => {
       let bulletShot = false;
-      if (cursor!.space!.isDown) {
+      if (cursor.space.isDown) {
         if (direction === 'right') {
           bullet = this.physics.add.sprite(
             x + BULLET_OFFSET,
@@ -173,8 +185,7 @@ class FortNerf extends Phaser.Scene {
         this.physics.add.collider(
           bullet,
           collidableObjects,
-          (theBullet, obj) => {
-            console.log(obj);
+          (theBullet) => {
             theBullet.destroy();
           },
           undefined,
@@ -183,8 +194,7 @@ class FortNerf extends Phaser.Scene {
         this.physics.add.collider(
           bullet,
           otherPlayer,
-          (theBullet, obj) => {
-            console.log(obj);
+          (theBullet) => {
             theBullet.destroy();
           },
           undefined,
@@ -264,9 +274,25 @@ class FortNerf extends Phaser.Scene {
 
     // collision
     player.setCollideWorldBounds(true);
+
+    playerText = this.add.text(
+      player.x - 30,
+      player.y + 30,
+      playerOneUsername,
+      {
+        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+      },
+    );
+    otherPlayerText = this.add.text(
+      otherPlayer.x - 30,
+      otherPlayer.y + 30,
+      'player 2',
+      {
+        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+      },
+    );
     // keyboard methods
     cursor = this.input.keyboard.createCursorKeys();
-
     // socket methods
     socket.on('playerMove', ({ x, y, direction }) => {
       if (direction === 'right') {
@@ -280,6 +306,8 @@ class FortNerf extends Phaser.Scene {
       }
       otherPlayer.x = x;
       otherPlayer.y = y;
+      otherPlayerText.setX(otherPlayer.x - 30);
+      otherPlayerText.setY(otherPlayer.y + 30);
       otherPlayer.moving = true;
     });
 
@@ -292,7 +320,7 @@ class FortNerf extends Phaser.Scene {
       this.physics.add.collider(
         otherBullet,
         player,
-        (theBullet, obj) => {
+        (theBullet) => {
           theBullet.destroy();
         },
         undefined,
@@ -301,7 +329,7 @@ class FortNerf extends Phaser.Scene {
       this.physics.add.collider(
         otherBullet,
         collidableObjects,
-        (theBullet, obj) => {
+        (theBullet) => {
           theBullet.destroy();
         },
         undefined,
@@ -324,6 +352,7 @@ class FortNerf extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(player);
+    // username text
     const playerMoved = movePlayer();
     if (playerMoved) {
       socket.emit('move', {

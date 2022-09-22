@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from 'phaser';
 import {
   BULLET_MOVEMENT,
@@ -85,7 +83,7 @@ class SingleMode extends Phaser.Scene {
       this.physics.add.collider(
         bullet,
         collidableObjects,
-        (theBullet, obj) => {
+        (theBullet) => {
           theBullet.destroy();
         },
         undefined,
@@ -94,7 +92,7 @@ class SingleMode extends Phaser.Scene {
       this.physics.add.collider(
         bullet,
         npc,
-        (theBullet, obj) => {
+        (theBullet) => {
           score += 10;
           scoreText.setText(`Score: ${score}`);
           theBullet.destroy();
