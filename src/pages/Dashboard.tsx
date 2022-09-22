@@ -23,6 +23,27 @@ const DashboardWrapper = styled.main`
     border-radius: 0.5em;
     overflow-y: scroll;
   }
+  .game-options-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    .nav-btn {
+      background: none;
+      color: white;
+      border: solid 0.2em white;
+      border-radius: 0.3em;
+      padding: 1em;
+      cursor: pointer;
+      width: 10em;
+    }
+    .btn-one {
+      margin-right: 2em;
+    }
+    .btn-three {
+      margin-left: 2em;
+    }
+  }
 `;
 const GameDetails = styled.section`
   display: flex;
@@ -61,11 +82,29 @@ function Dashboard() {
   const navToGame = (gameId: number) => {
     navigate(`/game/${gameId}`);
   };
+  const playSoloGame = () => {
+    navigate('/singleplayer');
+  };
   return (
     <DashboardWrapper>
       <UserNavBar />
       <section className="active-games">
         <h1>Click to Join a Game</h1>
+        <nav className="game-options-nav">
+          <button className="nav-btn btn-one" type="button">
+            Public
+          </button>
+          <button className="nav-btn btn-two" type="button">
+            Private
+          </button>
+          <button
+            className="nav-btn btn-three"
+            type="button"
+            onClick={playSoloGame}
+          >
+            Single Player
+          </button>
+        </nav>
         {gameServers.map(({ server, players, maxPlayers, id }) => (
           <GameDetails key={nanoid()} onClick={() => navToGame(id)}>
             <section id="item1">

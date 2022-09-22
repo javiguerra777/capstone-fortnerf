@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { BiUser } from 'react-icons/bi';
 import UserNavBar from '../components/UserNavBar';
 import UserContext from '../context/Context';
-// import { User } from '../types/AppTypes';
 
 const UserInfoWrapper = styled.main`
   color: white;

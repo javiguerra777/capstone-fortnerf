@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
-// import { GridEngine } from 'grid-engine';
 import FortNerf from '../phaser-game/scenes/FortNerf';
+// import SingleMode from '../phaser-game/scenes/SingleMode';
 
 const config = {
   type: Phaser.AUTO,
@@ -16,15 +16,6 @@ const config = {
     gravity: { y: 0 },
     debug: false,
   },
-  // plugins: {
-  //   scene: [
-  //     {
-  //       key: 'gridEngine',
-  //       plugin: GridEngine,
-  //       mapping: 'gridEngine',
-  //     },
-  //   ],
-  // },
   parent: 'main-game',
   scene: [FortNerf],
 };
@@ -32,13 +23,11 @@ type styleProps = {
   width: string;
 };
 function GameComponent({ width }: styleProps) {
-  const canvasRef = useRef<any>();
+  const canvasRef = useRef<HTMLDivElement>(null);
   const clickEvent = () => {
-    canvasRef.current.focus();
-    // window.addEventListener('keydown',);
-  };
-  const keyDownEvent = () => {
-    // something
+    if (canvasRef.current) {
+      canvasRef.current.focus();
+    }
   };
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
@@ -54,7 +43,7 @@ function GameComponent({ width }: styleProps) {
       role="button"
       onClick={clickEvent}
       tabIndex={0}
-      onKeyDown={keyDownEvent}
+      onKeyDown={() => null}
       aria-label="canvas element"
       ref={canvasRef}
     />

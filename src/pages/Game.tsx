@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlineWechat, AiOutlineAudioMuted } from 'react-icons/ai';
 import {
   BsPeople,
@@ -18,16 +18,19 @@ import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
 import UserContext from '../context/Context';
+import { socket } from '../App';
 
 function Game() {
   const navigate = useNavigate();
   const { user }: any = useContext(UserContext);
+  const { id } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
   const [displayAside, setDisplayAside] = useState(true);
-  const [mystream, setmystream] = useState<any>({});
-  const videoRef = useRef<any>();
+  const [message, setMessage] = useState('');
+  const [mystream, setmystream] = useState<MediaStream>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const asideOptions = () => {
     if (displayAside) {
       setDisplayAside(false);
@@ -42,28 +45,36 @@ function Game() {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })
       .then((stream) => {
-        videoRef.current.srcObject = stream;
-        videoRef.current.autoplay = true;
-        videoRef.current.muted = false;
-        setmystream(stream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.autoplay = true;
+          videoRef.current.muted = false;
+          setmystream(stream);
+        }
       })
       .catch((err) => {
-        console.log(err.message);
+        setMessage(err.message);
         setDisplayVid(false);
         setAudio(false);
       });
   }, []);
+  useEffect(() => {
+    socket.emit('join_room', {
+      room: id,
+    });
+    return () => {
+      socket.emit('leave_room', id);
+    };
+  }, [id]);
   function toggleVideo() {
     if (displayVid) {
-      setDisplayVid(false);
-      mystream.getTracks().forEach((track: any) => {
-        if (track.readyState === 'live' && track.kind === 'video') {
-          track.enabled = false;
-        }
+      setDisplayVid(!displayVid);
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
+        track.enabled = !(track.readyState === 'live' && track.kind === 'video')
       });
     } else {
       setDisplayVid(true);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'video') {
           track.enabled = true;
         }
@@ -73,14 +84,14 @@ function Game() {
   function toggleAudio() {
     if (audio) {
       setAudio(false);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'audio') {
           track.enabled = false;
         }
       });
     } else {
       setAudio(true);
-      mystream.getTracks().forEach((track: any) => {
+      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'audio') {
           track.enabled = true;
         }
@@ -90,8 +101,14 @@ function Game() {
   const navToDashboard = () => {
     navigate('/dashboard');
   };
+  if (message) {
+    setTimeout(() => {
+      setMessage('');
+    }, 1000);
+  }
   return (
     <GameWrapper>
+      {message && <h1 id="error">Camera {message}</h1>}
       <div className="game-chat-container">
         <GameComponent width={displayAside ? width : maxWidth} />
         {displayAside && (
