@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 import FortNerf from '../phaser-game/scenes/FortNerf';
-// import SingleMode from '../phaser-game/scenes/SingleMode';
 
 const config = {
   type: Phaser.AUTO,

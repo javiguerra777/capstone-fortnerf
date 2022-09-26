@@ -1,40 +1,36 @@
-import React, {
-  useState,
-  FormEvent,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import React, { useState, FormEvent } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { AiOutlineUser } from 'react-icons/ai';
 import convertToDate from '../utils/functions';
 import { Message } from '../types/AppTypes';
+import { socket } from '../App';
+import { RootState } from '../store';
 
 type ChatProps = {
   asideOptions: () => void;
   messages: Message[];
-  setMessages: Dispatch<SetStateAction<Message[]>>;
 };
 
-function GameChat({
-  asideOptions,
-  messages,
-  setMessages,
-}: ChatProps) {
+function GameChat({ asideOptions, messages }: ChatProps) {
+  const { username } = useSelector(
+    (state: RootState) => state.user,
+    shallowEqual,
+  );
+  const { id } = useSelector(
+    (state: RootState) => state.game,
+    shallowEqual,
+  );
   const [chatMessage, setChatMessage] = useState('');
   const sendChat = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setMessages((prevState) => [
-      ...prevState,
-      {
-        username: 'jhoodie777',
-        message: chatMessage,
-        date: Date.now(),
-      },
-    ]);
+    socket.emit('chat', {
+      username,
+      message: chatMessage,
+      date: Date.now(),
+      room: id,
+    });
     setChatMessage('');
-  };
-  const removeKeyBoard = () => {
-    console.log('phaser keyboard removed');
   };
   return (
     <aside className="chat-bar background-color">
@@ -75,7 +71,6 @@ function GameChat({
             placeholder="Message"
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
-            onClick={removeKeyBoard}
           />
         </label>
       </form>

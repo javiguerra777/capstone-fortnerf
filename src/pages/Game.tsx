@@ -8,15 +8,17 @@ import {
 } from 'react-icons/bs';
 import { FaMicrophoneAlt } from 'react-icons/fa';
 import { GiExitDoor } from 'react-icons/gi';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
 import { socket } from '../App';
 import { RootState } from '../store';
+import { setId } from '../store/GameSlice';
 
 function Game() {
+  const dispatch = useDispatch();
   const { username } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -62,6 +64,17 @@ function Game() {
       socket.emit('leave_room', id);
     };
   }, [id]);
+  useEffect(() => {
+    dispatch(setId(id));
+    return () => {
+      dispatch(setId(''));
+    };
+  }, [id, dispatch]);
+  useEffect(() => {
+    socket.on('chat_msg', (data) => {
+      setMessages((prev) => [...prev, data]);
+    });
+  }, []);
   function toggleVideo() {
     if (displayVid) {
       setDisplayVid(!displayVid);
@@ -110,11 +123,7 @@ function Game() {
       <div className="game-chat-container">
         <GameComponent width={displayAside ? width : maxWidth} />
         {displayAside && (
-          <GameChat
-            asideOptions={asideOptions}
-            messages={messages}
-            setMessages={setMessages}
-          />
+          <GameChat asideOptions={asideOptions} messages={messages} />
         )}
       </div>
       <footer className="user-settings background-color">

@@ -9,6 +9,7 @@ import {
 import { socket } from '../../App';
 
 let player: any;
+let gameRoom: string;
 let playerOneUsername: string;
 let playerText: Phaser.GameObjects.Text;
 let otherPlayer: any;
@@ -17,6 +18,8 @@ let shootBullet: any;
 let movePlayer: () => boolean;
 let bullet: any;
 let otherBullet;
+let health = 100;
+let lives = 3;
 let collidableObjects:
   | Phaser.GameObjects.GameObject
   | Phaser.GameObjects.GameObject[]
@@ -39,6 +42,8 @@ class FortNerf extends Phaser.Scene {
     const state = store.getState();
     const { username } = state.user;
     playerOneUsername = username;
+    const { id } = state.game;
+    gameRoom = id;
     this.load.spritesheet(
       'player',
       '/assets/characters/male_player.png',
@@ -275,6 +280,7 @@ class FortNerf extends Phaser.Scene {
     // collision
     player.setCollideWorldBounds(true);
 
+    // text within game
     playerText = this.add.text(
       player.x - 30,
       player.y + 30,
@@ -291,6 +297,30 @@ class FortNerf extends Phaser.Scene {
         fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
       },
     );
+    const healthText = this.add.text(
+      100,
+      100,
+      `hp: ${health.toString()}`,
+      {
+        fontFamily: '"Roboto Condensed"',
+        fontSize: 'px',
+      },
+    );
+    healthText.scrollFactorX = 0;
+    healthText.scrollFactorY = 0;
+    healthText.setFontSize(60);
+    const lifeText = this.add.text(
+      100,
+      50,
+      `lives: ${lives.toString()}`,
+      {
+        fontFamily: '"Roboto Condensed"',
+        fontSize: 'px',
+      },
+    );
+    lifeText.scrollFactorX = 0;
+    lifeText.scrollFactorY = 0;
+    lifeText.setFontSize(60);
     // keyboard methods
     cursor = this.input.keyboard.createCursorKeys();
     // socket methods
@@ -321,6 +351,28 @@ class FortNerf extends Phaser.Scene {
         otherBullet,
         player,
         (theBullet) => {
+          health -= 10;
+          healthText.setText(`hp: ${health.toString()}`);
+          if (health <= 0) {
+            lives -= 1;
+            health = 100;
+            lifeText.setText(`lives: ${lives.toString()}`);
+            healthText.setText(`hp: ${health.toString()}`);
+            player.setX(200);
+            player.setY(300);
+            playerText.setX(player.x - 30);
+            playerText.setY(player.y + 30);
+            player.direction = 'down';
+            socket.emit('move', {
+              x: 200,
+              y: 300,
+              direction: 'down',
+              room: gameRoom,
+            });
+          }
+          if (lives === 0) {
+            console.log('You lost');
+          }
           theBullet.destroy();
         },
         undefined,
@@ -352,18 +404,21 @@ class FortNerf extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(player);
-    // username text
     const playerMoved = movePlayer();
     if (playerMoved) {
       socket.emit('move', {
         x: player.x,
         y: player.y,
         direction: player.direction,
+        room: gameRoom,
       });
       player.movedLastFrame = true;
     } else {
       if (player.movedLastFrame) {
-        socket.emit('moveEnd', player.direction);
+        socket.emit('moveEnd', {
+          direction: player.direction,
+          room: gameRoom,
+        });
       }
       player.movedLastFrame = false;
     }
@@ -399,6 +454,7 @@ class FortNerf extends Phaser.Scene {
         x: bullet.x,
         y: bullet.y,
         direction: player.direction,
+        room: gameRoom,
       });
     }
   }
