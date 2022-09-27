@@ -1,4 +1,4 @@
-import React, { FormEvent, useState, useContext } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -8,13 +8,14 @@ import {
   where,
   query,
 } from 'firebase/firestore';
+import { useDispatch } from 'react-redux';
 import LoginWrapper from '../styles/ReusableStyles';
 import HomeNavBar from '../components/HomeNavBar';
 import { db, auth } from '../firebase/FirebaseTS';
-import UserContext from '../context/Context';
+import { setUser } from '../store/UserSlice';
 
 function LoginPage() {
-  const { setUser }: any = useContext(UserContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const userCollection = collection(db, 'users');
   const [email, setEmail] = useState('');
@@ -38,13 +39,15 @@ function LoginPage() {
           querySnapshot.forEach((doc) => {
             userData = { ...doc.data() };
           });
-          setUser({ ...userData, loggedIn: true });
+          dispatch(setUser({ ...userData }));
         };
         await getUserFromDB();
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      }
     }
   };
   return (

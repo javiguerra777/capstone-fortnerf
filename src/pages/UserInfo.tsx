@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import styled from 'styled-components';
 import { BiUser } from 'react-icons/bi';
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import UserNavBar from '../components/UserNavBar';
-import UserContext from '../context/Context';
+import { RootState } from '../store';
+import { setUser } from '../store/UserSlice';
 
 const UserInfoWrapper = styled.main`
   color: white;
@@ -51,11 +52,13 @@ const UserInfoWrapper = styled.main`
   }
 `;
 function UserInfo() {
-  const navigate = useNavigate();
-  const { user, setUser }: any = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { name, username, email } = useSelector(
+    (state: RootState) => state.user,
+    shallowEqual,
+  );
   const signOut = () => {
-    setUser({});
-    navigate('/login');
+    dispatch(setUser({}));
   };
   return (
     <UserInfoWrapper>
@@ -65,15 +68,15 @@ function UserInfo() {
         <section className="details">
           <section className="img-name">
             <BiUser size={70} />
-            <p>{user.name}</p>
+            <p>{name}</p>
           </section>
           <section className="username">
             <h3>Username:</h3>
-            <p>{user.username}</p>
+            <p>{username}</p>
           </section>
           <section className="email">
             <h3>Email:</h3>
-            <p>{user.email}</p>
+            <p>{email}</p>
           </section>
         </section>
         <footer className="user-info-footer">

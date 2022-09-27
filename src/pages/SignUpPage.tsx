@@ -1,4 +1,4 @@
-import React, { FormEvent, useState, useContext } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import {
@@ -8,12 +8,13 @@ import {
   query,
   getDocs,
 } from 'firebase/firestore';
+import { useDispatch } from 'react-redux';
 import { auth, db } from '../firebase/FirebaseTS';
 import LoginWrapper from '../styles/ReusableStyles';
-import UserContext from '../context/Context';
+import { setUser } from '../store/UserSlice';
 
 function SignUpPage() {
-  const { setUser }: any = useContext(UserContext);
+  const dispatch = useDispatch();
   const userCollection = collection(db, 'users');
   const [name, setName] = useState('');
   const [username, setUserName] = useState('');
@@ -46,13 +47,15 @@ function SignUpPage() {
           querySnapshot.forEach((doc) => {
             userData = { ...doc.data() };
           });
-          setUser({ ...userData, loggedIn: true });
+          dispatch(setUser({ ...userData }));
         };
         await getUserFromDB();
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      }
     }
   };
   return (

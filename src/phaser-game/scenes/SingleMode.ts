@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from 'phaser';
 import {
   BULLET_MOVEMENT,
@@ -8,7 +6,6 @@ import {
 } from '../utils/constants';
 import npcData from '../../NPC.json';
 
-// let background: any;
 let player: any;
 let cursor: {
   shift: { isDown: boolean };
@@ -23,7 +20,7 @@ let collidableObjects:
   | Phaser.GameObjects.GameObject[]
   | Phaser.GameObjects.Group
   | Phaser.GameObjects.Group[];
-let shootBullet: (x: number, y: number, direction: string) => void;
+let shootBullet: any;
 let bullet;
 let speed: number;
 let score = 0;
@@ -85,7 +82,7 @@ class SingleMode extends Phaser.Scene {
       immovable: true,
     });
 
-    npcData.forEach((anNpc: any) => {
+    npcData.forEach((anNpc) => {
       const npcSprite = npc.create(anNpc.x, anNpc.y, 'npc');
       npcSprite.body.setSize(NPC_DIMENSIONS, NPC_DIMENSIONS);
     });
@@ -96,7 +93,7 @@ class SingleMode extends Phaser.Scene {
       this.physics.add.collider(
         bullet,
         collidableObjects,
-        (theBullet, obj) => {
+        (theBullet) => {
           theBullet.destroy();
         },
         undefined,
@@ -105,7 +102,7 @@ class SingleMode extends Phaser.Scene {
       this.physics.add.collider(
         bullet,
         npc,
-        (theBullet, obj) => {
+        (theBullet) => {
           score += 10;
           scoreText.setText(`Score: ${score}`);
           theBullet.destroy();
