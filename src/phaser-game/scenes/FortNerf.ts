@@ -18,8 +18,8 @@ let shootBullet: any;
 let movePlayer: () => boolean;
 let bullet: any;
 let otherBullet;
-let health = 100;
-let lives = 3;
+let health: number;
+let lives: number;
 let collidableObjects:
   | Phaser.GameObjects.GameObject
   | Phaser.GameObjects.GameObject[]
@@ -69,6 +69,8 @@ class FortNerf extends Phaser.Scene {
   }
 
   create() {
+    health = 100;
+    lives = 3;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,

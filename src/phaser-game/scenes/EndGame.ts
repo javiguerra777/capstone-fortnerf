@@ -18,6 +18,10 @@ class EndGame extends Phaser.Scene {
       fontFamily: 'Georgia, "Goudy Bookletter 1911, Times, serif',
       color: '#19de65',
     });
+    this.add
+      .text(500, 400, 'Play Again')
+      .setInteractive()
+      .on('pointerdown', () => this.scene.start('FortNerf'));
   }
 }
 

@@ -23,7 +23,7 @@ let collidableObjects:
 let shootBullet: any;
 let bullet;
 let speed: number;
-let score = 0;
+let score: number;
 let scoreText: Phaser.GameObjects.Text;
 let npc: any;
 class SingleMode extends Phaser.Scene {
@@ -55,6 +55,7 @@ class SingleMode extends Phaser.Scene {
   }
 
   create() {
+    score = 0;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
