@@ -13,8 +13,9 @@ let cursor: {
   right: { isDown: boolean };
   down: { isDown: boolean };
   up: { isDown: boolean };
-  space: { isDown: boolean };
+  space?: { isDown: boolean };
 };
+let spaceBar: Phaser.Input.Keyboard.Key;
 let collidableObjects:
   | Phaser.GameObjects.GameObject
   | Phaser.GameObjects.GameObject[]
@@ -191,6 +192,9 @@ class SingleMode extends Phaser.Scene {
     player.setCollideWorldBounds(true);
     // keyboard methods
     cursor = this.input.keyboard.createCursorKeys();
+    spaceBar = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE,
+    );
 
     // display score of player
     scoreText = this.add.text(
@@ -249,7 +253,7 @@ class SingleMode extends Phaser.Scene {
       }
     }
     // controls bullet updates on space press
-    if (cursor.space.isDown) {
+    if (Phaser.Input.Keyboard.JustDown(spaceBar)) {
       if (player.direction === 'right') {
         shootBullet(
           player.x + BULLET_OFFSET,

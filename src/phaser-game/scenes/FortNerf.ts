@@ -31,8 +31,10 @@ let cursor: {
   down: Phaser.Input.Keyboard.Key;
   left: Phaser.Input.Keyboard.Key;
   right: Phaser.Input.Keyboard.Key;
-  space: Phaser.Input.Keyboard.Key;
+  space?: Phaser.Input.Keyboard.Key;
 };
+let spaceBar: Phaser.Input.Keyboard.Key;
+
 class FortNerf extends Phaser.Scene {
   constructor() {
     super('FortNerf');
@@ -163,7 +165,7 @@ class FortNerf extends Phaser.Scene {
     // bullet methods
     shootBullet = (x: number, y: number, direction: string) => {
       let bulletShot = false;
-      if (cursor.space.isDown) {
+      if (Phaser.Input.Keyboard.JustDown(spaceBar)) {
         if (direction === 'right') {
           bullet = this.physics.add.sprite(
             x + BULLET_OFFSET,
@@ -325,6 +327,10 @@ class FortNerf extends Phaser.Scene {
     lifeText.setFontSize(60);
     // keyboard methods
     cursor = this.input.keyboard.createCursorKeys();
+    spaceBar = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE,
+    );
+
     // socket methods
     socket.on('playerMove', ({ x, y, direction }) => {
       if (direction === 'right') {
