@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 import FortNerf from '../phaser-game/scenes/FortNerf';
+import EndGame from '../phaser-game/scenes/EndGame';
 
 const config = {
   type: Phaser.AUTO,
@@ -16,7 +17,7 @@ const config = {
     debug: false,
   },
   parent: 'main-game',
-  scene: [FortNerf],
+  scene: [FortNerf, EndGame],
 };
 type styleProps = {
   width: string;
@@ -32,7 +33,7 @@ function GameComponent({ width }: styleProps) {
     const phaserGame = new Phaser.Game(config);
     // when component unmounts
     return () => {
-      phaserGame.destroy(true);
+      phaserGame.destroy(false);
     };
   }, []);
   return (

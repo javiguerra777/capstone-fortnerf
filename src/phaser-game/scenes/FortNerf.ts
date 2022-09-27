@@ -371,7 +371,8 @@ class FortNerf extends Phaser.Scene {
             });
           }
           if (lives === 0) {
-            console.log('You lost');
+            this.scene.start('EndGame');
+            socket.emit('GameOver', gameRoom);
           }
           theBullet.destroy();
         },
@@ -399,6 +400,9 @@ class FortNerf extends Phaser.Scene {
         otherBullet.rotation = -1.55;
         otherBullet.setVelocityY(-BULLET_MOVEMENT);
       }
+    });
+    socket.on('EndScene', () => {
+      this.scene.start('EndGame');
     });
   }
 
