@@ -361,6 +361,43 @@ class FortNerf extends Phaser.Scene {
         direction: player.direction,
       });
       player.movedLastFrame = true;
+
+    const bulletHit = () => {
+      // eslinter comment
+    };
+    this.physics.add.collider(
+      bullet,
+      walls,
+      bulletHit,
+      undefined,
+      this,
+    );
+    if (leftCursor.isDown) {
+
+      // update left movement
+      // console.log(cursors);
+      player.setVelocityX(-160);
+      player.setVelocityY(0);
+      player.anims.play('left', true);
+      player.direction = 'left';
+    } else if (rightCursor.isDown) {
+      // update right movement
+      player.anims.play('right', true);
+      player.setVelocityY(0);
+      player.setVelocityX(160);
+      player.direction = 'right';
+    } else if (downCursor.isDown) {
+      // update the down movement
+      player.setVelocityX(0);
+      player.setVelocityY(160);
+      player.anims.play('down', true);
+      player.direction = 'down';
+    } else if (upCursor.isDown) {
+      // update the up movement
+      player.setVelocityX(0);
+      player.setVelocityY(-160);
+      player.anims.play('up', true);
+      player.direction = 'up';
     } else {
       if (player.movedLastFrame) {
         socket.emit('moveEnd', player.direction);
