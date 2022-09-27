@@ -33,7 +33,7 @@ function GameComponent({ width }: styleProps) {
     const phaserGame = new Phaser.Game(config);
     // when component unmounts
     return () => {
-      phaserGame.destroy(false);
+      phaserGame.destroy(true);
     };
   }, []);
   return (
