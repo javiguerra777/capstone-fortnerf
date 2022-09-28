@@ -6,28 +6,26 @@ import {
 } from '../utils/constants';
 import npcData from '../../NPC.json';
 
-let player: any;
-let cursor: {
-  shift: { isDown: boolean };
-  left: { isDown: boolean };
-  right: { isDown: boolean };
-  down: { isDown: boolean };
-  up: { isDown: boolean };
-  space?: { isDown: boolean };
-};
-let spaceBar: Phaser.Input.Keyboard.Key;
-let collidableObjects:
-  | Phaser.GameObjects.GameObject
-  | Phaser.GameObjects.GameObject[]
-  | Phaser.GameObjects.Group
-  | Phaser.GameObjects.Group[];
-let shootBullet: any;
-let bullet;
-let speed: number;
-let score: number;
-let scoreText: Phaser.GameObjects.Text;
-let npc: any;
 class SingleMode extends Phaser.Scene {
+  player!: any;
+
+  score = 0;
+
+  bullet!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+
+  spaceBar!: Phaser.Input.Keyboard.Key;
+
+  cursor!: {
+    shift: { isDown: boolean };
+    left: { isDown: boolean };
+    right: { isDown: boolean };
+    down: { isDown: boolean };
+    up: { isDown: boolean };
+    space?: { isDown: boolean };
+  };
+
+  shootBullet!: any;
+
   constructor() {
     super('FortNerf');
   }
@@ -56,7 +54,7 @@ class SingleMode extends Phaser.Scene {
   }
 
   create() {
-    score = 0;
+    let scoreText: Phaser.GameObjects.Text;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -73,13 +71,18 @@ class SingleMode extends Phaser.Scene {
     const tileSet = map.addTilesetImage('tilesOne', 'tiles');
     map.createLayer('floor', tileSet, 50, 20);
 
-    collidableObjects = map.createLayer('colliders', tileSet, 50, 20);
+    const collidableObjects = map.createLayer(
+      'colliders',
+      tileSet,
+      50,
+      20,
+    );
     map.setCollisionBetween(1, 999, true, 'colliders');
     // player methods
-    player = this.physics.add.sprite(500, 500, 'player');
-    player.direction = 'down';
+    this.player = this.physics.add.sprite(500, 500, 'player');
+    this.player.direction = 'down';
 
-    npc = this.physics.add.group({
+    const npc = this.physics.add.group({
       allowGravity: false,
       immovable: true,
     });
@@ -90,10 +93,10 @@ class SingleMode extends Phaser.Scene {
     });
 
     // bullet methods
-    shootBullet = (x: number, y: number, direction: string) => {
-      bullet = this.physics.add.sprite(x, y, 'bullet');
+    this.shootBullet = (x: number, y: number, direction: string) => {
+      this.bullet = this.physics.add.sprite(x, y, 'bullet');
       this.physics.add.collider(
-        bullet,
+        this.bullet,
         collidableObjects,
         (theBullet) => {
           theBullet.destroy();
@@ -102,27 +105,27 @@ class SingleMode extends Phaser.Scene {
         this,
       );
       this.physics.add.collider(
-        bullet,
+        this.bullet,
         npc,
         (theBullet) => {
-          score += 10;
-          scoreText.setText(`Score: ${score}`);
+          this.score += 10;
+          scoreText.setText(`Score: ${this.score}`);
           theBullet.destroy();
         },
         undefined,
         this,
       );
       if (direction === 'right') {
-        bullet.setVelocityX(BULLET_MOVEMENT);
+        this.bullet.setVelocityX(BULLET_MOVEMENT);
       } else if (direction === 'left') {
-        bullet.setVelocityX(-BULLET_MOVEMENT);
-        bullet.flipX = true;
+        this.bullet.setVelocityX(-BULLET_MOVEMENT);
+        this.bullet.flipX = true;
       } else if (direction === 'down') {
-        bullet.setVelocityY(BULLET_MOVEMENT);
-        bullet.rotation = 1.55;
+        this.bullet.setVelocityY(BULLET_MOVEMENT);
+        this.bullet.rotation = 1.55;
       } else if (direction === 'up') {
-        bullet.setVelocityY(-BULLET_MOVEMENT);
-        bullet.rotation = -1.55;
+        this.bullet.setVelocityY(-BULLET_MOVEMENT);
+        this.bullet.rotation = -1.55;
       }
     };
     // player animations
@@ -173,110 +176,114 @@ class SingleMode extends Phaser.Scene {
 
     // collision
     const playerHit = () => {
-      player.setVelocity(0, 0);
+      this.player.setVelocity(0, 0);
     };
     this.physics.add.collider(
-      player,
+      this.player,
       collidableObjects,
       playerHit,
       undefined,
       this,
     );
     this.physics.add.collider(
-      player,
+      this.player,
       npc,
       playerHit,
       undefined,
       this,
     );
-    player.setCollideWorldBounds(true);
+    this.player.setCollideWorldBounds(true);
     // keyboard methods
-    cursor = this.input.keyboard.createCursorKeys();
-    spaceBar = this.input.keyboard.addKey(
+    this.cursor = this.input.keyboard.createCursorKeys();
+    this.spaceBar = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE,
     );
 
     // display score of player
     scoreText = this.add.text(
-      player.x - 30,
-      player.y + 30,
-      `Score: ${score.toString()}`,
+      10,
+      10,
+      `Score: ${this.score.toString()}`,
       {
         fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
       },
     );
+    scoreText.scrollFactorX = 0;
+    scoreText.scrollFactorY = 0;
+    scoreText.setFontSize(30);
   }
 
   update() {
-    this.cameras.main.startFollow(player);
+    let speed: number;
+    this.cameras.main.startFollow(this.player);
     // changes speed
-    if (cursor.shift.isDown) {
+    if (this.cursor.shift.isDown) {
       speed = 1.5;
     } else {
       speed = 1;
     }
     // player movements
-    if (cursor.left.isDown) {
+    if (this.cursor.left.isDown) {
       // update left movement
-      player.setVelocityX(-160 * speed);
-      player.setVelocityY(0);
-      player.anims.play('left', true);
-      player.direction = 'left';
-    } else if (cursor.right.isDown) {
+      this.player.setVelocityX(-160 * speed);
+      this.player.setVelocityY(0);
+      this.player.anims.play('left', true);
+      this.player.direction = 'left';
+    } else if (this.cursor.right.isDown) {
       // update right movement
-      player.anims.play('right', true);
-      player.setVelocityY(0);
-      player.setVelocityX(160 * speed);
-      player.direction = 'right';
-    } else if (cursor.down.isDown) {
+      this.player.anims.play('right', true);
+      this.player.setVelocityY(0);
+      this.player.setVelocityX(160 * speed);
+      this.player.direction = 'right';
+    } else if (this.cursor.down.isDown) {
       // update the down movement
-      player.setVelocityX(0);
-      player.setVelocityY(160 * speed);
-      player.anims.play('down', true);
-      player.direction = 'down';
-    } else if (cursor.up.isDown) {
+      this.player.setVelocityX(0);
+      this.player.setVelocityY(160 * speed);
+      this.player.anims.play('down', true);
+      this.player.direction = 'down';
+    } else if (this.cursor.up.isDown) {
       // update the up movement
-      player.setVelocityX(0);
-      player.setVelocityY(-160 * speed);
-      player.anims.play('up', true);
-      player.direction = 'up';
+      this.player.setVelocityX(0);
+      this.player.setVelocityY(-160 * speed);
+      this.player.anims.play('up', true);
+      this.player.direction = 'up';
     } else {
-      player.setVelocity(0);
-      if (player.direction === 'up') {
-        player.anims.play('upstill', true);
-      } else if (player.direction === 'down') {
-        player.anims.play('downstill', true);
-      } else if (player.direction === 'left') {
-        player.anims.play('leftstill', true);
-      } else if (player.direction === 'right') {
-        player.anims.play('rightstill', true);
+      this.player.setVelocity(0);
+      if (this.player.direction === 'up') {
+        this.player.anims.play('upstill', true);
+      } else if (this.player.direction === 'down') {
+        this.player.anims.play('downstill', true);
+      } else if (this.player.direction === 'left') {
+        this.player.anims.play('leftstill', true);
+      } else if (this.player.direction === 'right') {
+        this.player.anims.play('rightstill', true);
       }
     }
     // controls bullet updates on space press
-    if (Phaser.Input.Keyboard.JustDown(spaceBar)) {
-      if (player.direction === 'right') {
-        shootBullet(
-          player.x + BULLET_OFFSET,
-          player.y,
-          player.direction,
+    if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
+      if (this.player.direction === 'right') {
+        this.shootBullet(
+          this.player.x + BULLET_OFFSET,
+          this.player.y,
+          this.player.direction,
         );
-      } else if (player.direction === 'left') {
-        shootBullet(
-          player.x - BULLET_OFFSET,
-          player.y,
-          player.direction,
+      } else if (this.player.direction === 'left') {
+        this.shootBullet(
+          this.player.x - BULLET_OFFSET,
+          this.player.y,
+          this.player.direction,
         );
-      } else if (player.direction === 'up') {
-        shootBullet(
-          player.x,
-          player.y - BULLET_OFFSET,
-          player.direction,
+      } else if (this.player.direction === 'up') {
+        this.shootBullet(
+          this.player.x,
+          this.player.y - BULLET_OFFSET,
+          this.player.direction,
         );
-      } else if (player.direction === 'down') {
-        shootBullet(
-          player.x,
-          player.y + BULLET_OFFSET,
-          player.direction,
+      } else if (this.player.direction === 'down') {
+        this.shootBullet(
+          this.player.x,
+          this.player.y + BULLET_OFFSET,
+          this.player.direction,
         );
       }
     }
