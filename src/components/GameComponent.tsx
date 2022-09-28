@@ -14,7 +14,7 @@ const config = {
   physics: {
     default: 'arcade',
     gravity: { y: 0 },
-    debug: false,
+    debug: true,
   },
   parent: 'main-game',
   scene: [FortNerf, EndGame],
@@ -22,6 +22,7 @@ const config = {
 type styleProps = {
   width: string;
 };
+
 function GameComponent({ width }: styleProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const clickEvent = () => {

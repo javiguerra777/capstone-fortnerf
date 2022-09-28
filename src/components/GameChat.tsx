@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { AiOutlineUser } from 'react-icons/ai';
@@ -6,12 +6,22 @@ import convertToDate from '../utils/functions';
 import { Message } from '../types/AppTypes';
 import { socket } from '../App';
 import { RootState } from '../store';
+import chatOptions from '../json/ChatOptions.json';
 
 type ChatProps = {
   asideOptions: () => void;
   messages: Message[];
 };
 
+function useChatScroll<T>(dep: T) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  }, [dep]);
+  return ref;
+}
 function GameChat({ asideOptions, messages }: ChatProps) {
   const { username } = useSelector(
     (state: RootState) => state.user,
@@ -21,17 +31,15 @@ function GameChat({ asideOptions, messages }: ChatProps) {
     (state: RootState) => state.game,
     shallowEqual,
   );
-  const [chatMessage, setChatMessage] = useState('');
-  const sendChat = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const sendChat = (message: string) => {
     socket.emit('chat', {
       username,
-      message: chatMessage,
+      message,
       date: Date.now(),
       room: id,
     });
-    setChatMessage('');
   };
+  const ref = useChatScroll(messages);
   return (
     <aside className="chat-bar background-color">
       <header className="chat-header">
@@ -42,7 +50,7 @@ function GameChat({ asideOptions, messages }: ChatProps) {
           </button>
         </div>
       </header>
-      <main className="main-chat">
+      <div className="main-chat" ref={ref}>
         {messages.length > 0 &&
           messages.map((message: Message) => (
             <section key={nanoid()} className="ind-message">
@@ -61,19 +69,19 @@ function GameChat({ asideOptions, messages }: ChatProps) {
               </div>
             </section>
           ))}
-      </main>
-      <form onSubmit={sendChat} className="message-form">
-        <label htmlFor="message">
-          <input
-            type="text"
-            name="message"
-            id="message"
-            placeholder="Message"
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-          />
-        </label>
-      </form>
+      </div>
+      <section className="chat-options">
+        {chatOptions.map((option) => (
+          <button
+            className="option-btn"
+            type="button"
+            onClick={() => sendChat(option.response)}
+            key={nanoid()}
+          >
+            {option.response}
+          </button>
+        ))}
+      </section>
     </aside>
   );
 }

@@ -72,6 +72,7 @@ class FortNerf extends Phaser.Scene {
     let health = 100;
     let lives = 3;
     let otherBullet;
+
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -365,6 +366,7 @@ class FortNerf extends Phaser.Scene {
 
     socket.on('bulletShot', ({ x, y, direction }) => {
       otherBullet = this.physics.add.sprite(x, y, 'bullet');
+      this.input.enableDebug(otherBullet);
       this.physics.add.collider(
         otherBullet,
         this.player,

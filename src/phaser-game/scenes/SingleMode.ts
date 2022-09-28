@@ -4,7 +4,7 @@ import {
   BULLET_OFFSET,
   NPC_DIMENSIONS,
 } from '../utils/constants';
-import npcData from '../../NPC.json';
+import npcData from '../../json/NPC.json';
 
 class SingleMode extends Phaser.Scene {
   player!: any;
