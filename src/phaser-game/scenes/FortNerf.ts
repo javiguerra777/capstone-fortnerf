@@ -8,29 +8,32 @@ import {
 } from '../utils/constants';
 import { socket } from '../../App';
 
-let player: any;
-let playerOneUsername: string;
-let playerText: Phaser.GameObjects.Text;
-let otherPlayer: any;
-let otherPlayerText: Phaser.GameObjects.Text;
-let shootBullet: any;
-let movePlayer: () => boolean;
-let bullet: any;
-let otherBullet;
-let collidableObjects:
-  | Phaser.GameObjects.GameObject
-  | Phaser.GameObjects.GameObject[]
-  | Phaser.GameObjects.Group
-  | Phaser.GameObjects.Group[];
-let cursor: {
-  shift: Phaser.Input.Keyboard.Key;
-  up: Phaser.Input.Keyboard.Key;
-  down: Phaser.Input.Keyboard.Key;
-  left: Phaser.Input.Keyboard.Key;
-  right: Phaser.Input.Keyboard.Key;
-  space: Phaser.Input.Keyboard.Key;
-};
 class FortNerf extends Phaser.Scene {
+  player!: any;
+
+  gameRoom!: string;
+
+  playerOneUsername!: string;
+
+  otherPlayer!: any;
+
+  shootBullet!: any;
+
+  bullet!: any;
+
+  movePlayer!: () => boolean;
+
+  cursor!: {
+    shift: Phaser.Input.Keyboard.Key;
+    up: Phaser.Input.Keyboard.Key;
+    down: Phaser.Input.Keyboard.Key;
+    left: Phaser.Input.Keyboard.Key;
+    right: Phaser.Input.Keyboard.Key;
+    space?: Phaser.Input.Keyboard.Key;
+  };
+
+  spaceBar!: Phaser.Input.Keyboard.Key;
+
   constructor() {
     super('FortNerf');
   }
@@ -38,7 +41,9 @@ class FortNerf extends Phaser.Scene {
   preload() {
     const state = store.getState();
     const { username } = state.user;
-    playerOneUsername = username;
+    this.playerOneUsername = username;
+    const { id } = state.game;
+    this.gameRoom = id;
     this.load.spritesheet(
       'player',
       '/assets/characters/male_player.png',
@@ -64,6 +69,9 @@ class FortNerf extends Phaser.Scene {
   }
 
   create() {
+    let health = 100;
+    let lives = 3;
+    let otherBullet;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -79,22 +87,74 @@ class FortNerf extends Phaser.Scene {
     );
     const tileSet = map.addTilesetImage('tilesOne', 'tiles');
     map.createLayer('floor', tileSet, 50, 20);
-    collidableObjects = map.createLayer('colliders', tileSet, 50, 20);
+    const collidableObjects = map.createLayer(
+      'colliders',
+      tileSet,
+      50,
+      20,
+    );
     map.setCollisionBetween(1, 999, true, 'colliders');
 
-    // player methods
-    player = this.physics.add.sprite(500, 500, 'player');
-    player.direction = 'down';
-    player.body.immovable = true;
-    otherPlayer = this.physics.add.sprite(500, 500, 'otherPlayer');
-    otherPlayer.body.immovable = true;
+    this.player = this.physics.add.sprite(500, 500, 'player');
+    this.otherPlayer = this.physics.add.sprite(
+      500,
+      500,
+      'otherPlayer',
+    );
+
+    // text within game
+    const playerText = this.add.text(
+      this.player.x - 30,
+      this.player.y + 30,
+      this.playerOneUsername,
+      {
+        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+      },
+    );
+    const otherPlayerText = this.add.text(
+      this.otherPlayer.x - 30,
+      this.otherPlayer.y + 30,
+      'player 2',
+      {
+        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+      },
+    );
+    const healthText = this.add.text(
+      100,
+      100,
+      `hp: ${health.toString()}`,
+      {
+        fontFamily: '"Roboto Condensed"',
+        fontSize: 'px',
+      },
+    );
+    healthText.scrollFactorX = 0;
+    healthText.scrollFactorY = 0;
+    healthText.setFontSize(60);
+    const lifeText = this.add.text(
+      100,
+      50,
+      `lives: ${lives.toString()}`,
+      {
+        fontFamily: '"Roboto Condensed"',
+        fontSize: 'px',
+      },
+    );
+    lifeText.scrollFactorX = 0;
+    lifeText.scrollFactorY = 0;
+    lifeText.setFontSize(60);
+
+    // player and other player methods
+    this.player.direction = 'down';
+    this.player.body.immovable = true;
+    this.otherPlayer.body.immovable = true;
     // player movement methods
-    movePlayer = () => {
+    this.movePlayer = () => {
       const playerCollision = () => {
-        player.setVelocity(0);
+        this.player.setVelocity(0);
       };
       this.physics.add.collider(
-        player,
+        this.player,
         collidableObjects,
         playerCollision,
         undefined,
@@ -103,87 +163,87 @@ class FortNerf extends Phaser.Scene {
       let playerMoved = false;
       let speed = 1;
       // collision
-      if (cursor.shift.isDown) {
+      if (this.cursor.shift.isDown) {
         speed = 1.5;
       }
-      if (cursor.up.isDown) {
+      if (this.cursor.up.isDown) {
         playerMoved = true;
-        player.direction = 'up';
-        player.setVelocityY(-PLAYER_MOVEMENT * speed);
-        player.setVelocityX(0);
-        playerText.setX(player.x - 30);
-        playerText.setY(player.y + 30);
-        player.anims.play('up', true);
-      } else if (cursor.down.isDown) {
+        this.player.direction = 'up';
+        this.player.setVelocityY(-PLAYER_MOVEMENT * speed);
+        this.player.setVelocityX(0);
+        playerText.setX(this.player.x - 30);
+        playerText.setY(this.player.y + 30);
+        this.player.anims.play('up', true);
+      } else if (this.cursor.down.isDown) {
         playerMoved = true;
-        player.direction = 'down';
-        player.setVelocityY(PLAYER_MOVEMENT * speed);
-        player.setVelocityX(0);
-        playerText.setX(player.x - 30);
-        playerText.setY(player.y + 30);
-        player.anims.play('down', true);
-      } else if (cursor.left.isDown) {
+        this.player.direction = 'down';
+        this.player.setVelocityY(PLAYER_MOVEMENT * speed);
+        this.player.setVelocityX(0);
+        playerText.setX(this.player.x - 30);
+        playerText.setY(this.player.y + 30);
+        this.player.anims.play('down', true);
+      } else if (this.cursor.left.isDown) {
         playerMoved = true;
-        player.direction = 'left';
-        player.setVelocityX(-PLAYER_MOVEMENT * speed);
-        player.setVelocityY(0);
-        playerText.setX(player.x - 30);
-        playerText.setY(player.y + 30);
-        player.anims.play('left', true);
-      } else if (cursor.right.isDown) {
+        this.player.direction = 'left';
+        this.player.setVelocityX(-PLAYER_MOVEMENT * speed);
+        this.player.setVelocityY(0);
+        playerText.setX(this.player.x - 30);
+        playerText.setY(this.player.y + 30);
+        this.player.anims.play('left', true);
+      } else if (this.cursor.right.isDown) {
         playerMoved = true;
-        player.direction = 'right';
-        player.setVelocityX(PLAYER_MOVEMENT * speed);
-        player.setVelocityY(0);
-        playerText.setX(player.x - 30);
-        playerText.setY(player.y + 30);
-        player.anims.play('right', true);
+        this.player.direction = 'right';
+        this.player.setVelocityX(PLAYER_MOVEMENT * speed);
+        this.player.setVelocityY(0);
+        playerText.setX(this.player.x - 30);
+        playerText.setY(this.player.y + 30);
+        this.player.anims.play('right', true);
       } else {
         playerMoved = false;
-        player.setVelocity(0);
-        if (player.direction === 'up') {
-          player.anims.play('upstill', true);
-        } else if (player.direction === 'down') {
-          player.anims.play('downstill', true);
-        } else if (player.direction === 'left') {
-          player.anims.play('leftstill', true);
-        } else if (player.direction === 'right') {
-          player.anims.play('rightstill', true);
+        this.player.setVelocity(0);
+        if (this.player.direction === 'up') {
+          this.player.anims.play('upstill', true);
+        } else if (this.player.direction === 'down') {
+          this.player.anims.play('downstill', true);
+        } else if (this.player.direction === 'left') {
+          this.player.anims.play('leftstill', true);
+        } else if (this.player.direction === 'right') {
+          this.player.anims.play('rightstill', true);
         }
       }
       return playerMoved;
     };
     // bullet methods
-    shootBullet = (x: number, y: number, direction: string) => {
+    this.shootBullet = (x: number, y: number, direction: string) => {
       let bulletShot = false;
-      if (cursor.space.isDown) {
+      if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
         if (direction === 'right') {
-          bullet = this.physics.add.sprite(
+          this.bullet = this.physics.add.sprite(
             x + BULLET_OFFSET,
             y,
             'bullet',
           );
         } else if (direction === 'left') {
-          bullet = this.physics.add.sprite(
+          this.bullet = this.physics.add.sprite(
             x - BULLET_OFFSET,
             y,
             'bullet',
           );
         } else if (direction === 'down') {
-          bullet = this.physics.add.sprite(
+          this.bullet = this.physics.add.sprite(
             x,
             y + BULLET_OFFSET,
             'bullet',
           );
         } else if (direction === 'up') {
-          bullet = this.physics.add.sprite(
+          this.bullet = this.physics.add.sprite(
             x,
             y - BULLET_OFFSET,
             'bullet',
           );
         }
         this.physics.add.collider(
-          bullet,
+          this.bullet,
           collidableObjects,
           (theBullet) => {
             theBullet.destroy();
@@ -192,8 +252,8 @@ class FortNerf extends Phaser.Scene {
           this,
         );
         this.physics.add.collider(
-          bullet,
-          otherPlayer,
+          this.bullet,
+          this.otherPlayer,
           (theBullet) => {
             theBullet.destroy();
           },
@@ -202,16 +262,16 @@ class FortNerf extends Phaser.Scene {
         );
         bulletShot = true;
         if (direction === 'right') {
-          bullet.setVelocityX(BULLET_MOVEMENT);
+          this.bullet.setVelocityX(BULLET_MOVEMENT);
         } else if (direction === 'left') {
-          bullet.setVelocityX(-BULLET_MOVEMENT);
-          bullet.flipX = true;
+          this.bullet.setVelocityX(-BULLET_MOVEMENT);
+          this.bullet.flipX = true;
         } else if (direction === 'down') {
-          bullet.setVelocityY(BULLET_MOVEMENT);
-          bullet.rotation = 1.55;
+          this.bullet.setVelocityY(BULLET_MOVEMENT);
+          this.bullet.rotation = 1.55;
         } else if (direction === 'up') {
-          bullet.setVelocityY(-BULLET_MOVEMENT);
-          bullet.rotation = -1.55;
+          this.bullet.setVelocityY(-BULLET_MOVEMENT);
+          this.bullet.rotation = -1.55;
         }
       }
       return bulletShot;
@@ -273,54 +333,65 @@ class FortNerf extends Phaser.Scene {
     createStillAnimation('upstillTwo', 'otherPlayer', 10);
 
     // collision
-    player.setCollideWorldBounds(true);
+    this.player.setCollideWorldBounds(true);
 
-    playerText = this.add.text(
-      player.x - 30,
-      player.y + 30,
-      playerOneUsername,
-      {
-        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
-      },
-    );
-    otherPlayerText = this.add.text(
-      otherPlayer.x - 30,
-      otherPlayer.y + 30,
-      'player 2',
-      {
-        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
-      },
-    );
     // keyboard methods
-    cursor = this.input.keyboard.createCursorKeys();
+    this.cursor = this.input.keyboard.createCursorKeys();
+    this.spaceBar = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE,
+    );
+
     // socket methods
     socket.on('playerMove', ({ x, y, direction }) => {
       if (direction === 'right') {
-        otherPlayer.direction = 'right';
+        this.otherPlayer.direction = 'right';
       } else if (direction === 'left') {
-        otherPlayer.direction = 'left';
+        this.otherPlayer.direction = 'left';
       } else if (direction === 'up') {
-        otherPlayer.direction = 'up';
+        this.otherPlayer.direction = 'up';
       } else if (direction === 'down') {
-        otherPlayer.direction = 'down';
+        this.otherPlayer.direction = 'down';
       }
-      otherPlayer.x = x;
-      otherPlayer.y = y;
-      otherPlayerText.setX(otherPlayer.x - 30);
-      otherPlayerText.setY(otherPlayer.y + 30);
-      otherPlayer.moving = true;
+      this.otherPlayer.x = x;
+      this.otherPlayer.y = y;
+      otherPlayerText.setX(this.otherPlayer.x - 30);
+      otherPlayerText.setY(this.otherPlayer.y + 30);
+      this.otherPlayer.moving = true;
     });
 
     socket.on('playerMoveEnd', (direction) => {
-      otherPlayer.direction = direction;
+      this.otherPlayer.direction = direction;
     });
 
     socket.on('bulletShot', ({ x, y, direction }) => {
       otherBullet = this.physics.add.sprite(x, y, 'bullet');
       this.physics.add.collider(
         otherBullet,
-        player,
+        this.player,
         (theBullet) => {
+          health -= 10;
+          healthText.setText(`hp: ${health.toString()}`);
+          if (health <= 0) {
+            lives -= 1;
+            health = 100;
+            lifeText.setText(`lives: ${lives.toString()}`);
+            healthText.setText(`hp: ${health.toString()}`);
+            this.player.setX(200);
+            this.player.setY(300);
+            playerText.setX(this.player.x - 30);
+            playerText.setY(this.player.y + 30);
+            this.player.direction = 'down';
+            socket.emit('move', {
+              x: 200,
+              y: 300,
+              direction: 'down',
+              room: this.gameRoom,
+            });
+          }
+          if (lives === 0) {
+            this.scene.start('EndGame');
+            socket.emit('GameOver', this.gameRoom);
+          }
           theBullet.destroy();
         },
         undefined,
@@ -348,94 +419,65 @@ class FortNerf extends Phaser.Scene {
         otherBullet.setVelocityY(-BULLET_MOVEMENT);
       }
     });
+    socket.on('EndScene', () => {
+      this.scene.start('EndGame');
+    });
   }
 
   update() {
-    this.cameras.main.startFollow(player);
-    // username text
-    const playerMoved = movePlayer();
+    this.cameras.main.startFollow(this.player);
+    const playerMoved = this.movePlayer();
     if (playerMoved) {
       socket.emit('move', {
-        x: player.x,
-        y: player.y,
-        direction: player.direction,
+        x: this.player.x,
+        y: this.player.y,
+        direction: this.player.direction,
+        room: this.gameRoom,
       });
-      player.movedLastFrame = true;
+      this.player.movedLastFrame = true;
 
-    const bulletHit = () => {
-      // eslinter comment
-    };
-    this.physics.add.collider(
-      bullet,
-      walls,
-      bulletHit,
-      undefined,
-      this,
-    );
-    if (leftCursor.isDown) {
-
-      // update left movement
-      // console.log(cursors);
-      player.setVelocityX(-160);
-      player.setVelocityY(0);
-      player.anims.play('left', true);
-      player.direction = 'left';
-    } else if (rightCursor.isDown) {
-      // update right movement
-      player.anims.play('right', true);
-      player.setVelocityY(0);
-      player.setVelocityX(160);
-      player.direction = 'right';
-    } else if (downCursor.isDown) {
-      // update the down movement
-      player.setVelocityX(0);
-      player.setVelocityY(160);
-      player.anims.play('down', true);
-      player.direction = 'down';
-    } else if (upCursor.isDown) {
-      // update the up movement
-      player.setVelocityX(0);
-      player.setVelocityY(-160);
-      player.anims.play('up', true);
-      player.direction = 'up';
     } else {
-      if (player.movedLastFrame) {
-        socket.emit('moveEnd', player.direction);
+      if (this.player.movedLastFrame) {
+        socket.emit('moveEnd', {
+          direction: this.player.direction,
+          room: this.gameRoom,
+        });
       }
-      player.movedLastFrame = false;
+      this.player.movedLastFrame = false;
     }
-    if (otherPlayer.moving) {
-      if (otherPlayer.direction === 'right') {
-        otherPlayer.anims.play('rightTwo');
-      } else if (otherPlayer.direction === 'left') {
-        otherPlayer.anims.play('leftTwo');
-      } else if (otherPlayer.direction === 'up') {
-        otherPlayer.anims.play('upTwo');
-      } else if (otherPlayer.direction === 'down') {
-        otherPlayer.anims.play('downTwo');
+    if (this.otherPlayer.moving) {
+      if (this.otherPlayer.direction === 'right') {
+        this.otherPlayer.anims.play('rightTwo');
+      } else if (this.otherPlayer.direction === 'left') {
+        this.otherPlayer.anims.play('leftTwo');
+      } else if (this.otherPlayer.direction === 'up') {
+        this.otherPlayer.anims.play('upTwo');
+      } else if (this.otherPlayer.direction === 'down') {
+        this.otherPlayer.anims.play('downTwo');
       }
-    } else if (!otherPlayer.moving) {
-      if (otherPlayer.direction === 'right') {
-        otherPlayer.anims.play('rightstillTwo');
-      } else if (otherPlayer.direction === 'left') {
-        otherPlayer.anims.play('leftstillTwo');
-      } else if (otherPlayer.direction === 'up') {
-        otherPlayer.anims.play('upstillTwo');
-      } else if (otherPlayer.direction === 'down') {
-        otherPlayer.anims.play('downstillTwo');
+    } else if (!this.otherPlayer.moving) {
+      if (this.otherPlayer.direction === 'right') {
+        this.otherPlayer.anims.play('rightstillTwo');
+      } else if (this.otherPlayer.direction === 'left') {
+        this.otherPlayer.anims.play('leftstillTwo');
+      } else if (this.otherPlayer.direction === 'up') {
+        this.otherPlayer.anims.play('upstillTwo');
+      } else if (this.otherPlayer.direction === 'down') {
+        this.otherPlayer.anims.play('downstillTwo');
       }
     }
-    // // controls bullet updates on space press
-    const bulletMoved = shootBullet(
-      player.x,
-      player.y,
-      player.direction,
+    // controls bullet updates on space press
+    const bulletMoved = this.shootBullet(
+      this.player.x,
+      this.player.y,
+      this.player.direction,
     );
     if (bulletMoved) {
       socket.emit('shoot', {
-        x: bullet.x,
-        y: bullet.y,
-        direction: player.direction,
+        x: this.bullet.x,
+        y: this.bullet.y,
+        direction: this.player.direction,
+        room: this.gameRoom,
       });
     }
   }

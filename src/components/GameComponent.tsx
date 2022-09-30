@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 import FortNerf from '../phaser-game/scenes/FortNerf';
-// import SingleMode from '../phaser-game/scenes/SingleMode';
+import EndGame from '../phaser-game/scenes/EndGame';
 
 const config = {
   type: Phaser.AUTO,
@@ -17,7 +17,7 @@ const config = {
     debug: false,
   },
   parent: 'main-game',
-  scene: [FortNerf],
+  scene: [FortNerf, EndGame],
 };
 type styleProps = {
   width: string;
