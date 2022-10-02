@@ -18,10 +18,15 @@ class EndGame extends Phaser.Scene {
       fontFamily: 'Georgia, "Goudy Bookletter 1911, Times, serif',
       color: '#19de65',
     });
+    // method that starts new scene
+    const newGame = () => {
+      this.scene.stop('EndGame');
+      this.scene.start('FortNerf');
+    };
     this.add
       .text(500, 400, 'Play Again')
       .setInteractive()
-      .on('pointerdown', () => this.scene.start('FortNerf'));
+      .on('pointerdown', newGame);
   }
 }
 
