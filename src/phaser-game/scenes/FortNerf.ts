@@ -1,4 +1,3 @@
-/* eslint-disable no-lonely-if */
 import Phaser from 'phaser';
 import store from '../../store';
 import {
@@ -332,19 +331,17 @@ class FortNerf extends Phaser.Scene {
     // socket methods
     socket.on('playerMove', ({ x, y, direction }) => {
       if (direction === 'right') {
-        this.otherPlayer.direction = 'right';
+        this.otherPlayer.anims.play('right');
       } else if (direction === 'left') {
-        this.otherPlayer.direction = 'left';
         this.otherPlayer.anims.play('left');
       } else if (direction === 'up') {
-        this.otherPlayer.direction = 'up';
         this.otherPlayer.anims.play('up');
       } else if (direction === 'down') {
-        this.otherPlayer.direction = 'down';
         this.otherPlayer.anims.play('down');
       }
       this.otherPlayer.x = x;
       this.otherPlayer.y = y;
+      this.otherPlayer.direction = direction;
       otherPlayerText.setX(this.otherPlayer.x - 30);
       otherPlayerText.setY(this.otherPlayer.y + 30);
       this.otherPlayer.moving = true;

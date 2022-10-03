@@ -67,43 +67,27 @@ class HomeScene extends Phaser.Scene {
     map.setCollisionBetween(1, 999, true, 'colliders');
     this.player = this.physics.add.sprite(500, 500, 'player');
 
+    const createMoveAnimations = (
+      keyId: string,
+      objectId: string,
+      startFrame: number,
+      endFrame: number,
+    ) => {
+      this.anims.create({
+        key: keyId,
+        frames: this.anims.generateFrameNumbers(objectId, {
+          start: startFrame,
+          end: endFrame,
+        }),
+        frameRate: 12,
+        repeat: -1,
+      });
+    };
     // animations
-    this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 3,
-        end: 5,
-      }),
-      frameRate: 24,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 6,
-        end: 8,
-      }),
-      frameRate: 24,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'up',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 9,
-        end: 11,
-      }),
-      frameRate: 24,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'down',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 0,
-        end: 2,
-      }),
-      frameRate: 24,
-      repeat: -1,
-    });
+    createMoveAnimations('left', 'player', 3, 5);
+    createMoveAnimations('right', 'player', 6, 8);
+    createMoveAnimations('up', 'player', 9, 11);
+    createMoveAnimations('down', 'player', 0, 2);
 
     this.movePlayer = () => {
       let playerMoved = false;
@@ -147,13 +131,13 @@ class HomeScene extends Phaser.Scene {
         playerMoved = false;
         this.player.setVelocity(0);
         if (this.player.direction === 'up') {
-          this.player.anims.play('upstill', true);
+          // this.player.anims.play('upstill', true);
         } else if (this.player.direction === 'down') {
-          this.player.anims.play('downstill', true);
+          // this.player.anims.play('downstill', true);
         } else if (this.player.direction === 'left') {
-          this.player.anims.play('leftstill', true);
+          // this.player.anims.play('leftstill', true);
         } else if (this.player.direction === 'right') {
-          this.player.anims.play('rightstill', true);
+          // this.player.anims.play('rightstill', true);
         }
       }
       return playerMoved;
@@ -176,6 +160,16 @@ class HomeScene extends Phaser.Scene {
     });
     socket.on('existingPlayer', () => {
       this.otherPlayer = this.physics.add.sprite(500, 500, 'player');
+    });
+    socket.on('playerMoveHome', ({ x, y, direction }) => {
+      this.otherPlayer.x = x;
+      this.otherPlayer.y = y;
+      this.otherPlayer.direction = direction;
+      this.otherPlayer.moving = true;
+    });
+    socket.on('moveHomeEnd', ({ direction }) => {
+      this.otherPlayer.direction = direction;
+      this.otherPlayer.moving = false;
     });
   }
 
