@@ -65,12 +65,10 @@ class FortNerf extends Phaser.Scene {
     );
     this.load.image('bullet', '/assets/bullets/01.png');
     this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
-    // this part..
     this.load.tilemapTiledJSON(
       'map',
       '/assets/tile-map/fort-nerf.json',
     );
-    // ...
   }
 
   create() {

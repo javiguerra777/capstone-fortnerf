@@ -1,11 +1,17 @@
 import Phaser from 'phaser';
+import store from '../../store';
 import {
   SPRITE_DIMENSIONS,
   PLAYER_MOVEMENT,
 } from '../utils/constants';
+import { socket } from '../../App';
 
 class HomeScene extends Phaser.Scene {
   player!: any;
+
+  otherPlayer!: any;
+
+  gameRoom!: string;
 
   movePlayer!: () => boolean;
 
@@ -23,6 +29,9 @@ class HomeScene extends Phaser.Scene {
   }
 
   preload() {
+    const state = store.getState();
+    const { id } = state.game;
+    this.gameRoom = id;
     this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
     this.load.tilemapTiledJSON(
       'map',
@@ -57,6 +66,44 @@ class HomeScene extends Phaser.Scene {
     const walls = map.createLayer('walls', tileSet, 50, 20); // add walls const
     map.setCollisionBetween(1, 999, true, 'colliders');
     this.player = this.physics.add.sprite(500, 500, 'player');
+
+    // animations
+    this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 3,
+        end: 5,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 6,
+        end: 8,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'up',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 9,
+        end: 11,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'down',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 0,
+        end: 2,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
 
     this.movePlayer = () => {
       let playerMoved = false;
@@ -122,25 +169,32 @@ class HomeScene extends Phaser.Scene {
       this,
     );
     this.cursor = this.input.keyboard.createCursorKeys();
+
+    // socket methods
+    socket.on('playerJoin', () => {
+      this.otherPlayer = this.physics.add.sprite(500, 500, 'player');
+    });
+    socket.on('existingPlayer', () => {
+      this.otherPlayer = this.physics.add.sprite(500, 500, 'player');
+    });
   }
 
   update() {
     this.cameras.main.startFollow(this.player);
     const playerMoved = this.movePlayer();
     if (playerMoved) {
-      // socket.emit('move', {
-      //   x: this.player.x,
-      //   y: this.player.y,
-      //   direction: this.player.direction,
-      //   room: this.gameRoom,
-      // });
+      socket.emit('moveHome', {
+        x: this.player.x,
+        y: this.player.y,
+        direction: this.player.direction,
+        room: this.gameRoom,
+      });
       this.player.movedLastFrame = true;
     } else if (this.player.movedLastFrame) {
-      //   socket.emit('moveEnd', {
-      //     direction: this.player.direction,
-      //     room: this.gameRoom,
-      //   });
-      // }
+      socket.emit('moveHomeEnd', {
+        direction: this.player.direction,
+        room: this.gameRoom,
+      });
       this.player.movedLastFrame = false;
     }
   }
