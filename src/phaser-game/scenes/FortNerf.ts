@@ -21,6 +21,8 @@ class FortNerf extends Phaser.Scene {
 
   bullet!: any;
 
+  otherBullet!: any;
+
   movePlayer!: () => boolean;
 
   cursor!: {
@@ -71,7 +73,6 @@ class FortNerf extends Phaser.Scene {
   create() {
     let health = 100;
     let lives = 3;
-    let otherBullet;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -96,11 +97,7 @@ class FortNerf extends Phaser.Scene {
     map.setCollisionBetween(1, 999, true, 'colliders');
 
     this.player = this.physics.add.sprite(500, 500, 'player');
-    this.otherPlayer = this.physics.add.sprite(
-      500,
-      500,
-      'otherPlayer',
-    );
+    this.otherPlayer = this.physics.add.sprite(700, 700, 'player');
 
     // text within game
     const playerText = this.add.text(
@@ -150,19 +147,8 @@ class FortNerf extends Phaser.Scene {
     this.otherPlayer.body.immovable = true;
     // player movement methods
     this.movePlayer = () => {
-      const playerCollision = () => {
-        this.player.setVelocity(0);
-      };
-      this.physics.add.collider(
-        this.player,
-        collidableObjects,
-        playerCollision,
-        undefined,
-        this,
-      );
       let playerMoved = false;
       let speed = 1;
-      // collision
       if (this.cursor.shift.isDown) {
         speed = 1.5;
       }
@@ -331,7 +317,8 @@ class FortNerf extends Phaser.Scene {
     createStillAnimation('rightstillTwo', 'otherPlayer', 7);
     createStillAnimation('downstillTwo', 'otherPlayer', 1);
     createStillAnimation('upstillTwo', 'otherPlayer', 10);
-
+    this.otherPlayer.anims.play('downstill');
+    this.otherPlayer.direction = 'down';
     // collision
     this.player.setCollideWorldBounds(true);
 
@@ -344,16 +331,17 @@ class FortNerf extends Phaser.Scene {
     // socket methods
     socket.on('playerMove', ({ x, y, direction }) => {
       if (direction === 'right') {
-        this.otherPlayer.direction = 'right';
+        this.otherPlayer.anims.play('right');
       } else if (direction === 'left') {
-        this.otherPlayer.direction = 'left';
+        this.otherPlayer.anims.play('left');
       } else if (direction === 'up') {
-        this.otherPlayer.direction = 'up';
+        this.otherPlayer.anims.play('up');
       } else if (direction === 'down') {
-        this.otherPlayer.direction = 'down';
+        this.otherPlayer.anims.play('down');
       }
       this.otherPlayer.x = x;
       this.otherPlayer.y = y;
+      this.otherPlayer.direction = direction;
       otherPlayerText.setX(this.otherPlayer.x - 30);
       otherPlayerText.setY(this.otherPlayer.y + 30);
       this.otherPlayer.moving = true;
@@ -361,14 +349,16 @@ class FortNerf extends Phaser.Scene {
 
     socket.on('playerMoveEnd', (direction) => {
       this.otherPlayer.direction = direction;
+      this.otherPlayer.moving = false;
     });
 
     socket.on('bulletShot', ({ x, y, direction }) => {
-      otherBullet = this.physics.add.sprite(x, y, 'bullet');
+      this.otherBullet = this.physics.add.sprite(x, y, 'bullet');
       this.physics.add.collider(
-        otherBullet,
+        this.otherBullet,
         this.player,
         (theBullet) => {
+          theBullet.destroy();
           health -= 10;
           healthText.setText(`hp: ${health.toString()}`);
           if (health <= 0) {
@@ -388,37 +378,41 @@ class FortNerf extends Phaser.Scene {
               room: this.gameRoom,
             });
           }
+          // how the scene shifts to endgame
           if (lives === 0) {
+            theBullet.destroy();
+            this.scene.stop('FortNerf');
             this.scene.start('EndGame');
             socket.emit('GameOver', this.gameRoom);
           }
-          theBullet.destroy();
-        },
-        undefined,
-        this,
-      );
-      this.physics.add.collider(
-        otherBullet,
-        collidableObjects,
-        (theBullet) => {
-          theBullet.destroy();
         },
         undefined,
         this,
       );
       if (direction === 'left') {
-        otherBullet.flipX = true;
-        otherBullet.setVelocityX(-BULLET_MOVEMENT);
+        this.otherBullet.flipX = true;
+        this.otherBullet.setVelocityX(-BULLET_MOVEMENT);
       } else if (direction === 'right') {
-        otherBullet.setVelocityX(BULLET_MOVEMENT);
+        this.otherBullet.setVelocityX(BULLET_MOVEMENT);
       } else if (direction === 'down') {
-        otherBullet.rotation = 1.55;
-        otherBullet.setVelocityY(BULLET_MOVEMENT);
+        this.otherBullet.rotation = 1.55;
+        this.otherBullet.setVelocityY(BULLET_MOVEMENT);
       } else if (direction === 'up') {
-        otherBullet.rotation = -1.55;
-        otherBullet.setVelocityY(-BULLET_MOVEMENT);
+        this.otherBullet.rotation = -1.55;
+        this.otherBullet.setVelocityY(-BULLET_MOVEMENT);
       }
     });
+    const playerCollision = () => {
+      this.player.setVelocity(0);
+    };
+    this.physics.add.collider(
+      this.player,
+      collidableObjects,
+      playerCollision,
+      undefined,
+      this,
+    );
+
     socket.on('EndScene', () => {
       this.scene.start('EndGame');
     });
@@ -446,24 +440,24 @@ class FortNerf extends Phaser.Scene {
       this.player.movedLastFrame = false;
     }
     if (this.otherPlayer.moving) {
-      if (this.otherPlayer.direction === 'right') {
-        this.otherPlayer.anims.play('rightTwo');
-      } else if (this.otherPlayer.direction === 'left') {
-        this.otherPlayer.anims.play('leftTwo');
+      if (this.otherPlayer.direction === 'down') {
+        this.otherPlayer.anims.play('down');
       } else if (this.otherPlayer.direction === 'up') {
-        this.otherPlayer.anims.play('upTwo');
-      } else if (this.otherPlayer.direction === 'down') {
-        this.otherPlayer.anims.play('downTwo');
+        this.otherPlayer.anims.play('up');
+      } else if (this.otherPlayer.direction === 'left') {
+        this.otherPlayer.anims.play('left');
+      } else if (this.otherPlayer.direction === 'right') {
+        this.otherPlayer.anims.play('right');
       }
-    } else if (!this.otherPlayer.moving) {
-      if (this.otherPlayer.direction === 'right') {
-        this.otherPlayer.anims.play('rightstillTwo');
-      } else if (this.otherPlayer.direction === 'left') {
-        this.otherPlayer.anims.play('leftstillTwo');
+    } else {
+      if (this.otherPlayer.direction === 'down') {
+        this.otherPlayer.anims.play('downstill');
       } else if (this.otherPlayer.direction === 'up') {
-        this.otherPlayer.anims.play('upstillTwo');
-      } else if (this.otherPlayer.direction === 'down') {
-        this.otherPlayer.anims.play('downstillTwo');
+        this.otherPlayer.anims.play('upstill');
+      } else if (this.otherPlayer.direction === 'left') {
+        this.otherPlayer.anims.play('leftstill');
+      } else if (this.otherPlayer.direction === 'right') {
+        this.otherPlayer.anims.play('rightstill');
       }
     }
     // controls bullet updates on space press

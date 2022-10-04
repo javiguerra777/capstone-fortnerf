@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 import FortNerf from '../phaser-game/scenes/FortNerf';
 import EndGame from '../phaser-game/scenes/EndGame';
+import HomeScene from '../phaser-game/scenes/HomeScene';
 
 const config = {
   type: Phaser.AUTO,
@@ -14,14 +15,15 @@ const config = {
   physics: {
     default: 'arcade',
     gravity: { y: 0 },
-    debug: false,
+    debug: true,
   },
   parent: 'main-game',
-  scene: [FortNerf, EndGame],
+  scene: [HomeScene, FortNerf, EndGame],
 };
 type styleProps = {
   width: string;
 };
+
 function GameComponent({ width }: styleProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const clickEvent = () => {

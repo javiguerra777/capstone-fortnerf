@@ -2,46 +2,46 @@
   {
     "id": 1,
     "server": "Narutp",
-    "players": 10,
-    "maxPlayers": 16
+    "players": 1,
+    "maxPlayers": 2
   },
   {
     "id": 2,
     "server": "Tangirl",
-    "players": 5,
-    "maxPlayers": 8
+    "players": 1,
+    "maxPlayers": 2
   },
   {
     "id": 3,
     "server": "CuteHusky",
-    "players": 4,
-    "maxPlayers": 12
+    "players": 1,
+    "maxPlayers": 2
   },
   {
     "id": 4,
     "server": "Bothspy",
-    "players": 2,
-    "maxPlayers": 10
+    "players": 1,
+    "maxPlayers": 2
   },
   {
-    "id": 4,
-    "server": "Bothspy",
-    "players": 2,
-    "maxPlayers": 10
+    "id": 5,
+    "server": "Aliens",
+    "players": 1,
+    "maxPlayers": 2
   },{
-    "id": 4,
-    "server": "Bothspy",
-    "players": 2,
-    "maxPlayers": 10
+    "id": 6,
+    "server": "Unicorns",
+    "players": 1,
+    "maxPlayers": 2
   },{
-    "id": 4,
-    "server": "Bothspy",
-    "players": 2,
-    "maxPlayers": 10
+    "id": 7,
+    "server": "RaptorsBestTeamEver",
+    "players": 1,
+    "maxPlayers": 2
   },{
-    "id": 4,
-    "server": "Bothspy",
-    "players": 2,
-    "maxPlayers": 10
+    "id": 8,
+    "server": "CelticsSuck",
+    "players": 1,
+    "maxPlayers": 2
   }
 ]

@@ -36,9 +36,25 @@ const GameWrapper = styled.main`
     border-left: 3px solid #333333;
     display: flex;
     flex-direction: column;
+    .chat-options {
+      height: 40%;
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      button {
+        width: 90%;
+        margin-top: 1em;
+        background: none;
+        border: solid 1px white;
+        border-radius: 0.5em;
+        color: white;
+        padding: 0.5em;
+      }
+    }
     .main-chat {
       background: #3b3c36;
-      height: 85%;
+      height: 60%;
       overflow-y: scroll;
       overflow-x: hidden;
       display: flex;

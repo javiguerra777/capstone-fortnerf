@@ -2,6 +2,7 @@ import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeNavBar from '../components/HomeNavBar';
+import dashboardimage from '../img/dashboard.png';
 
 const StyledHome = styled.main`
   height: 100vh;
@@ -78,12 +79,22 @@ const StyledHome = styled.main`
     }
   }
   .preview {
+    display: flex;
+    flex-direction: row;
     margin-top: 2em;
     width: 75vw;
     height: 20rem;
     background-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
     border-radius: 5px;
+    .dash-img {
+      height: 100%;
+      width: 50%;
+    }
+    .prev-vid {
+      height: 100%;
+      width: 50%;
+    }
   }
   #online-web-game {
     color: #16d892;
@@ -124,7 +135,21 @@ function HomePage() {
             </button>
           </form>
         </section>
-        <section className="preview center" />
+        <section className="preview center">
+          <img
+            className="dash-img"
+            src={dashboardimage}
+            alt="dashboard"
+          />
+          <iframe
+            className="prev-vid"
+            src="https://www.youtube.com/embed/T33NN_pPeNI"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture fullscreen"
+            allowFullScreen
+          />
+        </section>
       </section>
     </StyledHome>
   );
