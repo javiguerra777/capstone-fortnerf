@@ -8,7 +8,7 @@ export const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    // used for signing up user, logging in user, and logging user out of app
+    // used changing id of game
     setId(state, { payload }) {
       state.id = payload;
     },

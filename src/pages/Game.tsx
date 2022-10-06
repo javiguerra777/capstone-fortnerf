@@ -16,6 +16,7 @@ import { Message } from '../types/AppTypes';
 import { RootState } from '../store';
 import { setId } from '../store/GameSlice';
 import { socket } from '../service/socket';
+import { setCoords } from '../store/UserSlice';
 
 function Game() {
   const dispatch = useDispatch();
@@ -47,7 +48,7 @@ function Game() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.autoplay = true;
-          videoRef.current.muted = false;
+          videoRef.current.muted = true;
         }
       })
       .catch((err) => {
@@ -74,6 +75,15 @@ function Game() {
   useEffect(() => {
     socket.on('chat_msg', (data) => {
       setMessages((prev) => [...prev, data]);
+    });
+    socket.on('first_player', (data) => {
+      dispatch(setCoords(data));
+    });
+    socket.on('second_player', (data) => {
+      dispatch(setCoords(data));
+    });
+    socket.on('lobby', () => {
+      navigate('/dashboard');
     });
   }, []);
   function toggleVideo() {
@@ -129,7 +139,7 @@ function Game() {
       </div>
       <footer className="user-settings background-color">
         <section className="flex-row video-voice">
-          <video id="videoElement" ref={videoRef} />
+          <video id="videoElement" muted ref={videoRef} />
           <p>{username}</p>
           <button type="button" onClick={toggleAudio}>
             {audio ? (
@@ -156,11 +166,11 @@ function Game() {
               10
             </button>
           </section>
-          <section>
+          <div>
             <button type="button" onClick={navToDashboard}>
               <GiExitDoor />
             </button>
-          </section>
+          </div>
         </section>
       </footer>
     </GameWrapper>

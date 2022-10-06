@@ -11,7 +11,7 @@ class HomeScene extends Phaser.Scene {
 
   homeOtherPlayer!: any;
 
-  homeOtherPlayerText!: any;
+  homeOtherPlayerText!: Phaser.GameObjects.Text;
 
   homePlayerName!: string;
 
@@ -203,50 +203,91 @@ class HomeScene extends Phaser.Scene {
       room: this.homeGameRoom,
       username: this.homePlayerName,
     });
-    socket.on('playerJoin', ({ username }) => {
-      this.homeOtherPlayer = this.physics.add.sprite(
-        500,
-        500,
-        'homePlayer',
-      );
-      this.homeOtherPlayerText = this.add.text(
-        this.homeOtherPlayer.x - 30,
-        this.homeOtherPlayer.y - 35,
-        username,
-        {
-          fontFamily:
-            'Georgia, "Goudy Bookletter 1911", Times, serif',
-        },
-      );
-    });
-    socket.on('existingPlayer', () => {
-      console.log('existing player');
-      // this.homeOtherPlayer = this.physics.add.sprite(500, 500, 'homePlayer');
-    });
-    socket.on('playerMoveHome', ({ x, y, direction }) => {
-      this.homeOtherPlayer.x = x;
-      this.homeOtherPlayer.y = y;
-      this.homeOtherPlayer.direction = direction;
-      this.homeOtherPlayer.moving = true;
-      this.homeOtherPlayerText.setX(this.homeOtherPlayer.x - 30);
-      this.homeOtherPlayerText.setY(this.homeOtherPlayer.y - 35);
-      if (direction === 'right') {
-        this.homeOtherPlayer.anims.play('right');
-      } else if (direction === 'left') {
-        this.homeOtherPlayer.anims.play('left');
-      } else if (direction === 'up') {
-        this.homeOtherPlayer.anims.play('up');
-      } else if (direction === 'down') {
-        this.homeOtherPlayer.anims.play('down');
+    socket.on('playerJoin', async ({ username }) => {
+      try {
+        this.homeOtherPlayer = this.physics.add.sprite(
+          500,
+          500,
+          'homePlayer',
+        );
+        this.homeOtherPlayerText = this.add.text(
+          this.homeOtherPlayer.x - 30,
+          this.homeOtherPlayer.y - 35,
+          username,
+          {
+            fontFamily:
+              'Georgia, "Goudy Bookletter 1911", Times, serif',
+          },
+        );
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
       }
     });
-    socket.on('moveHomeEnd', ({ direction }) => {
-      this.homeOtherPlayer.direction = direction;
-      this.homeOtherPlayer.moving = false;
+    socket.on('existingPlayer', async (data) => {
+      try {
+        this.homeOtherPlayer = this.physics.add.sprite(
+          500,
+          500,
+          'homePlayer',
+        );
+        this.homeOtherPlayerText = this.add.text(
+          this.homeOtherPlayer.x - 30,
+          this.homeOtherPlayer.y - 35,
+          data.username,
+          {
+            fontFamily:
+              'Georgia, "Goudy Bookletter 1911", Times, serif',
+          },
+        );
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
+    });
+    socket.on('playerMoveHome', async ({ x, y, direction }) => {
+      try {
+        this.homeOtherPlayer.x = x;
+        this.homeOtherPlayer.y = y;
+        this.homeOtherPlayer.direction = direction;
+        this.homeOtherPlayer.moving = true;
+        this.homeOtherPlayerText.setX(this.homeOtherPlayer.x - 30);
+        this.homeOtherPlayerText.setY(this.homeOtherPlayer.y - 35);
+        if (direction === 'right') {
+          this.homeOtherPlayer.anims.play('right');
+        } else if (direction === 'left') {
+          this.homeOtherPlayer.anims.play('left');
+        } else if (direction === 'up') {
+          this.homeOtherPlayer.anims.play('up');
+        } else if (direction === 'down') {
+          this.homeOtherPlayer.anims.play('down');
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
+    });
+    socket.on('moveHomeEnd', async ({ direction }) => {
+      try {
+        this.homeOtherPlayer.direction = direction;
+        this.homeOtherPlayer.moving = false;
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
     });
     socket.on('play_game', async () => {
-      console.log('playing game');
-      await this.scene.start('FortNerf');
+      try {
+        this.scene.start('FortNerf');
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
     });
   }
 
