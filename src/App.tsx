@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { io } from 'socket.io-client';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import Main from './pages/Main';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -15,11 +14,22 @@ import ValidateEmail from './pages/ValidateEmail';
 import Game from './pages/Game';
 import SinglePlayer from './pages/SinglePlayer';
 import ProtectedRoutes from './components/ProtectedRoutes';
+import { socket } from './service/socket';
 import { RootState } from './store';
 
-export const socket = io('http://localhost:5000');
 function App() {
-  const { loggedIn } = useSelector((state: RootState) => state.user);
+  const { loggedIn } = useSelector(
+    (state: RootState) => state.user,
+    shallowEqual,
+  );
+  React.useEffect(() => {
+    socket.on('connect', () => {
+      console.log('connected');
+    });
+    return () => {
+      socket.off('connect');
+    };
+  }, []);
   return (
     <Routes>
       <Route path="/" element={<Main />}>

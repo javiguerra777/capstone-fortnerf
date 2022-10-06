@@ -4,18 +4,22 @@ import {
   SPRITE_DIMENSIONS,
   PLAYER_MOVEMENT,
 } from '../utils/constants';
-import { socket } from '../../App';
+import { socket } from '../../service/socket';
 
 class HomeScene extends Phaser.Scene {
-  player!: any;
+  homePlayer!: any;
 
-  otherPlayer!: any;
+  homeOtherPlayer!: any;
 
-  gameRoom!: string;
+  homeOtherPlayerText!: any;
 
-  movePlayer!: () => boolean;
+  homePlayerName!: string;
 
-  cursor!: {
+  homeGameRoom!: string;
+
+  homeMovePlayer!: () => boolean;
+
+  homeCursor!: {
     shift: Phaser.Input.Keyboard.Key;
     up: Phaser.Input.Keyboard.Key;
     down: Phaser.Input.Keyboard.Key;
@@ -31,14 +35,16 @@ class HomeScene extends Phaser.Scene {
   preload() {
     const state = store.getState();
     const { id } = state.game;
-    this.gameRoom = id;
-    this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
+    const { username } = state.user;
+    this.homePlayerName = username;
+    this.homeGameRoom = id;
+    this.load.image('tileSet', '/assets/tiles-img/tilesheet.png');
     this.load.tilemapTiledJSON(
-      'map',
+      'homeMap',
       '/assets/tile-map/homemap.json',
     );
     this.load.spritesheet(
-      'player',
+      'homePlayer',
       '/assets/characters/male_player.png',
       {
         frameWidth: SPRITE_DIMENSIONS,
@@ -48,25 +54,54 @@ class HomeScene extends Phaser.Scene {
   }
 
   create() {
-    const map: any = this.make.tilemap({ key: 'map' });
+    const homeMap: any = this.make.tilemap({ key: 'homeMap' });
     this.cameras.main.setBounds(
       0,
       0,
-      map.displayWidth,
-      map.displayHeight,
+      homeMap.displayWidth,
+      homeMap.displayHeight,
     );
     this.physics.world.setBounds(
       0,
       0,
-      map.displayWidth,
-      map.displayHeight,
+      homeMap.displayWidth,
+      homeMap.displayHeight,
     );
-    const tileSet = map.addTilesetImage('tiles', 'tiles');
-    map.createLayer('floor', tileSet, 50, 20);
-    const walls = map.createLayer('walls', tileSet, 50, 20); // add walls const
-    map.setCollisionBetween(1, 999, true, 'colliders');
-    this.player = this.physics.add.sprite(500, 500, 'player');
-
+    const homeTileSet = homeMap.addTilesetImage('tiles', 'tileSet');
+    homeMap.createLayer('floor', homeTileSet, 50, 20);
+    const walls = homeMap.createLayer('walls', homeTileSet, 50, 20);
+    homeMap.setCollisionBetween(1, 999, true, 'colliders');
+    this.homePlayer = this.physics.add.sprite(500, 500, 'homePlayer');
+    // game text
+    const playerText = this.add.text(
+      this.homePlayer.x - 30,
+      this.homePlayer.y - 35,
+      this.homePlayerName,
+      {
+        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
+      },
+    );
+    // button to switch to main game scene
+    const screenCenterX =
+      this.cameras.main.worldView.x +
+      this.cameras.main.worldView.width / 2;
+    const screenCenterY =
+      this.cameras.main.worldView.y +
+      this.cameras.main.worldView.height / 2;
+    const startFortNerf = async () => {
+      console.log(this.homeGameRoom);
+      await socket.emit('start_game', this.homeGameRoom);
+      await this.scene.start('FortNerf');
+    };
+    const playButton = this.add
+      .text(screenCenterX, screenCenterY + 100, 'Start Game')
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', startFortNerf);
+    playButton.scrollFactorX = 0;
+    playButton.scrollFactorY = 0;
+    playButton.setFontSize(60);
+    // movement animation function
     const createMoveAnimations = (
       keyId: string,
       objectId: string,
@@ -83,113 +118,155 @@ class HomeScene extends Phaser.Scene {
         repeat: -1,
       });
     };
+    const createStillAnimations = (
+      keyId: string,
+      objectId: string,
+      frameNumber: number,
+    ) => {
+      this.anims.create({
+        key: keyId,
+        frames: [{ key: objectId, frame: frameNumber }],
+        frameRate: 20,
+      });
+    };
     // animations
-    createMoveAnimations('left', 'player', 3, 5);
-    createMoveAnimations('right', 'player', 6, 8);
-    createMoveAnimations('up', 'player', 9, 11);
-    createMoveAnimations('down', 'player', 0, 2);
+    createMoveAnimations('left', 'homePlayer', 3, 5);
+    createMoveAnimations('right', 'homePlayer', 6, 8);
+    createMoveAnimations('up', 'homePlayer', 9, 11);
+    createMoveAnimations('down', 'homePlayer', 0, 2);
+    createStillAnimations('leftStill', 'homePlayer', 4);
+    createStillAnimations('rightStill', 'homePlayer', 7);
+    createStillAnimations('upStill', 'homePlayer', 10);
+    createStillAnimations('downStill', 'homePlayer', 1);
 
-    this.movePlayer = () => {
+    this.homeMovePlayer = () => {
       let playerMoved = false;
       let speed = 1;
-      if (this.cursor.shift.isDown) {
+      if (this.homeCursor.shift.isDown) {
         speed = 1.5;
       }
-      if (this.cursor.up.isDown) {
+      if (this.homeCursor.up.isDown) {
         playerMoved = true;
-        this.player.direction = 'up';
-        this.player.setVelocityY(-PLAYER_MOVEMENT * speed);
-        this.player.setVelocityX(0);
-        // playerText.setX(this.player.x - 30);
-        // playerText.setY(this.player.y + 30);
-        this.player.anims.play('up', true);
-      } else if (this.cursor.down.isDown) {
+        this.homePlayer.direction = 'up';
+        this.homePlayer.setVelocityY(-PLAYER_MOVEMENT * speed);
+        this.homePlayer.setVelocityX(0);
+        this.homePlayer.anims.play('up', true);
+      } else if (this.homeCursor.down.isDown) {
         playerMoved = true;
-        this.player.direction = 'down';
-        this.player.setVelocityY(PLAYER_MOVEMENT * speed);
-        this.player.setVelocityX(0);
-        // playerText.setX(this.player.x - 30);
-        // playerText.setY(this.player.y + 30);
-        this.player.anims.play('down', true);
-      } else if (this.cursor.left.isDown) {
+        this.homePlayer.direction = 'down';
+        this.homePlayer.setVelocityY(PLAYER_MOVEMENT * speed);
+        this.homePlayer.setVelocityX(0);
+        this.homePlayer.anims.play('down', true);
+      } else if (this.homeCursor.left.isDown) {
         playerMoved = true;
-        this.player.direction = 'left';
-        this.player.setVelocityX(-PLAYER_MOVEMENT * speed);
-        this.player.setVelocityY(0);
-        // playerText.setX(this.player.x - 30);
-        // playerText.setY(this.player.y + 30);
-        this.player.anims.play('left', true);
-      } else if (this.cursor.right.isDown) {
+        this.homePlayer.direction = 'left';
+        this.homePlayer.setVelocityX(-PLAYER_MOVEMENT * speed);
+        this.homePlayer.setVelocityY(0);
+        this.homePlayer.anims.play('left', true);
+      } else if (this.homeCursor.right.isDown) {
         playerMoved = true;
-        this.player.direction = 'right';
-        this.player.setVelocityX(PLAYER_MOVEMENT * speed);
-        this.player.setVelocityY(0);
-        // playerText.setX(this.player.x - 30);
-        // playerText.setY(this.player.y + 30);
-        this.player.anims.play('right', true);
+        this.homePlayer.direction = 'right';
+        this.homePlayer.setVelocityX(PLAYER_MOVEMENT * speed);
+        this.homePlayer.setVelocityY(0);
+        this.homePlayer.anims.play('right', true);
       } else {
         playerMoved = false;
-        this.player.setVelocity(0);
-        if (this.player.direction === 'up') {
-          // this.player.anims.play('upstill', true);
-        } else if (this.player.direction === 'down') {
-          // this.player.anims.play('downstill', true);
-        } else if (this.player.direction === 'left') {
-          // this.player.anims.play('leftstill', true);
-        } else if (this.player.direction === 'right') {
-          // this.player.anims.play('rightstill', true);
+        this.homePlayer.setVelocity(0);
+        if (this.homePlayer.direction === 'up') {
+          this.homePlayer.anims.play('upStill', true);
+        } else if (this.homePlayer.direction === 'down') {
+          this.homePlayer.anims.play('downStill', true);
+        } else if (this.homePlayer.direction === 'left') {
+          this.homePlayer.anims.play('leftStill', true);
+        } else if (this.homePlayer.direction === 'right') {
+          this.homePlayer.anims.play('rightStill', true);
         }
       }
+      playerText.setX(this.homePlayer.x - 30);
+      playerText.setY(this.homePlayer.y - 40);
       return playerMoved;
     };
     const playerCollider = () => {
-      this.player.setVelocity(0);
+      this.homePlayer.setVelocity(0);
     };
     this.physics.add.collider(
-      this.player,
+      this.homePlayer,
       walls,
       playerCollider,
       undefined,
       this,
     );
-    this.cursor = this.input.keyboard.createCursorKeys();
+    this.homeCursor = this.input.keyboard.createCursorKeys();
 
     // socket methods
-    socket.on('playerJoin', () => {
-      this.otherPlayer = this.physics.add.sprite(500, 500, 'player');
+    socket.emit('join_game', {
+      room: this.homeGameRoom,
+      username: this.homePlayerName,
+    });
+    socket.on('playerJoin', ({ username }) => {
+      this.homeOtherPlayer = this.physics.add.sprite(
+        500,
+        500,
+        'homePlayer',
+      );
+      this.homeOtherPlayerText = this.add.text(
+        this.homeOtherPlayer.x - 30,
+        this.homeOtherPlayer.y - 35,
+        username,
+        {
+          fontFamily:
+            'Georgia, "Goudy Bookletter 1911", Times, serif',
+        },
+      );
     });
     socket.on('existingPlayer', () => {
-      this.otherPlayer = this.physics.add.sprite(500, 500, 'player');
+      console.log('existing player');
+      // this.homeOtherPlayer = this.physics.add.sprite(500, 500, 'homePlayer');
     });
     socket.on('playerMoveHome', ({ x, y, direction }) => {
-      this.otherPlayer.x = x;
-      this.otherPlayer.y = y;
-      this.otherPlayer.direction = direction;
-      this.otherPlayer.moving = true;
+      this.homeOtherPlayer.x = x;
+      this.homeOtherPlayer.y = y;
+      this.homeOtherPlayer.direction = direction;
+      this.homeOtherPlayer.moving = true;
+      this.homeOtherPlayerText.setX(this.homeOtherPlayer.x - 30);
+      this.homeOtherPlayerText.setY(this.homeOtherPlayer.y - 35);
+      if (direction === 'right') {
+        this.homeOtherPlayer.anims.play('right');
+      } else if (direction === 'left') {
+        this.homeOtherPlayer.anims.play('left');
+      } else if (direction === 'up') {
+        this.homeOtherPlayer.anims.play('up');
+      } else if (direction === 'down') {
+        this.homeOtherPlayer.anims.play('down');
+      }
     });
     socket.on('moveHomeEnd', ({ direction }) => {
-      this.otherPlayer.direction = direction;
-      this.otherPlayer.moving = false;
+      this.homeOtherPlayer.direction = direction;
+      this.homeOtherPlayer.moving = false;
+    });
+    socket.on('play_game', async () => {
+      console.log('playing game');
+      await this.scene.start('FortNerf');
     });
   }
 
   update() {
-    this.cameras.main.startFollow(this.player);
-    const playerMoved = this.movePlayer();
+    this.cameras.main.startFollow(this.homePlayer);
+    const playerMoved = this.homeMovePlayer();
     if (playerMoved) {
       socket.emit('moveHome', {
-        x: this.player.x,
-        y: this.player.y,
-        direction: this.player.direction,
-        room: this.gameRoom,
+        x: this.homePlayer.x,
+        y: this.homePlayer.y,
+        direction: this.homePlayer.direction,
+        room: this.homeGameRoom,
       });
-      this.player.movedLastFrame = true;
-    } else if (this.player.movedLastFrame) {
+      this.homePlayer.movedLastFrame = true;
+    } else if (this.homePlayer.movedLastFrame) {
       socket.emit('moveHomeEnd', {
-        direction: this.player.direction,
-        room: this.gameRoom,
+        direction: this.homePlayer.direction,
+        room: this.homeGameRoom,
       });
-      this.player.movedLastFrame = false;
+      this.homePlayer.movedLastFrame = false;
     }
   }
 }

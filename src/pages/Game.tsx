@@ -13,9 +13,9 @@ import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
-import { socket } from '../App';
 import { RootState } from '../store';
 import { setId } from '../store/GameSlice';
+import { socket } from '../service/socket';
 
 function Game() {
   const dispatch = useDispatch();
@@ -43,11 +43,11 @@ function Game() {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })
       .then((stream) => {
+        setmystream(stream);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.autoplay = true;
           videoRef.current.muted = false;
-          setmystream(stream);
         }
       })
       .catch((err) => {
@@ -59,11 +59,12 @@ function Game() {
   useEffect(() => {
     socket.emit('join_room', {
       room: id,
+      username,
     });
     return () => {
       socket.emit('leave_room', id);
     };
-  }, [id]);
+  }, [id, username]);
   useEffect(() => {
     dispatch(setId(id));
     return () => {

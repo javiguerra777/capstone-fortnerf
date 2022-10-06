@@ -24,7 +24,7 @@ class EndGame extends Phaser.Scene {
       this.scene.start('FortNerf');
     };
     this.add
-      .text(500, 400, 'Play Again')
+      .text(500, 400, 'Return Home')
       .setInteractive()
       .on('pointerdown', newGame);
   }
