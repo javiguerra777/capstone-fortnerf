@@ -255,22 +255,13 @@ class HomeScene extends Phaser.Scene {
         this.homeOtherPlayer.moving = true;
         this.homeOtherPlayerText.setX(this.homeOtherPlayer.x - 30);
         this.homeOtherPlayerText.setY(this.homeOtherPlayer.y - 35);
-        if (direction === 'right') {
-          this.homeOtherPlayer.anims.play('right');
-        } else if (direction === 'left') {
-          this.homeOtherPlayer.anims.play('left');
-        } else if (direction === 'up') {
-          this.homeOtherPlayer.anims.play('up');
-        } else if (direction === 'down') {
-          this.homeOtherPlayer.anims.play('down');
-        }
       } catch (err) {
         if (err instanceof Error) {
           console.log(err.message);
         }
       }
     });
-    socket.on('moveHomeEnd', async ({ direction }) => {
+    socket.on('moveHomeEnd', async (direction) => {
       try {
         this.homeOtherPlayer.direction = direction;
         this.homeOtherPlayer.moving = false;
@@ -308,6 +299,28 @@ class HomeScene extends Phaser.Scene {
         room: this.homeGameRoom,
       });
       this.homePlayer.movedLastFrame = false;
+    }
+
+    if (this.homeOtherPlayer && this.homeOtherPlayer.moving) {
+      if (this.homeOtherPlayer.direction === 'right') {
+        this.homeOtherPlayer.anims.play('right', true);
+      } else if (this.homeOtherPlayer.direction === 'left') {
+        this.homeOtherPlayer.anims.play('left', true);
+      } else if (this.homeOtherPlayer.direction === 'up') {
+        this.homeOtherPlayer.anims.play('up', true);
+      } else if (this.homeOtherPlayer.direction === 'down') {
+        this.homeOtherPlayer.anims.play('down', true);
+      }
+    } else if (this.homeOtherPlayer && !this.homeOtherPlayer.moving) {
+      if (this.homeOtherPlayer.direction === 'right') {
+        this.homeOtherPlayer.anims.play('rightStill', true);
+      } else if (this.homeOtherPlayer.direction === 'left') {
+        this.homeOtherPlayer.anims.play('leftStill', true);
+      } else if (this.homeOtherPlayer.direction === 'up') {
+        this.homeOtherPlayer.anims.play('upStill', true);
+      } else if (this.homeOtherPlayer.direction === 'down') {
+        this.homeOtherPlayer.anims.play('downStill', true);
+      }
     }
   }
 }

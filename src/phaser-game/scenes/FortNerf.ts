@@ -77,14 +77,6 @@ class FortNerf extends Phaser.Scene {
         frameHeight: SPRITE_DIMENSIONS,
       },
     );
-    this.load.spritesheet(
-      'otherPlayer',
-      '/assets/characters/male_player.png',
-      {
-        frameWidth: SPRITE_DIMENSIONS,
-        frameHeight: SPRITE_DIMENSIONS,
-      },
-    );
     this.load.image('bullet', '/assets/bullets/01.png');
     this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
     this.load.tilemapTiledJSON(
@@ -214,23 +206,23 @@ class FortNerf extends Phaser.Scene {
       try {
         if (this.otherPlayer.moving) {
           if (this.otherPlayer.direction === 'right') {
-            this.otherPlayer.anims.play('right');
+            this.otherPlayer.anims.play('right', true);
           } else if (this.otherPlayer.direction === 'left') {
-            this.otherPlayer.anims.play('left');
+            this.otherPlayer.anims.play('left', true);
           } else if (this.otherPlayer.direction === 'up') {
-            this.otherPlayer.anims.play('up');
+            this.otherPlayer.anims.play('up', true);
           } else if (this.otherPlayer.direction === 'down') {
-            this.otherPlayer.anims.play('down');
+            this.otherPlayer.anims.play('down', true);
           }
         } else {
           if (this.otherPlayer.direction === 'right') {
-            this.otherPlayer.anims.play('rightstill');
+            this.otherPlayer.anims.play('rightstill', true);
           } else if (this.otherPlayer.direction === 'left') {
-            this.otherPlayer.anims.play('leftstill');
+            this.otherPlayer.anims.play('leftstill', true);
           } else if (this.otherPlayer.direction === 'up') {
-            this.otherPlayer.anims.play('upstill');
+            this.otherPlayer.anims.play('upstill', true);
           } else if (this.otherPlayer.direction === 'down') {
-            this.otherPlayer.anims.play('downstill');
+            this.otherPlayer.anims.play('downstill', true);
           }
         }
       } catch (err) {
@@ -345,18 +337,6 @@ class FortNerf extends Phaser.Scene {
     createStillAnimation('downstill', 'player', 1);
     createStillAnimation('upstill', 'player', 10);
 
-    // other player animations
-    // movement animations
-    createMoveAnimations('leftTwo', 'otherPlayer', 3, 5);
-    createMoveAnimations('rightTwo', 'otherPlayer', 6, 8);
-    createMoveAnimations('downTwo', 'otherPlayer', 0, 2);
-    createMoveAnimations('upTwo', 'otherPlayer', 9, 11);
-
-    // still animations
-    createStillAnimation('leftstillTwo', 'otherPlayer', 4);
-    createStillAnimation('rightstillTwo', 'otherPlayer', 7);
-    createStillAnimation('downstillTwo', 'otherPlayer', 1);
-    createStillAnimation('upstillTwo', 'otherPlayer', 10);
     // collision
     const playerCollision = () => {
       this.player.setVelocity(0);
@@ -412,41 +392,14 @@ class FortNerf extends Phaser.Scene {
         }
       }
     });
-    // socket.on('existingPlayer', async (data) => {
-    //   try {
-    //     if (!this.otherPlayer) {
-    //       this.otherPlayer = this.physics.add.sprite(
-    //         700,
-    //         700,
-    //         'player',
-    //       );
-    //       this.otherPlayer.body.immovable = true;
-    //       this.otherPlayer.anims.play('downstill');
-    //       this.otherPlayer.direction = 'down';
-    //       this.otherPlayerText = this.add.text(
-    //         this.otherPlayer.x - 30,
-    //         this.otherPlayer.y + 30,
-    //         data.username,
-    //         {
-    //           fontFamily:
-    //             'Georgia, "Goudy Bookletter 1911", Times, serif',
-    //         },
-    //       );
-    //     }
-    //   } catch (err) {
-    //     if (err instanceof Error) {
-    //       console.log(err.message);
-    //     }
-    //   }
-    // });
-    socket.on('playerMove', async ({ x, y, direction }) => {
+    socket.on('playerMove', async ({ x, y, direction, respawn }) => {
       try {
         this.otherPlayer.x = x;
         this.otherPlayer.y = y;
         this.otherPlayer.direction = direction;
         this.otherPlayerText.setX(this.otherPlayer.x - 30);
         this.otherPlayerText.setY(this.otherPlayer.y + 30);
-        this.otherPlayer.moving = true;
+        this.otherPlayer.moving = !respawn;
       } catch (err) {
         if (err instanceof Error) {
           console.log(err.message);
@@ -509,6 +462,7 @@ class FortNerf extends Phaser.Scene {
                   y: 300,
                   direction: 'down',
                   room: this.gameRoom,
+                  respawn: true,
                 });
               }
             } catch (err) {
@@ -564,6 +518,7 @@ class FortNerf extends Phaser.Scene {
         y: this.player.y,
         direction: this.player.direction,
         room: this.gameRoom,
+        respawn: false,
       });
       this.player.movedLastFrame = true;
     } else {
