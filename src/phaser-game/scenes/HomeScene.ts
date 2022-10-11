@@ -89,9 +89,8 @@ class HomeScene extends Phaser.Scene {
       this.cameras.main.worldView.y +
       this.cameras.main.worldView.height / 2;
     const startFortNerf = async () => {
-      console.log(this.homeGameRoom);
       await socket.emit('start_game', this.homeGameRoom);
-      await this.scene.start('FortNerf');
+      await this.scene.stop('HomeScene').launch('FortNerf');
     };
     const playButton = this.add
       .text(screenCenterX, screenCenterY + 100, 'Start Game')
@@ -273,7 +272,7 @@ class HomeScene extends Phaser.Scene {
     });
     socket.on('play_game', async () => {
       try {
-        this.scene.start('FortNerf');
+        this.scene.stop('HomeScene').launch('FortNerf');
       } catch (err) {
         if (err instanceof Error) {
           console.log(err.message);

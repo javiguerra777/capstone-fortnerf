@@ -86,6 +86,7 @@ class FortNerf extends Phaser.Scene {
   }
 
   create() {
+    console.log('game', this);
     this.health = 100;
     this.lives = 3;
     const map: any = this.make.tilemap({ key: 'map' });
