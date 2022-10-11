@@ -8,7 +8,7 @@ import {
 } from 'react-icons/bs';
 import { FaMicrophoneAlt } from 'react-icons/fa';
 import { GiExitDoor } from 'react-icons/gi';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
@@ -19,18 +19,22 @@ import { socket } from '../service/socket';
 import { setCoords } from '../store/UserSlice';
 import { getRoomData } from '../utils/api';
 
+type RoomData = Record<string, any>;
 function Game() {
   const dispatch = useDispatch();
-  const { username } = useSelector((state: RootState) => state.user);
+  const { username } = useSelector(
+    (state: RootState) => state.user,
+    shallowEqual,
+  );
   const navigate = useNavigate();
   const { id } = useParams();
-  const [host, setHost] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
   const [displayAside, setDisplayAside] = useState(true);
   const [message, setMessage] = useState('');
   const [mystream, setmystream] = useState<MediaStream>();
+  const [roomData, setRoomData] = useState<RoomData>({});
   const videoRef = useRef<HTMLVideoElement>(null);
   const asideOptions = () => {
     if (displayAside) {
@@ -62,12 +66,7 @@ function Game() {
   useEffect(() => {
     const resolveRoom = async () => {
       try {
-        getRoomData(id || '').then((res) => {
-          if (res.data.host === username) {
-            console.log('host');
-            setHost(true);
-          }
-        });
+        getRoomData(id || '').then((res) => setRoomData(res.data));
       } catch (err) {
         if (err instanceof Error) {
           setMessage(err.message);
@@ -83,10 +82,9 @@ function Game() {
       username,
     });
     return () => {
-      console.log(host);
       socket.emit('leave_room', {
         id,
-        host,
+        username,
       });
     };
   }, [id, username]);
@@ -105,6 +103,9 @@ function Game() {
     });
     socket.on('second_player', (data) => {
       dispatch(setCoords(data));
+    });
+    socket.on('updatedRoom', (data) => {
+      setRoomData(data);
     });
     socket.on('lobby', () => {
       navigate('/dashboard');
@@ -188,7 +189,7 @@ function Game() {
             </button>
             <button type="button">
               <BsPeople />
-              10
+              {roomData?.users?.length}
             </button>
           </section>
           <div>

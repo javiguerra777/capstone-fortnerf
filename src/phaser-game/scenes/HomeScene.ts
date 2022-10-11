@@ -303,6 +303,16 @@ class HomeScene extends Phaser.Scene {
         }
       }
     });
+    socket.on('playerLeft', async () => {
+      try {
+        this.homeOtherPlayer.destroy();
+        this.homeOtherPlayerText.destroy();
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
+    });
     socket.on('play_game', async () => {
       try {
         this.scene.stop('HomeScene').launch('FortNerf');
@@ -325,11 +335,13 @@ class HomeScene extends Phaser.Scene {
         room: this.homeGameRoom,
       });
       this.homePlayer.movedLastFrame = true;
-    } else if (this.homePlayer.movedLastFrame) {
-      socket.emit('moveHomeEnd', {
-        direction: this.homePlayer.direction,
-        room: this.homeGameRoom,
-      });
+    } else {
+      if (this.homePlayer.movedLastFrame) {
+        socket.emit('moveHomeEnd', {
+          direction: this.homePlayer.direction,
+          room: this.homeGameRoom,
+        });
+      }
       this.homePlayer.movedLastFrame = false;
     }
 

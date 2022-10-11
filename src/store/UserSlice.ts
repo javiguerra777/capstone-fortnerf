@@ -4,6 +4,7 @@ type User = {
   username: string;
   name: string;
   email: string;
+  host: boolean;
   loggedIn: boolean;
   connected: boolean;
   x: number;
@@ -14,6 +15,7 @@ const initialState = {
   username: '',
   name: '',
   email: '',
+  host: false,
   loggedIn: false,
   connected: false,
   x: 0,
@@ -38,8 +40,12 @@ export const userSlice = createSlice({
       state.x = payload.x;
       state.y = payload.y;
     },
+    setHost(state, { payload }) {
+      state.host = payload;
+    },
   },
 });
 
-export const { setUser, setConnected, setCoords } = userSlice.actions;
+export const { setUser, setConnected, setCoords, setHost } =
+  userSlice.actions;
 export default userSlice.reducer;

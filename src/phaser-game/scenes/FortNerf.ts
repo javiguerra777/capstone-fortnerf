@@ -198,7 +198,6 @@ class FortNerf extends Phaser.Scene {
       }
       this.playerText.setX(this.player.x - 30);
       this.playerText.setY(this.player.y + 30);
-
       return playerMoved;
     };
     // other player anims
