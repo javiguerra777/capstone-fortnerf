@@ -17,12 +17,14 @@ import { RootState } from '../store';
 import { setId } from '../store/GameSlice';
 import { socket } from '../service/socket';
 import { setCoords } from '../store/UserSlice';
+import { getRoomData } from '../utils/api';
 
 function Game() {
   const dispatch = useDispatch();
   const { username } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const { id } = useParams();
+  const [host, setHost] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
@@ -39,7 +41,7 @@ function Game() {
   };
   const maxWidth = '100%';
   const width = '90%';
-
+  // useEffects
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })
@@ -58,12 +60,34 @@ function Game() {
       });
   }, []);
   useEffect(() => {
+    const resolveRoom = async () => {
+      try {
+        getRoomData(id || '').then((res) => {
+          if (res.data.host === username) {
+            console.log('host');
+            setHost(true);
+          }
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+          setMessage(err.message);
+          navigate('/dashboard');
+        }
+      }
+    };
+    resolveRoom();
+  }, []);
+  useEffect(() => {
     socket.emit('join_room', {
       room: id,
       username,
     });
     return () => {
-      socket.emit('leave_room', id);
+      console.log(host);
+      socket.emit('leave_room', {
+        id,
+        host,
+      });
     };
   }, [id, username]);
   useEffect(() => {
@@ -86,6 +110,7 @@ function Game() {
       navigate('/dashboard');
     });
   }, []);
+  // functions
   function toggleVideo() {
     if (displayVid) {
       setDisplayVid(!displayVid);

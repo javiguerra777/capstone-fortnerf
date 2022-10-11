@@ -13,6 +13,7 @@ import LoginWrapper from '../styles/ReusableStyles';
 import HomeNavBar from '../components/HomeNavBar';
 import { db, auth } from '../firebase/FirebaseTS';
 import { setUser } from '../store/UserSlice';
+import AnimateCharacter from '../styles/AnimSprite';
 
 function LoginPage() {
   const dispatch = useDispatch();
@@ -60,7 +61,22 @@ function LoginPage() {
           Join the world of FortNerf! Play with others, there are
           several servers to choose from.
         </h2>
-        <section className="img-holder">Image placeholder</section>
+        <AnimateCharacter>
+          <div className="Character">
+            {/* Taken from aws existing spritesheet */}
+            <img
+              className="Character_shadow pixelart"
+              src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/21542/DemoRpgCharacterShadow.png"
+              alt="Shadow"
+            />
+
+            <img
+              className="Character_spritesheet pixelart face-down"
+              src="/assets/characters/male_player.png"
+              alt="Character"
+            />
+          </div>
+        </AnimateCharacter>
         <form onSubmit={loginToAccount}>
           <label htmlFor="username">
             <p>Email:</p>
