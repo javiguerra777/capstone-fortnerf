@@ -78,6 +78,12 @@ const GameDetails = styled.section`
     align-items: center;
   }
 `;
+
+type Game = {
+  name: string;
+  users: [];
+  _id: string;
+};
 function Dashboard() {
   const navigate = useNavigate();
   const [gameServers, setGameServers] = useState([]);
@@ -91,7 +97,10 @@ function Dashboard() {
     });
   }, []);
   // functions
-  const navToGame = (gameId: number) => {
+  const navToGame = (gameId: string, usersInGame: number) => {
+    if (usersInGame === 2) {
+      return;
+    }
     navigate(`/game/${gameId}`);
   };
   const playSoloGame = () => {
@@ -117,17 +126,20 @@ function Dashboard() {
             Single Player
           </button>
         </nav>
-        {gameServers?.map(({ name, users, _id }: any) => (
-          <GameDetails key={nanoid()} onClick={() => navToGame(_id)}>
+        {gameServers?.map((game: Game) => (
+          <GameDetails
+            key={nanoid()}
+            onClick={() => navToGame(game._id, game.users.length)}
+          >
             <section id="item1">
               <p>Fort Nerf</p>
               <img src={nerfTarget} alt="game-logo" />
             </section>
             <section id="item2">
-              <p>{name}</p>
+              <p>{game.name}</p>
             </section>
             <section id="item3">
-              <p>{users.length}/2</p>
+              <p>{game.users.length}/2</p>
               <HiOutlineUsers size={28} />
             </section>
           </GameDetails>
