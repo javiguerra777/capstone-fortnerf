@@ -336,12 +336,10 @@ class HomeScene extends Phaser.Scene {
       });
       this.homePlayer.movedLastFrame = true;
     } else {
-      if (this.homePlayer.movedLastFrame) {
-        socket.emit('moveHomeEnd', {
-          direction: this.homePlayer.direction,
-          room: this.homeGameRoom,
-        });
-      }
+      socket.emit('moveHomeEnd', {
+        direction: this.homePlayer.direction,
+        room: this.homeGameRoom,
+      });
       this.homePlayer.movedLastFrame = false;
     }
 
