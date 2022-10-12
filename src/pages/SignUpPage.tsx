@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import {
@@ -8,20 +8,31 @@ import {
   query,
   getDocs,
 } from 'firebase/firestore';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { auth, db } from '../firebase/FirebaseTS';
 import LoginWrapper from '../styles/ReusableStyles';
 import { setUser } from '../store/UserSlice';
+import { setEmail } from '../store/Registrations';
+import { RootState } from '../store';
 
 function SignUpPage() {
   const dispatch = useDispatch();
   const userCollection = collection(db, 'users');
+  const { email } = useSelector(
+    (state: RootState) => state.registration,
+    shallowEqual,
+  );
   const [name, setName] = useState('');
   const [username, setUserName] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  useEffect(
+    () => () => {
+      dispatch(setEmail(''));
+    },
+    [],
+  );
   const completeRegistration = async (
     e: FormEvent<HTMLFormElement>,
   ) => {
@@ -50,6 +61,7 @@ function SignUpPage() {
           dispatch(setUser({ ...userData }));
         };
         await getUserFromDB();
+        await dispatch(setEmail(''));
         navigate('/dashboard');
       }
     } catch (err) {
@@ -88,7 +100,7 @@ function SignUpPage() {
               type="email"
               placeholder="ex: Johnappleseed@gmail.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => dispatch(setEmail(e.target.value))}
             />
           </label>
           <label htmlFor="password">
