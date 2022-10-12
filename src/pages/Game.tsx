@@ -20,7 +20,9 @@ import { socket } from '../service/socket';
 import { setCoords } from '../store/UserSlice';
 import { getRoomData } from '../utils/api';
 
-type RoomData = Record<string, any>;
+type RoomData = {
+  users: [];
+};
 function Game() {
   const dispatch = useDispatch();
   const { username } = useSelector(
@@ -36,7 +38,7 @@ function Game() {
   const [displayAllUsers, setDisplayAllUsers] = useState(false);
   const [message, setMessage] = useState('');
   const [mystream, setmystream] = useState<MediaStream>();
-  const [roomData, setRoomData] = useState<RoomData>({});
+  const [roomData, setRoomData] = useState<RoomData>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const asideOptions = () => {
     if (displayAside) {
