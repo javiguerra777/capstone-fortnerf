@@ -30,6 +30,7 @@
   "rules": {
     "linebreak-style": 0,
     "no-lonely-if":"off",
+    "no-underscore-dangle": "off",
     "react/jsx-no-useless-fragment": "off",
     "no-param-reassign": "off",
     "jsx-a11y/media-has-caption":"off",

@@ -4,6 +4,7 @@ type User = {
   username: string;
   name: string;
   email: string;
+  host: boolean;
   loggedIn: boolean;
   connected: boolean;
   x: number;
@@ -14,6 +15,7 @@ const initialState = {
   username: '',
   name: '',
   email: '',
+  host: false,
   loggedIn: false,
   connected: false,
   x: 0,

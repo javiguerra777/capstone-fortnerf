@@ -19,6 +19,8 @@ class HomeScene extends Phaser.Scene {
 
   homeMovePlayer!: () => boolean;
 
+  handleOtherPlayerAnims!: () => void;
+
   homeCursor!: {
     shift: Phaser.Input.Keyboard.Key;
     up: Phaser.Input.Keyboard.Key;
@@ -89,9 +91,8 @@ class HomeScene extends Phaser.Scene {
       this.cameras.main.worldView.y +
       this.cameras.main.worldView.height / 2;
     const startFortNerf = async () => {
-      console.log(this.homeGameRoom);
       await socket.emit('start_game', this.homeGameRoom);
-      await this.scene.start('FortNerf');
+      await this.scene.stop('HomeScene').launch('FortNerf');
     };
     const playButton = this.add
       .text(screenCenterX, screenCenterY + 100, 'Start Game')
@@ -186,6 +187,36 @@ class HomeScene extends Phaser.Scene {
       playerText.setY(this.homePlayer.y - 40);
       return playerMoved;
     };
+    // other player anims
+    this.handleOtherPlayerAnims = async () => {
+      try {
+        if (this.homeOtherPlayer.moving) {
+          if (this.homeOtherPlayer.direction === 'right') {
+            this.homeOtherPlayer.anims.play('right', true);
+          } else if (this.homeOtherPlayer.direction === 'left') {
+            this.homeOtherPlayer.anims.play('left', true);
+          } else if (this.homeOtherPlayer.direction === 'up') {
+            this.homeOtherPlayer.anims.play('up', true);
+          } else if (this.homeOtherPlayer.direction === 'down') {
+            this.homeOtherPlayer.anims.play('down', true);
+          }
+        } else {
+          if (this.homeOtherPlayer.direction === 'right') {
+            this.homeOtherPlayer.anims.play('rightStill', true);
+          } else if (this.homeOtherPlayer.direction === 'left') {
+            this.homeOtherPlayer.anims.play('leftStill', true);
+          } else if (this.homeOtherPlayer.direction === 'up') {
+            this.homeOtherPlayer.anims.play('upStill', true);
+          } else if (this.homeOtherPlayer.direction === 'down') {
+            this.homeOtherPlayer.anims.play('downStill', true);
+          }
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
+    };
     const playerCollider = () => {
       this.homePlayer.setVelocity(0);
     };
@@ -228,10 +259,11 @@ class HomeScene extends Phaser.Scene {
     socket.on('existingPlayer', async (data) => {
       try {
         this.homeOtherPlayer = this.physics.add.sprite(
-          500,
-          500,
+          data.x,
+          data.y,
           'homePlayer',
         );
+        this.homeOtherPlayer.direction = data.direction;
         this.homeOtherPlayerText = this.add.text(
           this.homeOtherPlayer.x - 30,
           this.homeOtherPlayer.y - 35,
@@ -271,9 +303,19 @@ class HomeScene extends Phaser.Scene {
         }
       }
     });
+    socket.on('playerLeft', async () => {
+      try {
+        this.homeOtherPlayer.destroy();
+        this.homeOtherPlayerText.destroy();
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
+    });
     socket.on('play_game', async () => {
       try {
-        this.scene.start('FortNerf');
+        this.scene.stop('HomeScene').launch('FortNerf');
       } catch (err) {
         if (err instanceof Error) {
           console.log(err.message);
@@ -293,7 +335,7 @@ class HomeScene extends Phaser.Scene {
         room: this.homeGameRoom,
       });
       this.homePlayer.movedLastFrame = true;
-    } else if (this.homePlayer.movedLastFrame) {
+    } else {
       socket.emit('moveHomeEnd', {
         direction: this.homePlayer.direction,
         room: this.homeGameRoom,
@@ -301,26 +343,8 @@ class HomeScene extends Phaser.Scene {
       this.homePlayer.movedLastFrame = false;
     }
 
-    if (this.homeOtherPlayer && this.homeOtherPlayer.moving) {
-      if (this.homeOtherPlayer.direction === 'right') {
-        this.homeOtherPlayer.anims.play('right', true);
-      } else if (this.homeOtherPlayer.direction === 'left') {
-        this.homeOtherPlayer.anims.play('left', true);
-      } else if (this.homeOtherPlayer.direction === 'up') {
-        this.homeOtherPlayer.anims.play('up', true);
-      } else if (this.homeOtherPlayer.direction === 'down') {
-        this.homeOtherPlayer.anims.play('down', true);
-      }
-    } else if (this.homeOtherPlayer && !this.homeOtherPlayer.moving) {
-      if (this.homeOtherPlayer.direction === 'right') {
-        this.homeOtherPlayer.anims.play('rightStill', true);
-      } else if (this.homeOtherPlayer.direction === 'left') {
-        this.homeOtherPlayer.anims.play('leftStill', true);
-      } else if (this.homeOtherPlayer.direction === 'up') {
-        this.homeOtherPlayer.anims.play('upStill', true);
-      } else if (this.homeOtherPlayer.direction === 'down') {
-        this.homeOtherPlayer.anims.play('downStill', true);
-      }
+    if (this.homeOtherPlayer) {
+      this.handleOtherPlayerAnims();
     }
   }
 }

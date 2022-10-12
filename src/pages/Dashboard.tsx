@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { HiOutlineUsers } from 'react-icons/hi';
 import { nanoid } from 'nanoid';
-import gameServers from '../games.json';
 import nerfTarget from '../img/nerf_target.png';
 import UserNavBar from '../components/UserNavBar';
+import { getAllRooms } from '../utils/api';
+import { socket } from '../service/socket';
 
 const DashboardWrapper = styled.main`
   color: white;
@@ -77,9 +78,29 @@ const GameDetails = styled.section`
     align-items: center;
   }
 `;
+
+type Game = {
+  name: string;
+  users: [];
+  _id: string;
+};
 function Dashboard() {
   const navigate = useNavigate();
-  const navToGame = (gameId: number) => {
+  const [gameServers, setGameServers] = useState([]);
+  // useEffects
+  useEffect(() => {
+    getAllRooms().then((res) => setGameServers(res.data));
+  }, []);
+  useEffect(() => {
+    socket.on('updatedRooms', (data) => {
+      setGameServers(data);
+    });
+  }, []);
+  // functions
+  const navToGame = (gameId: string, usersInGame: number) => {
+    if (usersInGame === 2) {
+      return;
+    }
     navigate(`/game/${gameId}`);
   };
   const playSoloGame = () => {
@@ -105,19 +126,20 @@ function Dashboard() {
             Single Player
           </button>
         </nav>
-        {gameServers.map(({ server, players, maxPlayers, id }) => (
-          <GameDetails key={nanoid()} onClick={() => navToGame(id)}>
+        {gameServers?.map((game: Game) => (
+          <GameDetails
+            key={nanoid()}
+            onClick={() => navToGame(game._id, game.users.length)}
+          >
             <section id="item1">
               <p>Fort Nerf</p>
               <img src={nerfTarget} alt="game-logo" />
             </section>
             <section id="item2">
-              <p>{server}</p>
+              <p>{game.name}</p>
             </section>
             <section id="item3">
-              <p>
-                {players}/{maxPlayers}
-              </p>
+              <p>{game.users.length}/2</p>
               <HiOutlineUsers size={28} />
             </section>
           </GameDetails>

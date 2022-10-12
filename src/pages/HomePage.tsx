@@ -1,8 +1,12 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import styled from 'styled-components';
 import HomeNavBar from '../components/HomeNavBar';
 import dashboardimage from '../img/dashboard.png';
+import PreviewGame from '../img/prev_game.png';
+import { setEmail } from '../store/Registrations';
+import { RootState } from '../store';
 
 const StyledHome = styled.main`
   height: 100vh;
@@ -91,7 +95,7 @@ const StyledHome = styled.main`
       height: 100%;
       width: 50%;
     }
-    .prev-vid {
+    .prev-img {
       height: 100%;
       width: 50%;
     }
@@ -103,7 +107,11 @@ const StyledHome = styled.main`
 
 function HomePage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const dispatch = useDispatch();
+  const { email } = useSelector(
+    (state: RootState) => state.registration,
+    shallowEqual,
+  );
   const toLoginPage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmail('');
@@ -128,7 +136,7 @@ function HomePage() {
               type="email"
               placeholder="Enter your email address"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => dispatch(setEmail(e.target.value))}
             />
             <button type="submit" className="home-get-started items">
               Get Started
@@ -141,13 +149,10 @@ function HomePage() {
             src={dashboardimage}
             alt="dashboard"
           />
-          <iframe
-            className="prev-vid"
-            src="https://www.youtube.com/embed/T33NN_pPeNI"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture fullscreen"
-            allowFullScreen
+          <img
+            className="prev-img"
+            src={PreviewGame}
+            alt="preview game"
           />
         </section>
       </section>
