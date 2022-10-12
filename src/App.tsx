@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { io } from 'socket.io-client';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import Main from './pages/Main';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -15,11 +14,28 @@ import ValidateEmail from './pages/ValidateEmail';
 import Game from './pages/Game';
 import SinglePlayer from './pages/SinglePlayer';
 import ProtectedRoutes from './components/ProtectedRoutes';
+import { socket } from './service/socket';
 import { RootState } from './store';
+import { setConnected } from './store/UserSlice';
 
-export const socket = io('http://localhost:5000');
 function App() {
-  const { loggedIn } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  const { loggedIn, connected } = useSelector(
+    (state: RootState) => state.user,
+    shallowEqual,
+  );
+  useEffect(() => {
+    // only connect once in entire app when the app loads
+    if (!connected) {
+      socket.on('connect', () => {
+        console.log('connected');
+        dispatch(setConnected);
+      });
+    }
+    return () => {
+      socket.off('connect');
+    };
+  }, [dispatch, connected]);
   return (
     <Routes>
       <Route path="/" element={<Main />}>

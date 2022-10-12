@@ -1,11 +1,18 @@
 import Phaser from 'phaser';
+import store from '../../store';
+import { socket } from '../../service/socket';
 
 class EndGame extends Phaser.Scene {
+  gameRoom!: string;
+
   constructor() {
     super('EndGame');
   }
 
   preload() {
+    const state = store.getState();
+    const { id } = state.game;
+    this.gameRoom = id;
     this.load.image(
       'background',
       '/assets/backgrounds/endgame-bkg.jpg',
@@ -19,14 +26,19 @@ class EndGame extends Phaser.Scene {
       color: '#19de65',
     });
     // method that starts new scene
-    const newGame = () => {
-      this.scene.stop('EndGame');
-      this.scene.start('FortNerf');
+    const endGame = async () => {
+      try {
+        socket.emit('return_to_lobby', { room: this.gameRoom });
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        }
+      }
     };
     this.add
-      .text(500, 400, 'Play Again')
+      .text(500, 400, 'Return To Lobby')
       .setInteractive()
-      .on('pointerdown', newGame);
+      .on('pointerdown', endGame);
   }
 }
 

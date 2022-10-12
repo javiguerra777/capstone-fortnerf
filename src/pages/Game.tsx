@@ -13,9 +13,10 @@ import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
-import { socket } from '../App';
 import { RootState } from '../store';
 import { setId } from '../store/GameSlice';
+import { socket } from '../service/socket';
+import { setCoords } from '../store/UserSlice';
 
 function Game() {
   const dispatch = useDispatch();
@@ -43,11 +44,11 @@ function Game() {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })
       .then((stream) => {
+        setmystream(stream);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.autoplay = true;
-          videoRef.current.muted = false;
-          setmystream(stream);
+          videoRef.current.muted = true;
         }
       })
       .catch((err) => {
@@ -59,11 +60,12 @@ function Game() {
   useEffect(() => {
     socket.emit('join_room', {
       room: id,
+      username,
     });
     return () => {
       socket.emit('leave_room', id);
     };
-  }, [id]);
+  }, [id, username]);
   useEffect(() => {
     dispatch(setId(id));
     return () => {
@@ -73,6 +75,15 @@ function Game() {
   useEffect(() => {
     socket.on('chat_msg', (data) => {
       setMessages((prev) => [...prev, data]);
+    });
+    socket.on('first_player', (data) => {
+      dispatch(setCoords(data));
+    });
+    socket.on('second_player', (data) => {
+      dispatch(setCoords(data));
+    });
+    socket.on('lobby', () => {
+      navigate('/dashboard');
     });
   }, []);
   function toggleVideo() {
@@ -128,7 +139,7 @@ function Game() {
       </div>
       <footer className="user-settings background-color">
         <section className="flex-row video-voice">
-          <video id="videoElement" ref={videoRef} />
+          <video id="videoElement" muted ref={videoRef} />
           <p>{username}</p>
           <button type="button" onClick={toggleAudio}>
             {audio ? (
@@ -155,11 +166,11 @@ function Game() {
               10
             </button>
           </section>
-          <section>
+          <div>
             <button type="button" onClick={navToDashboard}>
               <GiExitDoor />
             </button>
-          </section>
+          </div>
         </section>
       </footer>
     </GameWrapper>

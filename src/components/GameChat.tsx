@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { AiOutlineUser } from 'react-icons/ai';
 import convertToDate from '../utils/functions';
 import { Message } from '../types/AppTypes';
-import { socket } from '../App';
+import { socket } from '../service/socket';
 import { RootState } from '../store';
 import chatOptions from '../json/ChatOptions.json';
 
