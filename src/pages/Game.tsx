@@ -11,6 +11,7 @@ import { GiExitDoor } from 'react-icons/gi';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
+import UsersAside from '../components/UsersAside';
 import GameWrapper from '../styles/GameStyle';
 import { Message } from '../types/AppTypes';
 import { RootState } from '../store';
@@ -32,6 +33,7 @@ function Game() {
   const [audio, setAudio] = useState(true);
   const [displayVid, setDisplayVid] = useState(true);
   const [displayAside, setDisplayAside] = useState(true);
+  const [displayAllUsers, setDisplayAllUsers] = useState(false);
   const [message, setMessage] = useState('');
   const [mystream, setmystream] = useState<MediaStream>();
   const [roomData, setRoomData] = useState<RoomData>({});
@@ -41,6 +43,17 @@ function Game() {
       setDisplayAside(false);
     } else {
       setDisplayAside(true);
+      setDisplayAllUsers(false);
+    }
+  };
+  const displayUsers = () => {
+    if (displayAside && !displayAllUsers) {
+      setDisplayAside(false);
+      setDisplayAllUsers(true);
+    } else if (!displayAside && displayAllUsers) {
+      setDisplayAllUsers(false);
+    } else if (!displayAside && !displayAllUsers) {
+      setDisplayAllUsers(true);
     }
   };
   const maxWidth = '100%';
@@ -75,7 +88,7 @@ function Game() {
       }
     };
     resolveRoom();
-  }, []);
+  }, [id, navigate]);
   useEffect(() => {
     socket.emit('join_room', {
       room: id,
@@ -158,10 +171,13 @@ function Game() {
     <GameWrapper>
       {message && <h1 id="error">Camera {message}</h1>}
       <div className="game-chat-container">
-        <GameComponent width={displayAside ? width : maxWidth} />
+        <GameComponent
+          width={displayAside || displayAllUsers ? width : maxWidth}
+        />
         {displayAside && (
           <GameChat asideOptions={asideOptions} messages={messages} />
         )}
+        {displayAllUsers && <UsersAside />}
       </div>
       <footer className="user-settings background-color">
         <section className="flex-row video-voice">
@@ -187,7 +203,7 @@ function Game() {
             <button type="button" onClick={asideOptions}>
               <AiOutlineWechat />
             </button>
-            <button type="button">
+            <button type="button" onClick={displayUsers}>
               <BsPeople />
               {roomData?.users?.length}
             </button>

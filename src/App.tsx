@@ -20,22 +20,19 @@ import { setConnected } from './store/UserSlice';
 
 function App() {
   const dispatch = useDispatch();
-  const { loggedIn, connected } = useSelector(
+  const { loggedIn } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
   );
   useEffect(() => {
     // only connect once in entire app when the app loads
-    if (!connected) {
-      socket.on('connect', () => {
-        console.log('connected');
-        dispatch(setConnected);
-      });
-    }
+    socket.on('connect', () => {
+      dispatch(setConnected);
+    });
     return () => {
       socket.off('connect');
     };
-  }, [dispatch, connected]);
+  }, []);
   return (
     <Routes>
       <Route path="/" element={<Main />}>

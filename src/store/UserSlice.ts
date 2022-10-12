@@ -40,12 +40,8 @@ export const userSlice = createSlice({
       state.x = payload.x;
       state.y = payload.y;
     },
-    setHost(state, { payload }) {
-      state.host = payload;
-    },
   },
 });
 
-export const { setUser, setConnected, setCoords, setHost } =
-  userSlice.actions;
+export const { setUser, setConnected, setCoords } = userSlice.actions;
 export default userSlice.reducer;
