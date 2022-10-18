@@ -28,6 +28,8 @@ class HomeScene extends Phaser.Scene {
     space?: Phaser.Input.Keyboard.Key;
   };
 
+  playButton!: Phaser.GameObjects.Text;
+
   constructor() {
     super('HomeScene');
   }
@@ -89,14 +91,6 @@ class HomeScene extends Phaser.Scene {
       await socket.emit('start_game', this.homeGameRoom);
       await this.scene.stop('HomeScene').launch('FortNerf');
     };
-    const playButton = this.add
-      .text(screenCenterX, screenCenterY + 100, 'Start Game')
-      .setOrigin(0.5)
-      .setInteractive()
-      .on('pointerdown', startFortNerf);
-    playButton.scrollFactorX = 0;
-    playButton.scrollFactorY = 0;
-    playButton.setFontSize(60);
     // movement animations
     createAnimation(this.anims, 'left', 'player', 'left', 1, 3);
     createAnimation(this.anims, 'right', 'player', 'right', 1, 3);
@@ -148,9 +142,7 @@ class HomeScene extends Phaser.Scene {
           },
         );
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
     socket.on('existingPlayer', async (data) => {
@@ -171,9 +163,7 @@ class HomeScene extends Phaser.Scene {
           },
         );
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
     socket.on('playerMoveHome', async ({ x, y, direction }) => {
@@ -185,9 +175,7 @@ class HomeScene extends Phaser.Scene {
         this.homeOtherPlayerText.setX(this.homeOtherPlayer.x - 30);
         this.homeOtherPlayerText.setY(this.homeOtherPlayer.y - 35);
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
     socket.on('moveHomeEnd', async (direction) => {
@@ -195,9 +183,7 @@ class HomeScene extends Phaser.Scene {
         this.homeOtherPlayer.direction = direction;
         this.homeOtherPlayer.moving = false;
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
     socket.on('playerLeft', async () => {
@@ -205,18 +191,35 @@ class HomeScene extends Phaser.Scene {
         this.homeOtherPlayer.destroy();
         this.homeOtherPlayerText.destroy();
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
     socket.on('play_game', async () => {
       try {
         this.scene.stop('HomeScene').launch('FortNerf');
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
+      }
+    });
+    socket.on('can_start', async () => {
+      try {
+        this.playButton = this.add
+          .text(screenCenterX, screenCenterY + 100, 'Start Game')
+          .setOrigin(0.5)
+          .setInteractive()
+          .on('pointerdown', startFortNerf);
+        this.playButton.scrollFactorX = 0;
+        this.playButton.scrollFactorY = 0;
+        this.playButton.setFontSize(60);
+      } catch (err) {
+        // want catch block to do nothing
+      }
+    });
+    socket.on('cant_start', async () => {
+      try {
+        this.playButton?.destroy();
+      } catch (err) {
+        // want catch block to do nothing
       }
     });
   }

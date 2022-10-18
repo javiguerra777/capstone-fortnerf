@@ -104,10 +104,7 @@ function Game() {
     socket.on('chat_msg', (data) => {
       setMessages((prev) => [...prev, data]);
     });
-    socket.on('first_player', (data) => {
-      dispatch(setCoords(data));
-    });
-    socket.on('second_player', (data) => {
+    socket.on('update_coords', (data) => {
       dispatch(setCoords(data));
     });
     socket.on('updatedRoom', (data) => {

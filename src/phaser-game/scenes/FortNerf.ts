@@ -257,14 +257,14 @@ class FortNerf extends Phaser.Scene {
       try {
         if (!this.otherPlayer) {
           this.otherPlayer = this.physics.add.sprite(
-            data.x,
-            data.y,
+            data.startingCoords.x,
+            data.startingCoords.y,
             'player',
           );
           this.player.direction = 'down';
           this.player.body.immovable = true;
           this.otherPlayer.body.immovable = true;
-          this.otherPlayer.anims.play('downstill');
+          this.otherPlayer.anims.play('downStill');
           this.otherPlayer.direction = 'down';
           this.otherPlayerText = this.add.text(
             this.otherPlayer.x - 30,
@@ -277,9 +277,7 @@ class FortNerf extends Phaser.Scene {
           );
         }
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
     socket.on('playerMove', async ({ x, y, direction, respawn }) => {
@@ -291,9 +289,7 @@ class FortNerf extends Phaser.Scene {
         this.otherPlayerText.setY(this.otherPlayer.y - 30);
         this.otherPlayer.moving = !respawn;
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
 
@@ -302,9 +298,7 @@ class FortNerf extends Phaser.Scene {
         this.otherPlayer.direction = direction;
         this.otherPlayer.moving = false;
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
 
@@ -358,9 +352,7 @@ class FortNerf extends Phaser.Scene {
                 });
               }
             } catch (err) {
-              if (err instanceof Error) {
-                console.log(err.message);
-              }
+              // want catch block to do nothing
             }
           },
           undefined,
@@ -379,9 +371,7 @@ class FortNerf extends Phaser.Scene {
           this.otherBullet.setVelocityY(-BULLET_MOVEMENT);
         }
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
 
@@ -394,9 +384,7 @@ class FortNerf extends Phaser.Scene {
         this.otherBulletCollider?.destroy();
         this.scene.start('EndGame');
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     });
   }
