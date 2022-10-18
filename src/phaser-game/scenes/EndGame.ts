@@ -30,9 +30,7 @@ class EndGame extends Phaser.Scene {
       try {
         socket.emit('return_to_lobby', { room: this.gameRoom });
       } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
+        // want catch block to do nothing
       }
     };
     this.add

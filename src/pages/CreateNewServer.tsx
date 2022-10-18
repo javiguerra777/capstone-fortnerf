@@ -8,13 +8,35 @@ import { RootState } from '../store';
 import { socket } from '../service/socket';
 
 const NewServerWrapper = styled.main`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   height: 100vh;
   width: 100vw;
+  button:hover {
+    cursor: pointer;
+  }
   .game-Error {
     color: white;
   }
   .game-form {
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    label {
+      margin-bottom: 1em;
+      input {
+        margin-left: 0.5em;
+      }
+    }
+    button {
+      background: none;
+      color: white;
+      border: solid 1px white;
+      border-radius: 0.5em;
+      padding: 5px;
+    }
   }
 `;
 
@@ -49,10 +71,11 @@ function CreateNewServer() {
       <form onSubmit={createGame} className="game-form">
         <h1>Enter Details for Game Room</h1>
         <label htmlFor="gameName">
-          <h2>Game Room Name:</h2>
+          Game Room Name:
           <input
             type="text"
             id="gameName"
+            placeholder="Max: 15 characters"
             onChange={(e) => setGameName(e.target.value)}
           />
         </label>

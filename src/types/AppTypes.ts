@@ -3,5 +3,9 @@ export type Message = {
   message: string;
   date: number;
 };
-
+export interface RoomData {
+  users: [];
+  private?: boolean;
+  password?: string;
+}
 export default {};

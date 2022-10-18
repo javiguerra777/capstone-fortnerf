@@ -1,29 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AiOutlineWechat, AiOutlineAudioMuted } from 'react-icons/ai';
-import {
-  BsPeople,
-  BsFillCameraVideoFill,
-  BsCameraVideoOff,
-} from 'react-icons/bs';
-import { FaMicrophoneAlt } from 'react-icons/fa';
-import { GiExitDoor } from 'react-icons/gi';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import UsersAside from '../components/UsersAside';
+import GameFooter from '../components/GameFooter';
 import GameWrapper from '../styles/GameStyle';
-import { Message } from '../types/AppTypes';
+import { Message, RoomData } from '../types/AppTypes';
 import { RootState } from '../store';
 import { setId } from '../store/GameSlice';
 import { socket } from '../service/socket';
 import { setCoords } from '../store/UserSlice';
 import { getRoomData } from '../utils/api';
 
-type RoomData = {
-  users: [];
-};
 function Game() {
+  const maxWidth = '100%';
+  const width = '85%';
   const dispatch = useDispatch();
   const { username } = useSelector(
     (state: RootState) => state.user,
@@ -37,10 +29,10 @@ function Game() {
   const [displayAside, setDisplayAside] = useState(true);
   const [displayAllUsers, setDisplayAllUsers] = useState(false);
   const [message, setMessage] = useState('');
-  const [mystream, setmystream] = useState<MediaStream>();
+  const [myStream, setMyStream] = useState<MediaStream>();
   const [roomData, setRoomData] = useState<RoomData>();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const asideOptions = () => {
+  const toggleAside = () => {
     if (displayAside) {
       setDisplayAside(false);
     } else {
@@ -48,7 +40,7 @@ function Game() {
       setDisplayAllUsers(false);
     }
   };
-  const displayUsers = () => {
+  const toggleDisplayUsers = () => {
     if (displayAside && !displayAllUsers) {
       setDisplayAside(false);
       setDisplayAllUsers(true);
@@ -58,14 +50,12 @@ function Game() {
       setDisplayAllUsers(true);
     }
   };
-  const maxWidth = '100%';
-  const width = '90%';
   // useEffects
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })
       .then((stream) => {
-        setmystream(stream);
+        setMyStream(stream);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.autoplay = true;
@@ -78,6 +68,7 @@ function Game() {
         setAudio(false);
       });
   }, []);
+  // checks if room exists, if it doesn't then user gets booted
   useEffect(() => {
     const resolveRoom = async () => {
       try {
@@ -113,10 +104,7 @@ function Game() {
     socket.on('chat_msg', (data) => {
       setMessages((prev) => [...prev, data]);
     });
-    socket.on('first_player', (data) => {
-      dispatch(setCoords(data));
-    });
-    socket.on('second_player', (data) => {
+    socket.on('update_coords', (data) => {
       dispatch(setCoords(data));
     });
     socket.on('updatedRoom', (data) => {
@@ -127,40 +115,40 @@ function Game() {
     });
   }, []);
   // functions
-  function toggleVideo() {
+  const toggleVideo = () => {
     if (displayVid) {
       setDisplayVid(!displayVid);
-      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
+      myStream?.getTracks().forEach((track: MediaStreamTrack) => {
         track.enabled = !(
           track.readyState === 'live' && track.kind === 'video'
         );
       });
     } else {
       setDisplayVid(true);
-      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
+      myStream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'video') {
           track.enabled = true;
         }
       });
     }
-  }
-  function toggleAudio() {
+  };
+  const toggleAudio = () => {
     if (audio) {
       setAudio(false);
-      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
+      myStream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'audio') {
           track.enabled = false;
         }
       });
     } else {
       setAudio(true);
-      mystream?.getTracks().forEach((track: MediaStreamTrack) => {
+      myStream?.getTracks().forEach((track: MediaStreamTrack) => {
         if (track.readyState === 'live' && track.kind === 'audio') {
           track.enabled = true;
         }
       });
     }
-  }
+  };
   const navToDashboard = () => {
     navigate('/dashboard');
   };
@@ -177,45 +165,30 @@ function Game() {
           width={displayAside || displayAllUsers ? width : maxWidth}
         />
         {displayAside && (
-          <GameChat asideOptions={asideOptions} messages={messages} />
+          <GameChat toggleAside={toggleAside} messages={messages} />
         )}
-        {displayAllUsers && <UsersAside />}
+        {displayAllUsers && (
+          <UsersAside
+            users={roomData?.users || []}
+            username={username}
+            privateRoom={roomData?.private || false}
+            roomPassword={roomData?.password || ''}
+          />
+        )}
       </div>
       <footer className="user-settings background-color">
-        <section className="flex-row video-voice">
-          <video id="videoElement" muted ref={videoRef} />
-          <p>{username}</p>
-          <button type="button" onClick={toggleAudio}>
-            {audio ? (
-              <FaMicrophoneAlt />
-            ) : (
-              <AiOutlineAudioMuted color="red" />
-            )}
-          </button>
-          <button type="button" onClick={toggleVideo}>
-            {displayVid ? (
-              <BsFillCameraVideoFill />
-            ) : (
-              <BsCameraVideoOff color="red" />
-            )}
-          </button>
-        </section>
-        <section className="flex-row text-users">
-          <section>
-            <button type="button" onClick={asideOptions}>
-              <AiOutlineWechat />
-            </button>
-            <button type="button" onClick={displayUsers}>
-              <BsPeople />
-              {roomData?.users?.length}
-            </button>
-          </section>
-          <div>
-            <button type="button" onClick={navToDashboard}>
-              <GiExitDoor />
-            </button>
-          </div>
-        </section>
+        <GameFooter
+          videoRef={videoRef}
+          username={username}
+          toggleAudio={toggleAudio}
+          audio={audio}
+          toggleVideo={toggleVideo}
+          displayVid={displayVid}
+          toggleAside={toggleAside}
+          toggleDisplayUsers={toggleDisplayUsers}
+          users={roomData?.users || []}
+          navToDashboard={navToDashboard}
+        />
       </footer>
     </GameWrapper>
   );
