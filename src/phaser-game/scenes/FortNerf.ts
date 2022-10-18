@@ -58,6 +58,8 @@ class FortNerf extends Phaser.Scene {
 
   otherBulletCollider!: Phaser.Physics.Arcade.Collider;
 
+  trees!: any;
+
   constructor() {
     super('FortNerf');
   }
@@ -81,9 +83,10 @@ class FortNerf extends Phaser.Scene {
       '/assets/bullets/nerfBullet.json',
     );
     this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
+    this.load.image('tree', '/assets/tiles-img/tree.png');
     this.load.tilemapTiledJSON(
       'map',
-      '/assets/tile-map/fort-nerf.json',
+      '/assets/tile-map/single-player.json',
     );
   }
 
@@ -105,13 +108,16 @@ class FortNerf extends Phaser.Scene {
     );
     const tileSet = map.addTilesetImage('tilesOne', 'tiles');
     map.createLayer('floor', tileSet, 50, 20);
-    const collidableObjects = map.createLayer(
-      'colliders',
-      tileSet,
-      50,
-      20,
-    );
-    map.setCollisionBetween(1, 999, true, 'colliders');
+    this.trees = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+    map.getObjectLayer('trees').objects.forEach((tree: any) => {
+      const treeSprite = this.trees
+        .create(tree.x + 50, tree.y - 45, 'tree')
+        .setOrigin(0);
+      treeSprite.body.setSize(tree.width - 5, tree.height);
+    });
     this.player = this.physics.add.sprite(
       this.startingX,
       this.startingY,
@@ -175,9 +181,9 @@ class FortNerf extends Phaser.Scene {
             .sprite(x, y - BULLET_OFFSET, 'bullet')
             .setScale(0.2);
         }
-        this.physics.add.collider(
+        this.physics.add.overlap(
           this.bullet,
-          collidableObjects,
+          this.trees,
           (theBullet) => {
             theBullet.destroy();
           },
@@ -229,12 +235,16 @@ class FortNerf extends Phaser.Scene {
     // bullet animation
     createAnimation(this.anims, 'shoot', 'bullet', 'bullet', 1, 1);
     // collision
-    const playerCollision = () => {
-      this.player.setVelocity(0);
+    const playerCollision = async () => {
+      try {
+        this.player.setVelocity(0, 0);
+      } catch (err: any) {
+        console.log(err.message);
+      }
     };
     this.physics.add.collider(
       this.player,
-      collidableObjects,
+      this.trees,
       playerCollision,
       undefined,
       this,
@@ -308,6 +318,19 @@ class FortNerf extends Phaser.Scene {
         this.otherBullet = this.physics.add
           .sprite(x, y, 'bullet')
           .setScale(0.2);
+        this.physics.add.overlap(
+          this.otherBullet,
+          this.trees,
+          async (theBullet) => {
+            try {
+              theBullet.destroy();
+            } catch (err) {
+              // do nothing
+            }
+          },
+          undefined,
+          this,
+        );
         this.otherBulletCollider = this.physics.add.collider(
           this.otherBullet,
           this.player,
