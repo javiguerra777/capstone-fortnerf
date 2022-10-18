@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 import store from '../../store';
-import {
-  SPRITE_DIMENSIONS,
-  PLAYER_MOVEMENT,
-} from '../utils/constants';
 import { socket } from '../../service/socket';
+import movePlayer from '../utils/playerMove';
+import createAnimation, {
+  handleOtherPlayerAnims,
+} from '../utils/animations';
 
 class HomeScene extends Phaser.Scene {
   homePlayer!: any;
@@ -17,9 +17,7 @@ class HomeScene extends Phaser.Scene {
 
   homeGameRoom!: string;
 
-  homeMovePlayer!: () => boolean;
-
-  handleOtherPlayerAnims!: () => void;
+  playerText!: Phaser.GameObjects.Text;
 
   homeCursor!: {
     shift: Phaser.Input.Keyboard.Key;
@@ -45,13 +43,10 @@ class HomeScene extends Phaser.Scene {
       'homeMap',
       '/assets/tile-map/homemap.json',
     );
-    this.load.spritesheet(
-      'homePlayer',
+    this.load.atlas(
+      'player',
       '/assets/characters/male_player.png',
-      {
-        frameWidth: SPRITE_DIMENSIONS,
-        frameHeight: SPRITE_DIMENSIONS,
-      },
+      '/assets/characters/male_player.json',
     );
   }
 
@@ -73,9 +68,9 @@ class HomeScene extends Phaser.Scene {
     homeMap.createLayer('floor', homeTileSet, 50, 20);
     const walls = homeMap.createLayer('walls', homeTileSet, 50, 20);
     homeMap.setCollisionBetween(1, 999, true, 'colliders');
-    this.homePlayer = this.physics.add.sprite(500, 500, 'homePlayer');
+    this.homePlayer = this.physics.add.sprite(500, 500, 'player');
     // game text
-    const playerText = this.add.text(
+    this.playerText = this.add.text(
       this.homePlayer.x - 30,
       this.homePlayer.y - 35,
       this.homePlayerName,
@@ -102,121 +97,23 @@ class HomeScene extends Phaser.Scene {
     playButton.scrollFactorX = 0;
     playButton.scrollFactorY = 0;
     playButton.setFontSize(60);
-    // movement animation function
-    const createMoveAnimations = (
-      keyId: string,
-      objectId: string,
-      startFrame: number,
-      endFrame: number,
-    ) => {
-      this.anims.create({
-        key: keyId,
-        frames: this.anims.generateFrameNumbers(objectId, {
-          start: startFrame,
-          end: endFrame,
-        }),
-        frameRate: 12,
-        repeat: -1,
-      });
-    };
-    const createStillAnimations = (
-      keyId: string,
-      objectId: string,
-      frameNumber: number,
-    ) => {
-      this.anims.create({
-        key: keyId,
-        frames: [{ key: objectId, frame: frameNumber }],
-        frameRate: 20,
-      });
-    };
-    // animations
-    createMoveAnimations('left', 'homePlayer', 3, 5);
-    createMoveAnimations('right', 'homePlayer', 6, 8);
-    createMoveAnimations('up', 'homePlayer', 9, 11);
-    createMoveAnimations('down', 'homePlayer', 0, 2);
-    createStillAnimations('leftStill', 'homePlayer', 4);
-    createStillAnimations('rightStill', 'homePlayer', 7);
-    createStillAnimations('upStill', 'homePlayer', 10);
-    createStillAnimations('downStill', 'homePlayer', 1);
-
-    this.homeMovePlayer = () => {
-      let playerMoved = false;
-      let speed = 1;
-      if (this.homeCursor.shift.isDown) {
-        speed = 1.5;
-      }
-      if (this.homeCursor.up.isDown) {
-        playerMoved = true;
-        this.homePlayer.direction = 'up';
-        this.homePlayer.setVelocityY(-PLAYER_MOVEMENT * speed);
-        this.homePlayer.setVelocityX(0);
-        this.homePlayer.anims.play('up', true);
-      } else if (this.homeCursor.down.isDown) {
-        playerMoved = true;
-        this.homePlayer.direction = 'down';
-        this.homePlayer.setVelocityY(PLAYER_MOVEMENT * speed);
-        this.homePlayer.setVelocityX(0);
-        this.homePlayer.anims.play('down', true);
-      } else if (this.homeCursor.left.isDown) {
-        playerMoved = true;
-        this.homePlayer.direction = 'left';
-        this.homePlayer.setVelocityX(-PLAYER_MOVEMENT * speed);
-        this.homePlayer.setVelocityY(0);
-        this.homePlayer.anims.play('left', true);
-      } else if (this.homeCursor.right.isDown) {
-        playerMoved = true;
-        this.homePlayer.direction = 'right';
-        this.homePlayer.setVelocityX(PLAYER_MOVEMENT * speed);
-        this.homePlayer.setVelocityY(0);
-        this.homePlayer.anims.play('right', true);
-      } else {
-        playerMoved = false;
-        this.homePlayer.setVelocity(0);
-        if (this.homePlayer.direction === 'up') {
-          this.homePlayer.anims.play('upStill', true);
-        } else if (this.homePlayer.direction === 'down') {
-          this.homePlayer.anims.play('downStill', true);
-        } else if (this.homePlayer.direction === 'left') {
-          this.homePlayer.anims.play('leftStill', true);
-        } else if (this.homePlayer.direction === 'right') {
-          this.homePlayer.anims.play('rightStill', true);
-        }
-      }
-      playerText.setX(this.homePlayer.x - 30);
-      playerText.setY(this.homePlayer.y - 40);
-      return playerMoved;
-    };
-    // other player anims
-    this.handleOtherPlayerAnims = async () => {
-      try {
-        if (this.homeOtherPlayer.moving) {
-          if (this.homeOtherPlayer.direction === 'right') {
-            this.homeOtherPlayer.anims.play('right', true);
-          } else if (this.homeOtherPlayer.direction === 'left') {
-            this.homeOtherPlayer.anims.play('left', true);
-          } else if (this.homeOtherPlayer.direction === 'up') {
-            this.homeOtherPlayer.anims.play('up', true);
-          } else if (this.homeOtherPlayer.direction === 'down') {
-            this.homeOtherPlayer.anims.play('down', true);
-          }
-        } else {
-          if (this.homeOtherPlayer.direction === 'right') {
-            this.homeOtherPlayer.anims.play('rightStill', true);
-          } else if (this.homeOtherPlayer.direction === 'left') {
-            this.homeOtherPlayer.anims.play('leftStill', true);
-          } else if (this.homeOtherPlayer.direction === 'up') {
-            this.homeOtherPlayer.anims.play('upStill', true);
-          } else if (this.homeOtherPlayer.direction === 'down') {
-            this.homeOtherPlayer.anims.play('downStill', true);
-          }
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          console.log(err.message);
-        }
-      }
-    };
+    // movement animations
+    createAnimation(this.anims, 'left', 'player', 'left', 1, 3);
+    createAnimation(this.anims, 'right', 'player', 'right', 1, 3);
+    createAnimation(this.anims, 'down', 'player', 'down', 1, 3);
+    createAnimation(this.anims, 'up', 'player', 'up', 1, 3);
+    // still animations
+    createAnimation(this.anims, 'leftStill', 'player', 'left', 3, 3);
+    createAnimation(
+      this.anims,
+      'rightStill',
+      'player',
+      'right',
+      3,
+      3,
+    );
+    createAnimation(this.anims, 'downStill', 'player', 'down', 3, 3);
+    createAnimation(this.anims, 'upStill', 'player', 'up', 3, 3);
     const playerCollider = () => {
       this.homePlayer.setVelocity(0);
     };
@@ -239,7 +136,7 @@ class HomeScene extends Phaser.Scene {
         this.homeOtherPlayer = this.physics.add.sprite(
           500,
           500,
-          'homePlayer',
+          'player',
         );
         this.homeOtherPlayerText = this.add.text(
           this.homeOtherPlayer.x - 30,
@@ -261,7 +158,7 @@ class HomeScene extends Phaser.Scene {
         this.homeOtherPlayer = this.physics.add.sprite(
           data.x,
           data.y,
-          'homePlayer',
+          'player',
         );
         this.homeOtherPlayer.direction = data.direction;
         this.homeOtherPlayerText = this.add.text(
@@ -326,7 +223,11 @@ class HomeScene extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(this.homePlayer);
-    const playerMoved = this.homeMovePlayer();
+    const playerMoved = movePlayer(
+      this.homePlayer,
+      this.homeCursor,
+      this.playerText,
+    );
     if (playerMoved) {
       socket.emit('moveHome', {
         x: this.homePlayer.x,
@@ -344,7 +245,7 @@ class HomeScene extends Phaser.Scene {
     }
 
     if (this.homeOtherPlayer) {
-      this.handleOtherPlayerAnims();
+      handleOtherPlayerAnims(this.homeOtherPlayer);
     }
   }
 }

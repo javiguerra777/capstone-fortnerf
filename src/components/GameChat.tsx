@@ -9,7 +9,7 @@ import { RootState } from '../store';
 import chatOptions from '../json/ChatOptions.json';
 
 type ChatProps = {
-  asideOptions: () => void;
+  toggleAside: () => void;
   messages: Message[];
 };
 
@@ -22,7 +22,7 @@ function useChatScroll<T>(dep: T) {
   }, [dep]);
   return ref;
 }
-function GameChat({ asideOptions, messages }: ChatProps) {
+function GameChat({ toggleAside, messages }: ChatProps) {
   const { username } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
@@ -45,7 +45,7 @@ function GameChat({ asideOptions, messages }: ChatProps) {
       <header className="chat-header">
         <h1>Chat</h1>
         <div>
-          <button type="button" onClick={asideOptions}>
+          <button type="button" onClick={toggleAside}>
             x
           </button>
         </div>
