@@ -10,6 +10,7 @@ import movePlayer from '../utils/playerMove';
 import createAnimation, {
   handleOtherPlayerAnims,
 } from '../utils/animations';
+import randomRespawn from '../utils/respawn';
 
 class FortNerf extends Phaser.Scene {
   player!: any;
@@ -338,14 +339,15 @@ class FortNerf extends Phaser.Scene {
                 this.healthText?.setText(
                   `hp: ${this.health.toString()}`,
                 );
-                this.player.setX(200);
-                this.player.setY(300);
+                const respawnCoords = randomRespawn();
+                this.player.setX(respawnCoords.x);
+                this.player.setY(respawnCoords.y);
                 this.playerText?.setX(this.player.x - 30);
                 this.playerText?.setY(this.player.y + 30);
                 this.player.direction = 'down';
                 socket.emit('move', {
-                  x: 200,
-                  y: 300,
+                  x: respawnCoords.x,
+                  y: respawnCoords.y,
                   direction: 'down',
                   room: this.gameRoom,
                   respawn: true,
