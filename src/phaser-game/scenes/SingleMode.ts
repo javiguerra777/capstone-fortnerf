@@ -82,7 +82,7 @@ class SingleMode extends Phaser.Scene {
       const treeSprite = this.trees
         .create(tree.x + 50, tree.y - 45, 'tree')
         .setOrigin(0);
-      treeSprite.body.setSize(tree.width - 5, tree.height - 15);
+      treeSprite.body.setSize(tree.width - 5, tree.height);
     });
     // player methods
     this.player = this.physics.add.sprite(500, 500, 'player');

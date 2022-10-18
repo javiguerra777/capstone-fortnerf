@@ -108,6 +108,7 @@ class FortNerf extends Phaser.Scene {
     );
     const tileSet = map.addTilesetImage('tilesOne', 'tiles');
     map.createLayer('floor', tileSet, 50, 20);
+    // all the trees object
     this.trees = this.physics.add.group({
       allowGravity: false,
       immovable: true,
@@ -124,7 +125,6 @@ class FortNerf extends Phaser.Scene {
       'player',
     );
     this.player.direction = 'down';
-    this.player.body.immovable = true;
 
     // text within game
     this.playerText = this.add.text(
@@ -237,9 +237,9 @@ class FortNerf extends Phaser.Scene {
     // collision
     const playerCollision = async () => {
       try {
-        this.player.setVelocity(0, 0);
+        this.player.setVelocityY(-200);
       } catch (err: any) {
-        console.log(err.message);
+        // do nothing
       }
     };
     this.physics.add.collider(
@@ -272,8 +272,6 @@ class FortNerf extends Phaser.Scene {
             data.startingCoords.y,
             'player',
           );
-          this.player.direction = 'down';
-          this.player.body.immovable = true;
           this.otherPlayer.body.immovable = true;
           this.otherPlayer.anims.play('downStill');
           this.otherPlayer.direction = 'down';
