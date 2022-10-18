@@ -397,5 +397,93 @@ export const AboutWrapper = styled.main`
     }
   }
 `;
+export const UsersWrapper = styled.aside`
+  height: 100%;
+  width: 15%;
+  background: #333333;
+  color: white;
+  display: flex;
+  font-size: 0.9rem;
+  flex-direction: column;
+  .each-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .users-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    h1 {
+      text-align: center;
+      border-bottom: solid 1px white;
+      padding-bottom: 0.5em;
+      width: 95%;
+    }
+  }
+  .users-section {
+    background: #3b3c36;
+    height: 100%;
+  }
+`;
+export const NavBarWrapper = styled.nav`
+  width: 100vw;
+  margin-top: 1em;
+  margin-bottom: 2em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  a {
+    color: white;
+    text-decoration: none;
+    margin-right: 2em;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+`;
+export const NavBar = styled.nav`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 8vh;
+  width: 100%;
+  a {
+    color: #fff5ee;
+    text-decoration: none;
+    margin-right: 2em;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  button {
+    cursor: pointer;
+  }
+  .app-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 1em;
+    color: #fff5ee;
+    h1 {
+      font-size: 2rem;
+      margin-right: 0.5em;
+    }
+    img {
+      height: 95%;
+      width: 3em;
+    }
+  }
+  .navigation {
+    button {
+      background: white;
+      border: none;
+      border-radius: 5px;
+      padding: 7px;
+      margin-right: 1em;
+    }
+  }
+`;
 
 export default LoginWrapper;

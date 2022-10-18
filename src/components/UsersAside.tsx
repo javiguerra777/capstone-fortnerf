@@ -1,12 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 import { nanoid } from 'nanoid';
-
-const UsersWrapper = styled.aside`
-  height: 100%;
-  width: 10%;
-  background: #333333;
-`;
+import { UsersWrapper } from '../styles/ReusableStyles';
 
 type Users = {
   users: [];
@@ -26,14 +20,14 @@ function UsersAside({
 }: Users) {
   return (
     <UsersWrapper>
-      <header>
-        <h1>List of users in game</h1>
+      <header className="users-header">
+        <h1>Users</h1>
       </header>
-      <section>
+      <section className="users-section">
         {users?.map((user: User) => (
-          <div key={nanoid()}>
+          <div className="each-user" key={nanoid()}>
             {username === user.username ? (
-              <h1>Host</h1>
+              <h4>Host</h4>
             ) : (
               <h1>Participant</h1>
             )}
@@ -42,7 +36,7 @@ function UsersAside({
         ))}
       </section>
       {privateRoom && (
-        <footer>
+        <footer className="users-footer">
           <h1>The Password for this private game is:</h1>
           <p>{roomPassword}</p>
         </footer>

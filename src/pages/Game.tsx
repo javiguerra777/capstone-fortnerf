@@ -15,7 +15,7 @@ import { getRoomData } from '../utils/api';
 
 function Game() {
   const maxWidth = '100%';
-  const width = '90%';
+  const width = '85%';
   const dispatch = useDispatch();
   const { username } = useSelector(
     (state: RootState) => state.user,

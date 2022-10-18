@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-export const chatBoxWidth = '10%';
-
 const GameWrapper = styled.main`
   display: flex;
   flex-direction: column;
@@ -29,7 +27,7 @@ const GameWrapper = styled.main`
   }
   .chat-bar {
     height: 100%;
-    width: ${chatBoxWidth};
+    width: 15%;
     bottom: 6vh;
     right: 0;
     border-bottom: 3px solid #333333;
