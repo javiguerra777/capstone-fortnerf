@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const dbUrl = 'http://localhost:5000';
+const dbUrl = 'https://capstone-backend-production.up.railway.app';
 type NewRoom = {
   name: string;
   username: string;
