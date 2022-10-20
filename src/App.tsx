@@ -13,6 +13,7 @@ import UserInfo from './pages/UserInfo';
 import ValidateEmail from './pages/ValidateEmail';
 import Game from './pages/Game';
 import SinglePlayer from './pages/SinglePlayer';
+import NotFound from './pages/NotFound';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { socket } from './service/socket';
 import { RootState } from './store';
@@ -85,6 +86,8 @@ function App() {
           }
         />
       </Route>
+      {/* Not Found Page */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

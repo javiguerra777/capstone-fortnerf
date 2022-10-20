@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const dbUrl = 'http://localhost:5000';
+const dbUrl = process.env.REACT_APP_BACKEND_URL;
 type NewRoom = {
   name: string;
   username: string;
