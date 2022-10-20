@@ -52,6 +52,7 @@ function ChangeName({
               type="text"
               id="newUsername"
               value={newUsername}
+              placeholder="raptors4life"
               onChange={(e) => setNewUsername(e.target.value)}
             />
           </label>
