@@ -18,6 +18,7 @@ A few of the frameworks/libraries that were used to build the project are
 * Axios
 * React Router
 * EsLint and AirBnb
+* Phaser
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- ### wireframe
   ### Getting Started The App build out with simple wireframes using Figma.
@@ -46,10 +47,14 @@ _Below is an example of how you can instruct your audience on installing and set
 
 ## Usage
 Can be used to create new game room servers if connected with a backend and play with other users online
+Can be used to create new account and login
+Can be used to play game with other users
 You can:
 - [x] View available game servers
 - [x] Join the servers
 - [x] Create your own server
+- [x] Sign up for account
+- [x] Play with other users
 
 ## Contact
 Javier Guerra - jaguerra@alphaworks.tech
