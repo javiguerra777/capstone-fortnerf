@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const dbUrl = 'https://capstone-backend-production.up.railway.app';
+const dbUrl = process.env.REACT_APP_BACKEND_URL;
 type NewRoom = {
   name: string;
   username: string;

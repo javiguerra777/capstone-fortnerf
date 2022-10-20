@@ -1,7 +1,6 @@
 import { io } from 'socket.io-client';
 
-export const socket = io(
-  'https://capstone-backend-production.up.railway.app/',
-);
+const dbUrl = process.env.REACT_APP_BACKEND_URL;
+export const socket = io(dbUrl || '');
 
 export default {};
