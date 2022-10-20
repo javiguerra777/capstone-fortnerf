@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BiUser } from 'react-icons/bi';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import UserNavBar from '../components/UserNavBar';
 import { RootState } from '../store';
 import { setUser } from '../store/UserSlice';
 import { UserInfoWrapper } from '../styles/ReusableStyles';
+import ChangeName from '../components/ChangeName';
 
 function UserInfo() {
   const dispatch = useDispatch();
-  const { name, username, email } = useSelector(
+  const { name, username, email, docId } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
   );
+  const [componentActive, setComponentActive] = useState(false);
   const signOut = () => {
     dispatch(setUser({}));
+  };
+  const toggleActiveComponent = () => {
+    setComponentActive(!componentActive);
   };
   return (
     <UserInfoWrapper>
@@ -38,9 +43,18 @@ function UserInfo() {
           <button type="button" onClick={signOut}>
             Sign Out
           </button>
-          <button type="button">Change Name</button>
+          <button type="button" onClick={toggleActiveComponent}>
+            Change Name
+          </button>
         </footer>
       </section>
+      {componentActive && (
+        <ChangeName
+          username={username}
+          docId={docId}
+          toggleActiveComponent={toggleActiveComponent}
+        />
+      )}
     </UserInfoWrapper>
   );
 }
