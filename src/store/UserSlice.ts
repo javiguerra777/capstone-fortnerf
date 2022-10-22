@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 type User = {
+  docId: string;
   username: string;
   name: string;
   email: string;
@@ -12,6 +13,7 @@ type User = {
 };
 
 const initialState = {
+  docId: '',
   username: '',
   name: '',
   email: '',
@@ -28,6 +30,7 @@ export const userSlice = createSlice({
   reducers: {
     // used for signing up user, logging in user, and logging user out of app
     setUser(state, { payload }) {
+      state.docId = payload.id;
       state.username = payload.username;
       state.name = payload.name;
       state.email = payload.email;
@@ -40,8 +43,12 @@ export const userSlice = createSlice({
       state.x = payload.x;
       state.y = payload.y;
     },
+    updateUsername(state, { payload }) {
+      state.username = payload;
+    },
   },
 });
 
-export const { setUser, setConnected, setCoords } = userSlice.actions;
+export const { setUser, setConnected, setCoords, updateUsername } =
+  userSlice.actions;
 export default userSlice.reducer;
