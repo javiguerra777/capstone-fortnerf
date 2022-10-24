@@ -1,32 +1,22 @@
 import Phaser from 'phaser';
 import store from '../../store';
 import { socket } from '../../service/socket';
-import movePlayer from '../utils/playerMove';
 import createAnimation, {
   handleOtherPlayerAnims,
 } from '../utils/animations';
+import { style } from '../utils/constants';
+import Player from '../objects/Player';
 
 class HomeScene extends Phaser.Scene {
   homePlayer!: any;
 
-  homeOtherPlayer!: any;
-
-  homeOtherPlayerText!: Phaser.GameObjects.Text;
+  otherPlayers!: any;
 
   homePlayerName!: string;
 
   homeGameRoom!: string;
 
-  playerText!: Phaser.GameObjects.Text;
-
-  homeCursor!: {
-    shift: Phaser.Input.Keyboard.Key;
-    up: Phaser.Input.Keyboard.Key;
-    down: Phaser.Input.Keyboard.Key;
-    left: Phaser.Input.Keyboard.Key;
-    right: Phaser.Input.Keyboard.Key;
-    space?: Phaser.Input.Keyboard.Key;
-  };
+  homeCursor!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   playButton!: Phaser.GameObjects.Text;
 
@@ -53,6 +43,7 @@ class HomeScene extends Phaser.Scene {
   }
 
   create() {
+    // map
     const homeMap: any = this.make.tilemap({ key: 'homeMap' });
     this.cameras.main.setBounds(
       0,
@@ -70,16 +61,9 @@ class HomeScene extends Phaser.Scene {
     homeMap.createLayer('floor', homeTileSet, 50, 20);
     const walls = homeMap.createLayer('walls', homeTileSet, 50, 20);
     homeMap.setCollisionBetween(1, 999, true, 'colliders');
-    this.homePlayer = this.physics.add.sprite(500, 500, 'player');
-    // game text
-    this.playerText = this.add.text(
-      this.homePlayer.x - 30,
-      this.homePlayer.y - 35,
-      this.homePlayerName,
-      {
-        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
-      },
-    );
+    // player and other player groups
+    this.homePlayer = new Player(this, 500, 500, this.homePlayerName);
+    this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
     const screenCenterX =
       this.cameras.main.worldView.x +
@@ -121,75 +105,93 @@ class HomeScene extends Phaser.Scene {
     this.homeCursor = this.input.keyboard.createCursorKeys();
 
     // socket methods
-    socket.emit('join_game', {
+    socket.emit('join_home', {
       room: this.homeGameRoom,
       username: this.homePlayerName,
     });
-    socket.on('playerJoin', async ({ username }) => {
+    socket.on('new_player', async ({ username, socketId }) => {
       try {
-        this.homeOtherPlayer = this.physics.add.sprite(
+        const otherPlayer: any = this.physics.add.sprite(
           500,
           500,
           'player',
         );
-        this.homeOtherPlayerText = this.add.text(
-          this.homeOtherPlayer.x - 30,
-          this.homeOtherPlayer.y - 35,
+        otherPlayer.socketId = socketId;
+        otherPlayer.text = this.add.text(
+          otherPlayer.x - 30,
+          otherPlayer.y - 35,
           username,
-          {
-            fontFamily:
-              'Georgia, "Goudy Bookletter 1911", Times, serif',
-          },
+          style,
         );
+        otherPlayer.moving = false;
+        this.otherPlayers.add(otherPlayer);
       } catch (err) {
         // want catch block to do nothing
       }
     });
-    socket.on('existingPlayer', async (data) => {
+    socket.on('existingPlayers', async (data) => {
       try {
-        this.homeOtherPlayer = this.physics.add.sprite(
-          data.x,
-          data.y,
-          'player',
-        );
-        this.homeOtherPlayer.direction = data.direction;
-        this.homeOtherPlayerText = this.add.text(
-          this.homeOtherPlayer.x - 30,
-          this.homeOtherPlayer.y - 35,
-          data.username,
-          {
-            fontFamily:
-              'Georgia, "Goudy Bookletter 1911", Times, serif',
-          },
-        );
+        data.forEach((player: any) => {
+          const otherPlayer: any = this.physics.add.sprite(
+            player.x,
+            player.y,
+            'player',
+          );
+          otherPlayer.socketId = player.id;
+          otherPlayer.text = this.add.text(
+            otherPlayer.x - 30,
+            otherPlayer.y - 35,
+            player.username,
+            style,
+          );
+          otherPlayer.moving = false;
+          this.otherPlayers.add(otherPlayer);
+        });
       } catch (err) {
         // want catch block to do nothing
       }
     });
-    socket.on('playerMoveHome', async ({ x, y, direction }) => {
+    socket.on(
+      'playerMoveHome',
+      async ({ x, y, direction, socketId }) => {
+        try {
+          this.otherPlayers.children.entries.forEach(
+            (player: any) => {
+              if (player.socketId === socketId) {
+                player.x = x;
+                player.y = y;
+                player.direction = direction;
+                player.text.setX(x - 30);
+                player.text.setY(y - 30);
+                player.moving = true;
+              }
+            },
+          );
+        } catch (err) {
+          // want catch block to do nothing
+        }
+      },
+    );
+    socket.on('moveHomeEnd', async ({ direction, socketId }) => {
       try {
-        this.homeOtherPlayer.x = x;
-        this.homeOtherPlayer.y = y;
-        this.homeOtherPlayer.direction = direction;
-        this.homeOtherPlayer.moving = true;
-        this.homeOtherPlayerText.setX(this.homeOtherPlayer.x - 30);
-        this.homeOtherPlayerText.setY(this.homeOtherPlayer.y - 35);
+        this.otherPlayers.children.entries.forEach((player: any) => {
+          if (player.socketId === socketId) {
+            player.direction = direction;
+            player.moving = false;
+          }
+        });
       } catch (err) {
         // want catch block to do nothing
       }
     });
-    socket.on('moveHomeEnd', async (direction) => {
+    socket.on('playerLeft', async (socketId) => {
       try {
-        this.homeOtherPlayer.direction = direction;
-        this.homeOtherPlayer.moving = false;
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
-    socket.on('playerLeft', async () => {
-      try {
-        this.homeOtherPlayer.destroy();
-        this.homeOtherPlayerText.destroy();
+        this.otherPlayers.children.entries.forEach((player: any) => {
+          if (player.socketId === socketId) {
+            player.destroy();
+            player.text.destroy();
+          }
+        });
       } catch (err) {
         // want catch block to do nothing
       }
@@ -226,11 +228,7 @@ class HomeScene extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(this.homePlayer);
-    const playerMoved = movePlayer(
-      this.homePlayer,
-      this.homeCursor,
-      this.playerText,
-    );
+    const playerMoved = this.homePlayer.movePlayer();
     if (playerMoved) {
       socket.emit('moveHome', {
         x: this.homePlayer.x,
@@ -246,9 +244,10 @@ class HomeScene extends Phaser.Scene {
       });
       this.homePlayer.movedLastFrame = false;
     }
-
-    if (this.homeOtherPlayer) {
-      handleOtherPlayerAnims(this.homeOtherPlayer);
+    if (this.otherPlayers.children.entries.length > 0) {
+      this.otherPlayers.children.entries.forEach((player: any) => {
+        handleOtherPlayerAnims(player);
+      });
     }
   }
 }

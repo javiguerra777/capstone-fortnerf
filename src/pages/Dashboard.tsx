@@ -30,7 +30,7 @@ function Dashboard() {
   }, []);
   // functions
   const navToGame = (gameId: string, usersInGame: number) => {
-    if (usersInGame === 2) {
+    if (usersInGame === 10) {
       return;
     }
     navigate(`/game/${gameId}`);
@@ -71,7 +71,7 @@ function Dashboard() {
               <p>{game.name}</p>
             </section>
             <section id="item3">
-              <p>{game.users.length}/2</p>
+              <p>{game.users.length}/10</p>
               <HiOutlineUsers size={28} />
             </section>
           </GameDetails>

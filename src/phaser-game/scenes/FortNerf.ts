@@ -33,14 +33,7 @@ class FortNerf extends Phaser.Scene {
 
   handleOtherPlayerAnims!: () => void;
 
-  cursor!: {
-    shift: Phaser.Input.Keyboard.Key;
-    up: Phaser.Input.Keyboard.Key;
-    down: Phaser.Input.Keyboard.Key;
-    left: Phaser.Input.Keyboard.Key;
-    right: Phaser.Input.Keyboard.Key;
-    space?: Phaser.Input.Keyboard.Key;
-  };
+  cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   spaceBar!: Phaser.Input.Keyboard.Key;
 
@@ -329,7 +322,7 @@ class FortNerf extends Phaser.Scene {
           undefined,
           this,
         );
-        this.otherBulletCollider = this.physics.add.collider(
+        this.otherBulletCollider = this.physics.add.overlap(
           this.otherBullet,
           this.player,
           async (theBullet) => {
