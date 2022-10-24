@@ -205,14 +205,16 @@ class HomeScene extends Phaser.Scene {
     });
     socket.on('can_start', async () => {
       try {
-        this.playButton = this.add
-          .text(screenCenterX, screenCenterY + 100, 'Start Game')
-          .setOrigin(0.5)
-          .setInteractive()
-          .on('pointerdown', startFortNerf);
-        this.playButton.scrollFactorX = 0;
-        this.playButton.scrollFactorY = 0;
-        this.playButton.setFontSize(60);
+        if (!this.playButton) {
+          this.playButton = this.add
+            .text(screenCenterX, screenCenterY + 100, 'Start Game')
+            .setOrigin(0.5)
+            .setInteractive()
+            .on('pointerdown', startFortNerf);
+          this.playButton.scrollFactorX = 0;
+          this.playButton.scrollFactorY = 0;
+          this.playButton.setFontSize(60);
+        }
       } catch (err) {
         // want catch block to do nothing
       }

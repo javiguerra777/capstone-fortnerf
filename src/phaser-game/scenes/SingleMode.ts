@@ -1,20 +1,21 @@
 import Phaser from 'phaser';
 import {
-  // BULLET_MOVEMENT,
-  // BULLET_OFFSET,
+  BULLET_MOVEMENT,
+  BULLET_OFFSET,
   NPC_DIMENSIONS,
   style,
 } from '../utils/constants';
 import npcData from '../../json/NPC.json';
 import Player from '../objects/Player';
-import Bullets from '../objects/Bullets';
 
 class SingleMode extends Phaser.Scene {
   player!: any;
 
   score = 0;
 
-  bullets!: Bullets;
+  bullet!: any;
+
+  bullets!: any;
 
   spaceBar!: Phaser.Input.Keyboard.Key;
 
@@ -73,7 +74,47 @@ class SingleMode extends Phaser.Scene {
     // player methods
     this.player = new Player(this, 400, 400, 'player');
     // bullet group
-    this.bullets = new Bullets(this);
+    this.bullets = this.physics.add.group();
+    // shoot bullet method
+    this.shootBullet = (x: number, y: number, direction: string) => {
+      if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
+        switch (direction) {
+          case 'right':
+            this.bullet = this.physics.add
+              .sprite(x + BULLET_OFFSET, y, 'bullet')
+              .setScale(0.2);
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityX(BULLET_MOVEMENT);
+            break;
+          case 'left':
+            this.bullet = this.physics.add
+              .sprite(x - BULLET_OFFSET, y, 'bullet')
+              .setScale(0.2);
+            this.bullet.flipX = true;
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityX(-BULLET_MOVEMENT);
+            break;
+          case 'up':
+            this.bullet = this.physics.add
+              .sprite(x, y - BULLET_OFFSET, 'bullet')
+              .setScale(0.2);
+            this.bullet.rotation = -1.55;
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityY(-BULLET_MOVEMENT);
+            break;
+          case 'down':
+            this.bullet = this.physics.add
+              .sprite(x, y + BULLET_OFFSET, 'bullet')
+              .setScale(0.2);
+            this.bullet.rotation = 1.55;
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityY(BULLET_MOVEMENT);
+            break;
+          default:
+            break;
+        }
+      }
+    };
     // npc
     const npc = this.physics.add.group({
       allowGravity: false,
@@ -139,13 +180,11 @@ class SingleMode extends Phaser.Scene {
     // move player function
     this.player.movePlayer();
     // controls bullet updates on space press
-    if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
-      this.bullets.fireBullet(
-        this.player.x,
-        this.player.y,
-        this.player.direction,
-      );
-    }
+    this.shootBullet(
+      this.player.x,
+      this.player.y,
+      this.player.direction,
+    );
   }
 }
 

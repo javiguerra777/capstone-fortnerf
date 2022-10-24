@@ -4,13 +4,14 @@ import {
   BULLET_OFFSET,
   BULLET_MOVEMENT,
   HEALTH_DECREMENT,
+  style,
 } from '../utils/constants';
 import { socket } from '../../service/socket';
-import movePlayer from '../utils/playerMove';
 import createAnimation, {
   handleOtherPlayerAnims,
 } from '../utils/animations';
 import randomRespawn from '../utils/respawn';
+import Player from '../objects/Player';
 
 class FortNerf extends Phaser.Scene {
   player!: any;
@@ -23,7 +24,7 @@ class FortNerf extends Phaser.Scene {
 
   playerOneUsername!: string;
 
-  otherPlayer!: any;
+  otherPlayers!: any;
 
   shootBullet!: any;
 
@@ -112,22 +113,16 @@ class FortNerf extends Phaser.Scene {
         .setOrigin(0);
       treeSprite.body.setSize(tree.width - 5, tree.height);
     });
-    this.player = this.physics.add.sprite(
+    // player and other players group
+    this.player = new Player(
+      this,
       this.startingX,
       this.startingY,
-      'player',
-    );
-    this.player.direction = 'down';
-
-    // text within game
-    this.playerText = this.add.text(
-      this.player.x - 30,
-      this.player.y + 30,
       this.playerOneUsername,
-      {
-        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
-      },
     );
+    this.otherPlayers = this.physics.add.group({
+      immovable: true,
+    });
     this.healthText = this.add.text(
       100,
       100,
@@ -185,7 +180,7 @@ class FortNerf extends Phaser.Scene {
         );
         this.physics.add.collider(
           this.bullet,
-          this.otherPlayer,
+          this.otherPlayers,
           (theBullet) => {
             theBullet.destroy();
           },
@@ -257,48 +252,57 @@ class FortNerf extends Phaser.Scene {
       x: this.startingX,
       y: this.startingY,
     });
-    socket.on('main_join', async (data) => {
+    socket.on('existing_game_players', async (data) => {
       try {
-        if (!this.otherPlayer) {
-          this.otherPlayer = this.physics.add.sprite(
-            data.startingCoords.x,
-            data.startingCoords.y,
+        data.forEach((player: any) => {
+          const otherPlayer: any = this.physics.add.sprite(
+            player.startingCoords.x,
+            player.startingCoords.y,
             'player',
           );
-          this.otherPlayer.body.immovable = true;
-          this.otherPlayer.anims.play('downStill');
-          this.otherPlayer.direction = 'down';
-          this.otherPlayerText = this.add.text(
-            this.otherPlayer.x - 30,
-            this.otherPlayer.y - 30,
-            data.username,
-            {
-              fontFamily:
-                'Georgia, "Goudy Bookletter 1911", Times, serif',
+          otherPlayer.socketId = player.id;
+          otherPlayer.text = this.add.text(
+            otherPlayer.x - 30,
+            otherPlayer.y - 35,
+            player.username,
+            style,
+          );
+          this.otherPlayers.add(otherPlayer);
+        });
+      } catch (err) {
+        // want catch block to do nothing
+      }
+    });
+    socket.on(
+      'playerMove',
+      async ({ x, y, direction, socketId, respawn }) => {
+        try {
+          this.otherPlayers.children.entries.forEach(
+            (player: any) => {
+              if (player.socketId === socketId) {
+                player.x = x;
+                player.y = y;
+                player.direction = direction;
+                player.text.setX(x - 30);
+                player.text.setY(y - 30);
+                player.moving = !respawn;
+              }
             },
           );
+        } catch (err) {
+          // want catch block to do nothing
         }
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
-    socket.on('playerMove', async ({ x, y, direction, respawn }) => {
-      try {
-        this.otherPlayer.x = x;
-        this.otherPlayer.y = y;
-        this.otherPlayer.direction = direction;
-        this.otherPlayerText.setX(this.otherPlayer.x - 30);
-        this.otherPlayerText.setY(this.otherPlayer.y - 30);
-        this.otherPlayer.moving = !respawn;
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
+      },
+    );
 
-    socket.on('playerMoveEnd', async (direction) => {
+    socket.on('playerMoveEnd', async ({ direction, socketId }) => {
       try {
-        this.otherPlayer.direction = direction;
-        this.otherPlayer.moving = false;
+        this.otherPlayers.children.entries.forEach((player: any) => {
+          if (player.socketId === socketId) {
+            player.direction = direction;
+            player.moving = false;
+          }
+        });
       } catch (err) {
         // want catch block to do nothing
       }
@@ -407,11 +411,7 @@ class FortNerf extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(this.player);
-    const playerMoved = movePlayer(
-      this.player,
-      this.cursor,
-      this.playerText,
-    );
+    const playerMoved = this.player.movePlayer();
     if (playerMoved) {
       socket.emit('move', {
         x: this.player.x,
@@ -430,8 +430,10 @@ class FortNerf extends Phaser.Scene {
       }
       this.player.movedLastFrame = false;
     }
-    if (this.otherPlayer) {
-      handleOtherPlayerAnims(this.otherPlayer);
+    if (this.otherPlayers.children.entries.length > 0) {
+      this.otherPlayers.children.entries.forEach((player: any) => {
+        handleOtherPlayerAnims(player);
+      });
     }
     // controls bullet updates on space press
     const bulletMoved = this.shootBullet(
