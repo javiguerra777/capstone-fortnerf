@@ -4,8 +4,8 @@ import { socket } from '../../service/socket';
 import createAnimation, {
   handleOtherPlayerAnims,
 } from '../utils/animations';
-import { style } from '../utils/constants';
 import Player from '../objects/Player';
+import TextBox from '../objects/TextBox';
 
 class HomeScene extends Phaser.Scene {
   homePlayer!: any;
@@ -65,12 +65,7 @@ class HomeScene extends Phaser.Scene {
     this.homePlayer = new Player(this, 500, 500, this.homePlayerName);
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
-    const screenCenterX =
-      this.cameras.main.worldView.x +
-      this.cameras.main.worldView.width / 2;
-    const screenCenterY =
-      this.cameras.main.worldView.y +
-      this.cameras.main.worldView.height / 2;
+    const { height, width } = this.sys.game.canvas;
     const startFortNerf = async () => {
       await socket.emit('start_game', this.homeGameRoom);
       await this.scene.stop('HomeScene').launch('FortNerf');
@@ -117,11 +112,11 @@ class HomeScene extends Phaser.Scene {
           'player',
         );
         otherPlayer.socketId = socketId;
-        otherPlayer.text = this.add.text(
+        otherPlayer.text = new TextBox(
+          this,
           otherPlayer.x - 30,
           otherPlayer.y - 35,
           username,
-          style,
         );
         otherPlayer.moving = false;
         this.otherPlayers.add(otherPlayer);
@@ -138,11 +133,11 @@ class HomeScene extends Phaser.Scene {
             'player',
           );
           otherPlayer.socketId = player.id;
-          otherPlayer.text = this.add.text(
+          otherPlayer.text = new TextBox(
+            this,
             otherPlayer.x - 30,
             otherPlayer.y - 35,
             player.username,
-            style,
           );
           otherPlayer.moving = false;
           this.otherPlayers.add(otherPlayer);
@@ -206,8 +201,13 @@ class HomeScene extends Phaser.Scene {
     socket.on('can_start', async () => {
       try {
         if (!this.playButton) {
-          this.playButton = this.add
-            .text(screenCenterX, screenCenterY + 100, 'Start Game')
+          this.playButton = new TextBox(
+            this,
+            width / 2,
+            height / 2,
+            'Start Game',
+          );
+          this.playButton
             .setOrigin(0.5)
             .setInteractive()
             .on('pointerdown', startFortNerf);
@@ -230,6 +230,11 @@ class HomeScene extends Phaser.Scene {
 
   update() {
     this.cameras.main.startFollow(this.homePlayer);
+    if (this.playButton) {
+      const { height, width } = this.sys.game.canvas;
+      this.playButton.setX(width / 2);
+      this.playButton.setY(height / 2 + 100);
+    }
     const playerMoved = this.homePlayer.movePlayer();
     if (playerMoved) {
       socket.emit('moveHome', {

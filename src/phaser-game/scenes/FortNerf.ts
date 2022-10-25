@@ -12,6 +12,8 @@ import createAnimation, {
 } from '../utils/animations';
 import randomRespawn from '../utils/respawn';
 import Player from '../objects/Player';
+import TextBox from '../objects/TextBox';
+import { postScore } from '../../utils/api';
 
 class FortNerf extends Phaser.Scene {
   player!: any;
@@ -45,8 +47,6 @@ class FortNerf extends Phaser.Scene {
   health!: number;
 
   score!: number;
-
-  otherBulletCollider!: Phaser.Physics.Arcade.Collider;
 
   trees!: any;
 
@@ -87,7 +87,7 @@ class FortNerf extends Phaser.Scene {
   create() {
     this.health = 100;
     this.score = 0;
-    this.clock = 180;
+    this.clock = 10 * 60;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -125,14 +125,17 @@ class FortNerf extends Phaser.Scene {
       immovable: true,
     });
     // text within game
-    this.clockText = this.add.text(
-      500,
+    const { width } = this.sys.game.canvas;
+    this.clockText = new TextBox(
+      this,
+      width / 2,
       100,
       `Time: ${this.clock.toString()}`,
-      style,
     );
     this.clockText.scrollFactorX = 0;
     this.clockText.scrollFactorY = 0;
+    this.clockText.setFontSize(30);
+    this.clockText.setColor('black');
     this.healthText = this.add.text(
       100,
       100,
@@ -141,7 +144,8 @@ class FortNerf extends Phaser.Scene {
     );
     this.healthText.scrollFactorX = 0;
     this.healthText.scrollFactorY = 0;
-    this.healthText.setFontSize(60);
+    this.healthText.setFontSize(30);
+    this.healthText.setColor('black');
     this.scoreText = this.add.text(
       100,
       50,
@@ -150,7 +154,8 @@ class FortNerf extends Phaser.Scene {
     );
     this.scoreText.scrollFactorX = 0;
     this.scoreText.scrollFactorY = 0;
-    this.scoreText.setFontSize(60);
+    this.scoreText.setFontSize(30);
+    this.scoreText.setColor('black');
 
     // bullet methods
     this.shootBullet = (x: number, y: number, direction: string) => {
@@ -234,7 +239,7 @@ class FortNerf extends Phaser.Scene {
     const playerCollision = async () => {
       try {
         this.player.setVelocityY(-200);
-      } catch (err: any) {
+      } catch (err) {
         // do nothing
       }
     };
@@ -331,7 +336,7 @@ class FortNerf extends Phaser.Scene {
           undefined,
           this,
         );
-        this.otherBulletCollider = this.physics.add.overlap(
+        this.physics.add.overlap(
           this.otherBullet,
           this.player,
           async (theBullet) => {
@@ -384,10 +389,20 @@ class FortNerf extends Phaser.Scene {
   }
 
   update() {
+    const { width } = this.sys.game.canvas;
     this.cameras.main.startFollow(this.player);
     this.clock -= 1;
     this.clockText.setText(`Time: ${this.clock.toString()}`);
+    this.clockText.setX(width / 2);
     if (this.clock <= 0) {
+      const data = {
+        id: this.gameRoom,
+        user: {
+          username: this.playerOneUsername,
+          score: this.score,
+        },
+      };
+      postScore(data);
       this.scene.stop('FortNerf').launch('EndGame');
     }
     const playerMoved = this.player.movePlayer();

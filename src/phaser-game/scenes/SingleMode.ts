@@ -3,10 +3,10 @@ import {
   BULLET_MOVEMENT,
   BULLET_OFFSET,
   NPC_DIMENSIONS,
-  style,
 } from '../utils/constants';
 import npcData from '../../json/NPC.json';
 import Player from '../objects/Player';
+import TextBox from '../objects/TextBox';
 
 class SingleMode extends Phaser.Scene {
   player!: any;
@@ -22,6 +22,10 @@ class SingleMode extends Phaser.Scene {
   shootBullet!: any;
 
   trees!: any;
+
+  timer = 0;
+
+  timerText!: Phaser.GameObjects.Text;
 
   constructor() {
     super('FortNerf');
@@ -51,7 +55,6 @@ class SingleMode extends Phaser.Scene {
   }
 
   create() {
-    let scoreText: Phaser.GameObjects.Text;
     const map: any = this.make.tilemap({ key: 'map' });
     this.physics.world.setBounds(
       0,
@@ -125,10 +128,32 @@ class SingleMode extends Phaser.Scene {
       const npcSprite = npc.create(anNpc.x, anNpc.y, 'npc');
       npcSprite.body.setSize(NPC_DIMENSIONS, NPC_DIMENSIONS);
     });
+    // text
+    this.timer = 180 * 60;
+    const { width } = this.sys.game.canvas;
+    this.timerText = new TextBox(
+      this,
+      width / 2,
+      0,
+      `Time: ${this.timer.toString()}`,
+    );
+    this.timerText.scrollFactorX = 0;
+    this.timerText.scrollFactorY = 0;
+    this.timerText.setFontSize(36);
+    this.timerText.setColor('black');
+    const scoreText = new TextBox(
+      this,
+      10,
+      10,
+      `Score: ${this.score.toString()}`,
+    );
+    scoreText.scrollFactorX = 0;
+    scoreText.scrollFactorY = 0;
+    scoreText.setFontSize(30);
+    scoreText.setColor('black');
     // collision
     const playerHit = () => {
       this.player.setVelocity(0);
-      this.player.visible = false;
     };
     this.physics.add.collider(
       this.player,
@@ -137,7 +162,6 @@ class SingleMode extends Phaser.Scene {
       undefined,
       this,
     );
-
     this.physics.add.collider(
       this.bullets,
       npc,
@@ -163,20 +187,18 @@ class SingleMode extends Phaser.Scene {
     this.spaceBar = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE,
     );
-
-    // display score of player
-    scoreText = this.add.text(
-      10,
-      10,
-      `Score: ${this.score.toString()}`,
-      style,
-    );
-    scoreText.scrollFactorX = 0;
-    scoreText.scrollFactorY = 0;
-    scoreText.setFontSize(30);
   }
 
   update() {
+    const { width } = this.sys.game.canvas;
+    this.timerText.setX(width / 2);
+    if (this.timer >= 0) {
+      this.timer -= 1;
+      this.timerText.setText(`Time: ${this.timer}`);
+    }
+    if (this.timer <= 0) {
+      this.scene.restart();
+    }
     this.cameras.main.startFollow(this.player);
     // move player function
     this.player.movePlayer();
