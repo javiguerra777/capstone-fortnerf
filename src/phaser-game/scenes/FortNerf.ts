@@ -87,7 +87,7 @@ class FortNerf extends Phaser.Scene {
   create() {
     this.health = 100;
     this.score = 0;
-    this.clock = 10 * 60;
+    this.clock = 180 * 60;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -238,7 +238,7 @@ class FortNerf extends Phaser.Scene {
     // collision
     const playerCollision = async () => {
       try {
-        this.player.setVelocityY(-200);
+        this.player.setVelocityY(0);
       } catch (err) {
         // do nothing
       }

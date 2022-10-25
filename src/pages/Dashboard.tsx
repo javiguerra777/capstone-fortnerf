@@ -15,6 +15,7 @@ type Game = {
   name: string;
   users: [];
   _id: string;
+  maxUsers: number;
 };
 function Dashboard() {
   const navigate = useNavigate();
@@ -29,8 +30,12 @@ function Dashboard() {
     });
   }, []);
   // functions
-  const navToGame = (gameId: string, usersInGame: number) => {
-    if (usersInGame === 10) {
+  const navToGame = (
+    gameId: string,
+    usersInGame: number,
+    maxUsers: number,
+  ) => {
+    if (usersInGame === maxUsers) {
       return;
     }
     navigate(`/game/${gameId}`);
@@ -61,7 +66,9 @@ function Dashboard() {
         {gameServers?.map((game: Game) => (
           <GameDetails
             key={nanoid()}
-            onClick={() => navToGame(game._id, game.users.length)}
+            onClick={() =>
+              navToGame(game._id, game.users.length, game.maxUsers)
+            }
           >
             <section id="item1">
               <p>Fort Nerf</p>
@@ -71,7 +78,9 @@ function Dashboard() {
               <p>{game.name}</p>
             </section>
             <section id="item3">
-              <p>{game.users.length}/10</p>
+              <p>
+                {game.users.length}/{game.maxUsers}
+              </p>
               <HiOutlineUsers size={28} />
             </section>
           </GameDetails>
