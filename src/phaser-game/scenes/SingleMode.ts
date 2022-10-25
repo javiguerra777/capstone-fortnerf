@@ -128,6 +128,7 @@ class SingleMode extends Phaser.Scene {
     // collision
     const playerHit = () => {
       this.player.setVelocity(0);
+      this.player.visible = false;
     };
     this.physics.add.collider(
       this.player,

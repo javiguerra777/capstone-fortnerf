@@ -38,21 +38,21 @@ class FortNerf extends Phaser.Scene {
 
   spaceBar!: Phaser.Input.Keyboard.Key;
 
-  playerText!: Phaser.GameObjects.Text;
-
-  otherPlayerText!: Phaser.GameObjects.Text;
-
   healthText!: Phaser.GameObjects.Text;
 
-  lifeText!: Phaser.GameObjects.Text;
+  scoreText!: Phaser.GameObjects.Text;
 
   health!: number;
 
-  lives!: number;
+  score!: number;
 
   otherBulletCollider!: Phaser.Physics.Arcade.Collider;
 
   trees!: any;
+
+  clock!: number;
+
+  clockText!: Phaser.GameObjects.Text;
 
   constructor() {
     super('FortNerf');
@@ -86,7 +86,8 @@ class FortNerf extends Phaser.Scene {
 
   create() {
     this.health = 100;
-    this.lives = 3;
+    this.score = 0;
+    this.clock = 180;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -123,30 +124,33 @@ class FortNerf extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group({
       immovable: true,
     });
+    // text within game
+    this.clockText = this.add.text(
+      500,
+      100,
+      `Time: ${this.clock.toString()}`,
+      style,
+    );
+    this.clockText.scrollFactorX = 0;
+    this.clockText.scrollFactorY = 0;
     this.healthText = this.add.text(
       100,
       100,
       `hp: ${this.health.toString()}`,
-      {
-        fontFamily: '"Roboto Condensed"',
-        fontSize: 'px',
-      },
+      style,
     );
     this.healthText.scrollFactorX = 0;
     this.healthText.scrollFactorY = 0;
     this.healthText.setFontSize(60);
-    this.lifeText = this.add.text(
+    this.scoreText = this.add.text(
       100,
       50,
-      `lives: ${this.lives.toString()}`,
-      {
-        fontFamily: '"Roboto Condensed"',
-        fontSize: 'px',
-      },
+      `Score: ${this.score.toString()}`,
+      style,
     );
-    this.lifeText.scrollFactorX = 0;
-    this.lifeText.scrollFactorY = 0;
-    this.lifeText.setFontSize(60);
+    this.scoreText.scrollFactorX = 0;
+    this.scoreText.scrollFactorY = 0;
+    this.scoreText.setFontSize(60);
 
     // bullet methods
     this.shootBullet = (x: number, y: number, direction: string) => {
@@ -182,6 +186,10 @@ class FortNerf extends Phaser.Scene {
           this.bullet,
           this.otherPlayers,
           (theBullet) => {
+            this.score += 10;
+            this.scoreText?.setText(
+              `Score: ${this.score.toString()}`,
+            );
             theBullet.destroy();
           },
           undefined,
@@ -247,10 +255,7 @@ class FortNerf extends Phaser.Scene {
 
     // socket methods
     socket.emit('home_game', {
-      username: this.playerOneUsername,
       room: this.gameRoom,
-      x: this.startingX,
-      y: this.startingY,
     });
     socket.on('existing_game_players', async (data) => {
       try {
@@ -337,31 +342,13 @@ class FortNerf extends Phaser.Scene {
                 `hp: ${this.health.toString()}`,
               );
               if (this.health <= 0) {
-                this.lives -= 1;
-                if (this.lives <= 0) {
-                  // how the scene shifts to endgame
-                  this.bullet?.destroy();
-                  this.otherBullet?.destroy();
-                  theBullet?.destroy();
-                  this.healthText?.destroy();
-                  this.lifeText?.destroy();
-                  this.otherBulletCollider.destroy();
-                  this.scene.start('EndGame');
-                  socket.emit('GameOver', this.gameRoom);
-                  return;
-                }
                 this.health = 100;
-                this.lifeText?.setText(
-                  `lives: ${this.lives.toString()}`,
-                );
                 this.healthText?.setText(
                   `hp: ${this.health.toString()}`,
                 );
                 const respawnCoords = randomRespawn();
                 this.player.setX(respawnCoords.x);
                 this.player.setY(respawnCoords.y);
-                this.playerText?.setX(this.player.x - 30);
-                this.playerText?.setY(this.player.y + 30);
                 this.player.direction = 'down';
                 socket.emit('move', {
                   x: respawnCoords.x,
@@ -394,23 +381,15 @@ class FortNerf extends Phaser.Scene {
         // want catch block to do nothing
       }
     });
-
-    socket.on('EndScene', async () => {
-      try {
-        this.bullet?.destroy();
-        this.otherBullet?.destroy();
-        this.healthText?.destroy();
-        this.lifeText?.destroy();
-        this.otherBulletCollider?.destroy();
-        this.scene.start('EndGame');
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
   }
 
   update() {
     this.cameras.main.startFollow(this.player);
+    this.clock -= 1;
+    this.clockText.setText(`Time: ${this.clock.toString()}`);
+    if (this.clock <= 0) {
+      this.scene.stop('FortNerf').launch('EndGame');
+    }
     const playerMoved = this.player.movePlayer();
     if (playerMoved) {
       socket.emit('move', {

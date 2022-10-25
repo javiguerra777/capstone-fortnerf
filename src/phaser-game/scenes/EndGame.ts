@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import store from '../../store';
 import { socket } from '../../service/socket';
+import { style } from '../utils/constants';
 
 class EndGame extends Phaser.Scene {
   gameRoom!: string;
@@ -21,10 +22,7 @@ class EndGame extends Phaser.Scene {
 
   create() {
     this.add.image(1000, 1000, 'background');
-    this.add.text(200, 200, 'Game Over', {
-      fontFamily: 'Georgia, "Goudy Bookletter 1911, Times, serif',
-      color: '#19de65',
-    });
+    this.add.text(200, 200, 'Game Over', style);
     // method that starts new scene
     const endGame = async () => {
       try {
