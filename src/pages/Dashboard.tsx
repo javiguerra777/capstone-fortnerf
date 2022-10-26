@@ -16,6 +16,7 @@ type Game = {
   users: [];
   _id: string;
   maxUsers: number;
+  started: boolean;
 };
 function Dashboard() {
   const navigate = useNavigate();
@@ -63,28 +64,30 @@ function Dashboard() {
             Single Player
           </button>
         </nav>
-        {gameServers?.map((game: Game) => (
-          <GameDetails
-            key={nanoid()}
-            onClick={() =>
-              navToGame(game._id, game.users.length, game.maxUsers)
-            }
-          >
-            <section id="item1">
-              <p>Fort Nerf</p>
-              <img src={nerfTarget} alt="game-logo" />
-            </section>
-            <section id="item2">
-              <p>{game.name}</p>
-            </section>
-            <section id="item3">
-              <p>
-                {game.users.length}/{game.maxUsers}
-              </p>
-              <HiOutlineUsers size={28} />
-            </section>
-          </GameDetails>
-        ))}
+        {gameServers
+          ?.filter((game: Game) => !game.started)
+          .map((game: Game) => (
+            <GameDetails
+              key={nanoid()}
+              onClick={() =>
+                navToGame(game._id, game.users.length, game.maxUsers)
+              }
+            >
+              <section id="item1">
+                <p>Fort Nerf</p>
+                <img src={nerfTarget} alt="game-logo" />
+              </section>
+              <section id="item2">
+                <p>{game.name}</p>
+              </section>
+              <section id="item3">
+                <p>
+                  {game.users.length}/{game.maxUsers}
+                </p>
+                <HiOutlineUsers size={28} />
+              </section>
+            </GameDetails>
+          ))}
       </section>
     </DashboardWrapper>
   );
