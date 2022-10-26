@@ -44,6 +44,7 @@ class EndGame extends Phaser.Scene {
     // method that starts new scene
     const endGame = async () => {
       try {
+        socket.emit('GameOver', this.gameRoom);
         socket.emit('return_to_lobby', { room: this.gameRoom });
       } catch (err) {
         // want catch block to do nothing
