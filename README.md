@@ -1,5 +1,5 @@
 # Front-End for multiplayer video game
-<a href="#top"></a>
+<a name="top"></a>
 An interpretation of Fort Nerf which was created by Bitwise!
 
 # Table of contents
@@ -20,7 +20,7 @@ A few of the frameworks/libraries that were used to build the project are
 * EsLint and AirBnb
 * Phaser
 * Socket-io Client
-<p align="right">(<a name="top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 <!-- ### wireframe
   ### Getting Started The App build out with simple wireframes using Figma.
 <img width="328" alt="wire-frame-frontend" src=""> -->
