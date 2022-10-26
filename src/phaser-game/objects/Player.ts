@@ -22,8 +22,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.playerText = this.scene.add.text(
-      x - 30,
-      y - 30,
+      this.getTopLeft().x - 5,
+      this.getTopCenter().y - 20,
       text,
       style,
     );
@@ -90,8 +90,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
     if (this.playerText) {
-      this.playerText?.setX(this.x - 30);
-      this.playerText?.setY(this.y - 40);
+      this.playerText?.setX(this.getTopLeft().x - 5);
+      this.playerText?.setY(this.getTopCenter().y - 20);
     }
     return playerMoved;
   }
