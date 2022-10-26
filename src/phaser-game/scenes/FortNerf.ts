@@ -4,16 +4,19 @@ import {
   BULLET_OFFSET,
   BULLET_MOVEMENT,
   HEALTH_DECREMENT,
+  style,
 } from '../utils/constants';
 import { socket } from '../../service/socket';
-import movePlayer from '../utils/playerMove';
 import createAnimation, {
   handleOtherPlayerAnims,
 } from '../utils/animations';
 import randomRespawn from '../utils/respawn';
+import Player from '../objects/Player';
+import TextBox from '../objects/TextBox';
+import { postScore } from '../../utils/api';
 
 class FortNerf extends Phaser.Scene {
-  player!: any;
+  player!: Player;
 
   startingX!: number;
 
@@ -23,42 +26,32 @@ class FortNerf extends Phaser.Scene {
 
   playerOneUsername!: string;
 
-  otherPlayer!: any;
+  otherPlayers!: Phaser.Physics.Arcade.Group;
 
-  shootBullet!: any;
+  // eslint-disable-next-line no-unused-vars
+  shootBullet!: (x: number, y: number, direction: string) => boolean;
 
-  bullet!: any;
+  bullet!: Phaser.Physics.Arcade.Sprite;
 
-  otherBullet!: any;
+  otherBullet!: Phaser.Physics.Arcade.Sprite;
 
-  handleOtherPlayerAnims!: () => void;
-
-  cursor!: {
-    shift: Phaser.Input.Keyboard.Key;
-    up: Phaser.Input.Keyboard.Key;
-    down: Phaser.Input.Keyboard.Key;
-    left: Phaser.Input.Keyboard.Key;
-    right: Phaser.Input.Keyboard.Key;
-    space?: Phaser.Input.Keyboard.Key;
-  };
+  cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   spaceBar!: Phaser.Input.Keyboard.Key;
 
-  playerText!: Phaser.GameObjects.Text;
-
-  otherPlayerText!: Phaser.GameObjects.Text;
-
   healthText!: Phaser.GameObjects.Text;
 
-  lifeText!: Phaser.GameObjects.Text;
+  scoreText!: Phaser.GameObjects.Text;
 
   health!: number;
 
-  lives!: number;
+  score!: number;
 
-  otherBulletCollider!: Phaser.Physics.Arcade.Collider;
+  trees!: Phaser.Physics.Arcade.Group;
 
-  trees!: any;
+  clock!: number;
+
+  clockText!: Phaser.GameObjects.Text;
 
   constructor() {
     super('FortNerf');
@@ -92,7 +85,8 @@ class FortNerf extends Phaser.Scene {
 
   create() {
     this.health = 100;
-    this.lives = 3;
+    this.score = 0;
+    this.clock = 180 * 60;
     const map: any = this.make.tilemap({ key: 'map' });
     this.cameras.main.setBounds(
       0,
@@ -113,52 +107,63 @@ class FortNerf extends Phaser.Scene {
       allowGravity: false,
       immovable: true,
     });
-    map.getObjectLayer('trees').objects.forEach((tree: any) => {
-      const treeSprite = this.trees
-        .create(tree.x + 50, tree.y - 45, 'tree')
-        .setOrigin(0);
-      treeSprite.body.setSize(tree.width - 5, tree.height);
-    });
-    this.player = this.physics.add.sprite(
+    map
+      .getObjectLayer('trees')
+      .objects.forEach(
+        (tree: {
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+        }) => {
+          const treeSprite = this.trees
+            .create(tree.x + 50, tree.y - 45, 'tree')
+            .setOrigin(0);
+          treeSprite.body.setSize(tree.width - 5, tree.height);
+        },
+      );
+    // player and other players group
+    this.player = new Player(
+      this,
       this.startingX,
       this.startingY,
-      'player',
-    );
-    this.player.direction = 'down';
-
-    // text within game
-    this.playerText = this.add.text(
-      this.player.x - 30,
-      this.player.y + 30,
       this.playerOneUsername,
-      {
-        fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif',
-      },
     );
+    this.otherPlayers = this.physics.add.group({
+      immovable: true,
+    });
+    // text within game
+    const { width } = this.sys.game.canvas;
+    this.clockText = new TextBox(
+      this,
+      width / 2,
+      100,
+      `Time: ${this.clock.toString()}`,
+    );
+    this.clockText.scrollFactorX = 0;
+    this.clockText.scrollFactorY = 0;
+    this.clockText.setFontSize(30);
+    this.clockText.setColor('black');
     this.healthText = this.add.text(
       100,
       100,
       `hp: ${this.health.toString()}`,
-      {
-        fontFamily: '"Roboto Condensed"',
-        fontSize: 'px',
-      },
+      style,
     );
     this.healthText.scrollFactorX = 0;
     this.healthText.scrollFactorY = 0;
-    this.healthText.setFontSize(60);
-    this.lifeText = this.add.text(
+    this.healthText.setFontSize(30);
+    this.healthText.setColor('black');
+    this.scoreText = this.add.text(
       100,
       50,
-      `lives: ${this.lives.toString()}`,
-      {
-        fontFamily: '"Roboto Condensed"',
-        fontSize: 'px',
-      },
+      `Score: ${this.score.toString()}`,
+      style,
     );
-    this.lifeText.scrollFactorX = 0;
-    this.lifeText.scrollFactorY = 0;
-    this.lifeText.setFontSize(60);
+    this.scoreText.scrollFactorX = 0;
+    this.scoreText.scrollFactorY = 0;
+    this.scoreText.setFontSize(30);
+    this.scoreText.setColor('black');
 
     // bullet methods
     this.shootBullet = (x: number, y: number, direction: string) => {
@@ -192,8 +197,12 @@ class FortNerf extends Phaser.Scene {
         );
         this.physics.add.collider(
           this.bullet,
-          this.otherPlayer,
+          this.otherPlayers,
           (theBullet) => {
+            this.score += 10;
+            this.scoreText?.setText(
+              `Score: ${this.score.toString()}`,
+            );
             theBullet.destroy();
           },
           undefined,
@@ -237,8 +246,8 @@ class FortNerf extends Phaser.Scene {
     // collision
     const playerCollision = async () => {
       try {
-        this.player.setVelocityY(-200);
-      } catch (err: any) {
+        this.player.setVelocityY(0);
+      } catch (err) {
         // do nothing
       }
     };
@@ -259,53 +268,65 @@ class FortNerf extends Phaser.Scene {
 
     // socket methods
     socket.emit('home_game', {
-      username: this.playerOneUsername,
       room: this.gameRoom,
-      x: this.startingX,
-      y: this.startingY,
     });
-    socket.on('main_join', async (data) => {
+    socket.on('existing_game_players', async (data) => {
       try {
-        if (!this.otherPlayer) {
-          this.otherPlayer = this.physics.add.sprite(
-            data.startingCoords.x,
-            data.startingCoords.y,
-            'player',
-          );
-          this.otherPlayer.body.immovable = true;
-          this.otherPlayer.anims.play('downStill');
-          this.otherPlayer.direction = 'down';
-          this.otherPlayerText = this.add.text(
-            this.otherPlayer.x - 30,
-            this.otherPlayer.y - 30,
-            data.username,
-            {
-              fontFamily:
-                'Georgia, "Goudy Bookletter 1911", Times, serif',
+        data.forEach(
+          (player: {
+            startingCoords: { x: number; y: number };
+            id: string;
+            username: string | string[];
+          }) => {
+            const otherPlayer: any = this.physics.add.sprite(
+              player.startingCoords.x,
+              player.startingCoords.y,
+              'player',
+            );
+            otherPlayer.socketId = player.id;
+            otherPlayer.text = this.add.text(
+              otherPlayer.x - 30,
+              otherPlayer.y - 35,
+              player.username,
+              style,
+            );
+            this.otherPlayers.add(otherPlayer);
+          },
+        );
+      } catch (err) {
+        // want catch block to do nothing
+      }
+    });
+    socket.on(
+      'playerMove',
+      async ({ x, y, direction, socketId, respawn }) => {
+        try {
+          this.otherPlayers.children.entries.forEach(
+            (player: any) => {
+              if (player.socketId === socketId) {
+                player.x = x;
+                player.y = y;
+                player.direction = direction;
+                player.text.setX(x - 30);
+                player.text.setY(y - 30);
+                player.moving = !respawn;
+              }
             },
           );
+        } catch (err) {
+          // want catch block to do nothing
         }
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
-    socket.on('playerMove', async ({ x, y, direction, respawn }) => {
-      try {
-        this.otherPlayer.x = x;
-        this.otherPlayer.y = y;
-        this.otherPlayer.direction = direction;
-        this.otherPlayerText.setX(this.otherPlayer.x - 30);
-        this.otherPlayerText.setY(this.otherPlayer.y - 30);
-        this.otherPlayer.moving = !respawn;
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
+      },
+    );
 
-    socket.on('playerMoveEnd', async (direction) => {
+    socket.on('playerMoveEnd', async ({ direction, socketId }) => {
       try {
-        this.otherPlayer.direction = direction;
-        this.otherPlayer.moving = false;
+        this.otherPlayers.children.entries.forEach((player: any) => {
+          if (player.socketId === socketId) {
+            player.direction = direction;
+            player.moving = false;
+          }
+        });
       } catch (err) {
         // want catch block to do nothing
       }
@@ -329,7 +350,7 @@ class FortNerf extends Phaser.Scene {
           undefined,
           this,
         );
-        this.otherBulletCollider = this.physics.add.collider(
+        this.physics.add.overlap(
           this.otherBullet,
           this.player,
           async (theBullet) => {
@@ -340,31 +361,13 @@ class FortNerf extends Phaser.Scene {
                 `hp: ${this.health.toString()}`,
               );
               if (this.health <= 0) {
-                this.lives -= 1;
-                if (this.lives <= 0) {
-                  // how the scene shifts to endgame
-                  this.bullet?.destroy();
-                  this.otherBullet?.destroy();
-                  theBullet?.destroy();
-                  this.healthText?.destroy();
-                  this.lifeText?.destroy();
-                  this.otherBulletCollider.destroy();
-                  this.scene.start('EndGame');
-                  socket.emit('GameOver', this.gameRoom);
-                  return;
-                }
                 this.health = 100;
-                this.lifeText?.setText(
-                  `lives: ${this.lives.toString()}`,
-                );
                 this.healthText?.setText(
                   `hp: ${this.health.toString()}`,
                 );
                 const respawnCoords = randomRespawn();
                 this.player.setX(respawnCoords.x);
                 this.player.setY(respawnCoords.y);
-                this.playerText?.setX(this.player.x - 30);
-                this.playerText?.setY(this.player.y + 30);
                 this.player.direction = 'down';
                 socket.emit('move', {
                   x: respawnCoords.x,
@@ -397,28 +400,26 @@ class FortNerf extends Phaser.Scene {
         // want catch block to do nothing
       }
     });
-
-    socket.on('EndScene', async () => {
-      try {
-        this.bullet?.destroy();
-        this.otherBullet?.destroy();
-        this.healthText?.destroy();
-        this.lifeText?.destroy();
-        this.otherBulletCollider?.destroy();
-        this.scene.start('EndGame');
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
   }
 
   update() {
+    const { width } = this.sys.game.canvas;
     this.cameras.main.startFollow(this.player);
-    const playerMoved = movePlayer(
-      this.player,
-      this.cursor,
-      this.playerText,
-    );
+    this.clock -= 1;
+    this.clockText.setText(`Time: ${this.clock.toString()}`);
+    this.clockText.setX(width / 2);
+    if (this.clock <= 0) {
+      const data = {
+        id: this.gameRoom,
+        user: {
+          username: this.playerOneUsername,
+          score: this.score,
+        },
+      };
+      postScore(data);
+      this.scene.stop('FortNerf').launch('EndGame');
+    }
+    const playerMoved = this.player.movePlayer();
     if (playerMoved) {
       socket.emit('move', {
         x: this.player.x,
@@ -438,8 +439,10 @@ class FortNerf extends Phaser.Scene {
       }
       this.player.movedLastFrame = false;
     }
-    if (this.otherPlayer) {
-      handleOtherPlayerAnims(this.otherPlayer);
+    if (this.otherPlayers.children.entries.length > 0) {
+      this.otherPlayers.children.entries.forEach((player) => {
+        handleOtherPlayerAnims(player);
+      });
     }
     // controls bullet updates on space press
     const bulletMoved = this.shootBullet(

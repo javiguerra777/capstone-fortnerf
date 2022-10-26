@@ -54,9 +54,14 @@ function ChangeName({
               value={newUsername}
               placeholder="raptors4life"
               onChange={(e) => setNewUsername(e.target.value)}
+              required
             />
           </label>
-          <button className="submit-btn" type="submit">
+          <button
+            className="submit-btn"
+            type="submit"
+            disabled={username === ''}
+          >
             Change Username
           </button>
         </form>
