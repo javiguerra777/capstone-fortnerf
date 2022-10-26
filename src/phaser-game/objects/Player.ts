@@ -9,6 +9,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   playerText;
 
+  movedLastFrame = false;
+
   constructor(
     scene: Phaser.Scene,
     x: number,

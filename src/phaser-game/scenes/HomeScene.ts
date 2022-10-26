@@ -8,9 +8,9 @@ import Player from '../objects/Player';
 import TextBox from '../objects/TextBox';
 
 class HomeScene extends Phaser.Scene {
-  homePlayer!: any;
+  homePlayer!: Player;
 
-  otherPlayers!: any;
+  otherPlayers!: Phaser.Physics.Arcade.Group;
 
   homePlayerName!: string;
 
@@ -126,22 +126,29 @@ class HomeScene extends Phaser.Scene {
     });
     socket.on('existingPlayers', async (data) => {
       try {
-        data.forEach((player: any) => {
-          const otherPlayer: any = this.physics.add.sprite(
-            player.x,
-            player.y,
-            'player',
-          );
-          otherPlayer.socketId = player.id;
-          otherPlayer.text = new TextBox(
-            this,
-            otherPlayer.x - 30,
-            otherPlayer.y - 35,
-            player.username,
-          );
-          otherPlayer.moving = false;
-          this.otherPlayers.add(otherPlayer);
-        });
+        data.forEach(
+          (player: {
+            x: number;
+            y: number;
+            id: string;
+            username: string;
+          }) => {
+            const otherPlayer: any = this.physics.add.sprite(
+              player.x,
+              player.y,
+              'player',
+            );
+            otherPlayer.socketId = player.id;
+            otherPlayer.text = new TextBox(
+              this,
+              otherPlayer.x - 30,
+              otherPlayer.y - 35,
+              player.username,
+            );
+            otherPlayer.moving = false;
+            this.otherPlayers.add(otherPlayer);
+          },
+        );
       } catch (err) {
         // want catch block to do nothing
       }
@@ -252,7 +259,7 @@ class HomeScene extends Phaser.Scene {
       this.homePlayer.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
-      this.otherPlayers.children.entries.forEach((player: any) => {
+      this.otherPlayers.children.entries.forEach((player) => {
         handleOtherPlayerAnims(player);
       });
     }

@@ -9,19 +9,20 @@ import Player from '../objects/Player';
 import TextBox from '../objects/TextBox';
 
 class SingleMode extends Phaser.Scene {
-  player!: any;
+  player!: Player;
 
   score = 0;
 
-  bullet!: any;
+  bullet!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 
-  bullets!: any;
+  bullets!: Phaser.Physics.Arcade.Group;
 
   spaceBar!: Phaser.Input.Keyboard.Key;
 
-  shootBullet!: any;
+  // eslint-disable-next-line no-unused-vars
+  shootBullet!: (x: number, y: number, direction: string) => void;
 
-  trees!: any;
+  trees!: Phaser.Physics.Arcade.Group;
 
   timer = 0;
 
@@ -68,12 +69,21 @@ class SingleMode extends Phaser.Scene {
       allowGravity: false,
       immovable: true,
     });
-    map.getObjectLayer('trees').objects.forEach((tree: any) => {
-      const treeSprite = this.trees
-        .create(tree.x + 50, tree.y - 45, 'tree')
-        .setOrigin(0);
-      treeSprite.body.setSize(tree.width - 5, tree.height);
-    });
+    map
+      .getObjectLayer('trees')
+      .objects.forEach(
+        (tree: {
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+        }) => {
+          const treeSprite = this.trees
+            .create(tree.x + 50, tree.y - 45, 'tree')
+            .setOrigin(0);
+          treeSprite.body.setSize(tree.width - 5, tree.height);
+        },
+      );
     // player methods
     this.player = new Player(this, 400, 400, 'player');
     // bullet group

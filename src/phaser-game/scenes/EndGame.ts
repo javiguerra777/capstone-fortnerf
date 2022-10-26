@@ -14,7 +14,7 @@ class EndGame extends Phaser.Scene {
 
   returnToLobbyText!: Phaser.GameObjects.Text;
 
-  textGroup!: any;
+  textGroup!: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super('EndGame');

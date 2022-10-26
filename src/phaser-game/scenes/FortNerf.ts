@@ -16,7 +16,7 @@ import TextBox from '../objects/TextBox';
 import { postScore } from '../../utils/api';
 
 class FortNerf extends Phaser.Scene {
-  player!: any;
+  player!: Player;
 
   startingX!: number;
 
@@ -26,15 +26,14 @@ class FortNerf extends Phaser.Scene {
 
   playerOneUsername!: string;
 
-  otherPlayers!: any;
+  otherPlayers!: Phaser.Physics.Arcade.Group;
 
-  shootBullet!: any;
+  // eslint-disable-next-line no-unused-vars
+  shootBullet!: (x: number, y: number, direction: string) => boolean;
 
-  bullet!: any;
+  bullet!: Phaser.Physics.Arcade.Sprite;
 
-  otherBullet!: any;
-
-  handleOtherPlayerAnims!: () => void;
+  otherBullet!: Phaser.Physics.Arcade.Sprite;
 
   cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -48,7 +47,7 @@ class FortNerf extends Phaser.Scene {
 
   score!: number;
 
-  trees!: any;
+  trees!: Phaser.Physics.Arcade.Group;
 
   clock!: number;
 
@@ -108,12 +107,21 @@ class FortNerf extends Phaser.Scene {
       allowGravity: false,
       immovable: true,
     });
-    map.getObjectLayer('trees').objects.forEach((tree: any) => {
-      const treeSprite = this.trees
-        .create(tree.x + 50, tree.y - 45, 'tree')
-        .setOrigin(0);
-      treeSprite.body.setSize(tree.width - 5, tree.height);
-    });
+    map
+      .getObjectLayer('trees')
+      .objects.forEach(
+        (tree: {
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+        }) => {
+          const treeSprite = this.trees
+            .create(tree.x + 50, tree.y - 45, 'tree')
+            .setOrigin(0);
+          treeSprite.body.setSize(tree.width - 5, tree.height);
+        },
+      );
     // player and other players group
     this.player = new Player(
       this,
@@ -264,21 +272,27 @@ class FortNerf extends Phaser.Scene {
     });
     socket.on('existing_game_players', async (data) => {
       try {
-        data.forEach((player: any) => {
-          const otherPlayer: any = this.physics.add.sprite(
-            player.startingCoords.x,
-            player.startingCoords.y,
-            'player',
-          );
-          otherPlayer.socketId = player.id;
-          otherPlayer.text = this.add.text(
-            otherPlayer.x - 30,
-            otherPlayer.y - 35,
-            player.username,
-            style,
-          );
-          this.otherPlayers.add(otherPlayer);
-        });
+        data.forEach(
+          (player: {
+            startingCoords: { x: number; y: number };
+            id: string;
+            username: string | string[];
+          }) => {
+            const otherPlayer: any = this.physics.add.sprite(
+              player.startingCoords.x,
+              player.startingCoords.y,
+              'player',
+            );
+            otherPlayer.socketId = player.id;
+            otherPlayer.text = this.add.text(
+              otherPlayer.x - 30,
+              otherPlayer.y - 35,
+              player.username,
+              style,
+            );
+            this.otherPlayers.add(otherPlayer);
+          },
+        );
       } catch (err) {
         // want catch block to do nothing
       }
@@ -425,7 +439,7 @@ class FortNerf extends Phaser.Scene {
       this.player.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
-      this.otherPlayers.children.entries.forEach((player: any) => {
+      this.otherPlayers.children.entries.forEach((player) => {
         handleOtherPlayerAnims(player);
       });
     }
