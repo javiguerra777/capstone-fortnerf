@@ -7,6 +7,7 @@ An interpretation of Fort Nerf which was created by Bitwise!
 # About the Project
 ## About The Project
 This app build with the existing knowledge of the React basics, and give you further practice working with codebase linting, component testing, Redux Toolkit, and TypeScript. A user should, at the bare minimum, be able to join a game, create a new game, participate with other users in the game, and at the end the game will display the scores of all participants in the game.
+<p align="left">(<a href="#top">back to top</a>)</p>
 
 ### Built with
 A few of the frameworks/libraries that were used to build the project are
@@ -20,7 +21,7 @@ A few of the frameworks/libraries that were used to build the project are
 * EsLint and AirBnb
 * Phaser
 * Socket-io Client
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="left">(<a href="#top">back to top</a>)</p>
 <!-- ### wireframe
   ### Getting Started The App build out with simple wireframes using Figma.
 <img width="328" alt="wire-frame-frontend" src=""> -->
@@ -55,7 +56,12 @@ REACT_APP_MEASUREMENT_ID="Measurement Id"
 REACT_APP_BACKEND_URL="ex: http://localhost:5000"
 ```
 4. npm start for the frontend
+```
+npm start
+```
 5. You will need to connect a backend to this project.
+<p align="left">(<a href="#top">back to top</a>)</p>
+
 
 ## Usage
 Can be used to create new game room servers if connected with a backend and play with other users online
@@ -67,8 +73,23 @@ You can:
 - [x] Create your own server
 - [x] Sign up for account
 - [x] Play with other users
+<p align="left">(<a href="#top">back to top</a>)</p>
+
+## Contributing
+If you have a suggestion that could improve this project, please fork the repo anc create a pull request. You can simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thank yoU!
+
+1. Fork the project
+2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m "message")
+4. Push to the branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
+<p align="left">(<a href="#top">back to top</a>)</p>
+
 
 ## Contact
 Javier Guerra - jaguerra@alphaworks.tech
 
 Project link: https://github.com/javiguerra777/capstone-frontend
+
+Project Demo: https://multiplayerfortnerf.netlify.app/
+<p align="left">(<a href="#top">back to top</a>)</p>
