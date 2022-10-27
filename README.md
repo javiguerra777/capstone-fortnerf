@@ -24,9 +24,8 @@ An interpretation of Fort Nerf which was created by Bitwise!
 </details>
 
 # About the Project
-## About The Project
 <a name="about-the-project"></a>
-This app build with the existing knowledge of the React basics, and give you further practice working with codebase linting, component testing, Redux Toolkit, and TypeScript. A user should, at the bare minimum, be able to join a game, create a new game, participate with other users in the game, and at the end of the game the scene will display the scores of all participants in the game.
+This app is built with the existing knowledge of the React basics, and give you further practice working with codebase linting, component testing, Redux Toolkit, and TypeScript. A user should, at the bare minimum, be able to join a game, create a new game, participate with other users in the game, and at the end of the game the scene will display the scores of all participants in the game.
 <p align="left">(<a href="#top">back to top</a>)</p>
 
 ### Built with
@@ -54,13 +53,12 @@ To install the FortNerf App Follow these steps
 ### Prerequisites
 <a name="prerequisites"></a>
 * npm
-  ```sh
+  ```
   npm install npm@latest -g
   ```
 
 ### Installation
 <a name="installation"></a>
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
 1. Clone the repo
   ```she
@@ -102,7 +100,7 @@ You can:
 <p align="left">(<a href="#top">back to top</a>)</p>
 
 ## Contributing
-If you have a suggestion that could improve this project, please fork the repo anc create a pull request. You can simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thank yoU!
+If you have a suggestion that could improve this project, please fork the repo and create a pull request. You can simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thank you!
 
 1. Fork the project
 2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
