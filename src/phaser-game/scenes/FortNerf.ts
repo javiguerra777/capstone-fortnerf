@@ -156,7 +156,7 @@ class FortNerf extends Phaser.Scene {
     this.healthText.setColor('black');
     this.scoreText = this.add.text(
       10,
-      10,
+      40,
       `Score: ${this.score.toString()}`,
       style,
     );
