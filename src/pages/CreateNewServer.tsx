@@ -47,12 +47,14 @@ function CreateNewServer() {
     shallowEqual,
   );
   const [gameName, setGameName] = useState('');
+  const [maxPlayers, setMaxPlayers] = useState(4);
   const [error, setError] = useState('');
   const createGame = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const gameData = {
       name: gameName,
       username,
+      maxPlayers,
     };
     try {
       const { data } = await createNewRoom(gameData);
@@ -77,6 +79,20 @@ function CreateNewServer() {
             id="gameName"
             placeholder="Max: 15 characters"
             onChange={(e) => setGameName(e.target.value)}
+            required
+          />
+        </label>
+        <label htmlFor="maxPlayers">
+          <input
+            type="number"
+            min={4}
+            max={6}
+            value={maxPlayers}
+            onChange={(e) =>
+              setMaxPlayers(parseFloat(e.target.value))
+            }
+            required
+            placeholder="enter a number between 4 and 6"
           />
         </label>
         <button type="submit">Create New Game</button>

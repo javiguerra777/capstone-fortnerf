@@ -1,23 +1,7 @@
 import React, { useEffect } from 'react';
 import Phaser from 'phaser';
-import SingleMode from '../phaser-game/scenes/SingleMode';
+import config from '../phaser-game/config/SinglePlayerConfig';
 
-const config = {
-  type: Phaser.AUTO,
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-    width: '100%',
-    height: '100%',
-  },
-  backgroundColor: '#ffffff',
-  physics: {
-    default: 'arcade',
-    gravity: { y: 0 },
-    debug: false,
-  },
-  parent: 'single-mode',
-  scene: [SingleMode],
-};
 function SinglePlayerGame() {
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
