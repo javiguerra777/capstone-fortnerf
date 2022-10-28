@@ -137,16 +137,16 @@ class FortNerf extends Phaser.Scene {
     this.clockText = new TextBox(
       this,
       width / 2,
-      100,
+      10,
       `Time: ${this.clock.toString()}`,
     );
     this.clockText.scrollFactorX = 0;
     this.clockText.scrollFactorY = 0;
-    this.clockText.setFontSize(30);
+    this.clockText.setFontSize(36);
     this.clockText.setColor('black');
     this.healthText = this.add.text(
-      100,
-      100,
+      10,
+      10,
       `hp: ${this.health.toString()}`,
       style,
     );
@@ -155,8 +155,8 @@ class FortNerf extends Phaser.Scene {
     this.healthText.setFontSize(30);
     this.healthText.setColor('black');
     this.scoreText = this.add.text(
-      100,
-      50,
+      10,
+      40,
       `Score: ${this.score.toString()}`,
       style,
     );
@@ -285,8 +285,8 @@ class FortNerf extends Phaser.Scene {
             );
             otherPlayer.socketId = player.id;
             otherPlayer.text = this.add.text(
-              otherPlayer.x - 30,
-              otherPlayer.y - 35,
+              otherPlayer.getTopLeft().x - 5,
+              otherPlayer.getTopCenter().y - 20,
               player.username,
               style,
             );
@@ -307,8 +307,8 @@ class FortNerf extends Phaser.Scene {
                 player.x = x;
                 player.y = y;
                 player.direction = direction;
-                player.text.setX(x - 30);
-                player.text.setY(y - 30);
+                player.text.setX(player.getTopLeft().x - 5);
+                player.text.setY(player.getTopCenter().y - 20);
                 player.moving = !respawn;
               }
             },

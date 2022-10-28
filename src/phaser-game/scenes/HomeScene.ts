@@ -114,8 +114,8 @@ class HomeScene extends Phaser.Scene {
         otherPlayer.socketId = socketId;
         otherPlayer.text = new TextBox(
           this,
-          otherPlayer.x - 30,
-          otherPlayer.y - 35,
+          otherPlayer.getTopLeft().x - 5,
+          otherPlayer.getTopCenter().y - 20,
           username,
         );
         otherPlayer.moving = false;
@@ -141,8 +141,8 @@ class HomeScene extends Phaser.Scene {
             otherPlayer.socketId = player.id;
             otherPlayer.text = new TextBox(
               this,
-              otherPlayer.x - 30,
-              otherPlayer.y - 35,
+              otherPlayer.getTopLeft().x - 5,
+              otherPlayer.getTopCenter().y - 20,
               player.username,
             );
             otherPlayer.moving = false;
@@ -163,8 +163,8 @@ class HomeScene extends Phaser.Scene {
                 player.x = x;
                 player.y = y;
                 player.direction = direction;
-                player.text.setX(x - 30);
-                player.text.setY(y - 30);
+                player.text.setX(player.getTopLeft().x - 5);
+                player.text.setY(player.getTopRight().y - 20);
                 player.moving = true;
               }
             },
