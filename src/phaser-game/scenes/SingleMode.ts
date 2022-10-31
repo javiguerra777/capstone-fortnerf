@@ -38,6 +38,7 @@ class SingleMode extends Phaser.Scene {
     const state = store.getState();
     const { playerSprite } = state.user;
     this.playerSprite = playerSprite;
+    // character sprites
     this.load.atlas(
       'player',
       '/assets/characters/male_player.png',
@@ -48,6 +49,22 @@ class SingleMode extends Phaser.Scene {
       '/assets/characters/npc.png',
       '/assets/characters/npc.json',
     );
+    this.load.atlas(
+      'soldier',
+      '/assets/characters/soldier.png',
+      '/assets/characters/soldier.json',
+    );
+    this.load.atlas(
+      'pumpkin',
+      '/assets/characters/pumpkin.png',
+      '/assets/characters/pumpkin.json',
+    );
+    this.load.atlas(
+      'robeman',
+      '/assets/characters/robeman.png',
+      '/assets/characters/robeman.json',
+    );
+    // bullet sprite
     this.load.atlas(
       'bullet',
       '/assets/bullets/nerfBullet.png',
@@ -97,7 +114,7 @@ class SingleMode extends Phaser.Scene {
       400,
       'MyPlayer',
       this.playerSprite,
-    );
+    ).setScale(1.5);
     // npc
     this.npcs = this.physics.add.group({
       allowGravity: false,
@@ -105,7 +122,12 @@ class SingleMode extends Phaser.Scene {
     });
 
     npcData.forEach((anNpc) => {
-      const npcSprite: NPC = new NPC(this, anNpc.x, anNpc.y, 'npc');
+      const npcSprite: NPC = new NPC(
+        this,
+        anNpc.x,
+        anNpc.y,
+        'npc',
+      ).setScale(1.5);
       this.npcs.add(npcSprite);
     });
     // bullet group

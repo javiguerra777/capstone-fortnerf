@@ -14,7 +14,6 @@ const config = {
   backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',
-    gravity: { y: 0 },
     debug: true,
   },
   parent: 'main-game',

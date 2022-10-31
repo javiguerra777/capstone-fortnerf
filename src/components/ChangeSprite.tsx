@@ -14,6 +14,7 @@ function ChangeSprite({
 }: SpriteProps) {
   const dispatch = useDispatch();
   const [newSprite, setNewSprite] = useState('');
+  const [error, setError] = useState('');
   const updatePlayerSprite = async (
     e: FormEvent<HTMLFormElement>,
   ) => {
@@ -21,7 +22,9 @@ function ChangeSprite({
     try {
       dispatch(changePlayerSprite(newSprite));
     } catch (err) {
-      //
+      if (err instanceof Error) {
+        setError(err.message);
+      }
     }
   };
   return (
@@ -37,6 +40,7 @@ function ChangeSprite({
             x
           </button>
         </header>
+        {error && <h1>{error}</h1>}
         <form onSubmit={updatePlayerSprite}>
           <div className="radio">
             <label htmlFor="player">
@@ -60,7 +64,42 @@ function ChangeSprite({
               npc
             </label>
           </div>
-          <button type="submit">Change Sprite</button>
+          <div className="radio">
+            <label htmlFor="pumpkin">
+              <input
+                type="radio"
+                value="pumpkin"
+                checked={newSprite === 'pumpkin'}
+                onChange={(e) => setNewSprite(e.target.value)}
+              />
+              Pumpkin
+            </label>
+          </div>
+          <div className="radio">
+            <label htmlFor="soldier">
+              <input
+                type="radio"
+                value="soldier"
+                checked={newSprite === 'soldier'}
+                onChange={(e) => setNewSprite(e.target.value)}
+              />
+              Soldier
+            </label>
+          </div>
+          <div className="radio">
+            <label htmlFor="robeman">
+              <input
+                type="radio"
+                value="robeman"
+                checked={newSprite === 'robeman'}
+                onChange={(e) => setNewSprite(e.target.value)}
+              />
+              Robeman
+            </label>
+          </div>
+          <button type="submit" disabled={newSprite === ''}>
+            Change Sprite
+          </button>
         </form>
       </section>
     </ChangeNameWrapper>

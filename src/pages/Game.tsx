@@ -17,7 +17,7 @@ function Game() {
   const maxWidth = '100%';
   const width = '85%';
   const dispatch = useDispatch();
-  const { username } = useSelector(
+  const { username, playerSprite } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
   );
@@ -86,6 +86,7 @@ function Game() {
     socket.emit('join_room', {
       room: id,
       username,
+      sprite: playerSprite,
     });
     return () => {
       socket.emit('leave_room', {
@@ -93,7 +94,7 @@ function Game() {
         username,
       });
     };
-  }, [id, username]);
+  }, [id, username, playerSprite]);
   useEffect(() => {
     dispatch(setId(id));
     return () => {

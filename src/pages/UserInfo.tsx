@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { BiUser } from 'react-icons/bi';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import UserNavBar from '../components/UserNavBar';
 import { RootState } from '../store';
@@ -7,6 +6,8 @@ import { setUser } from '../store/UserSlice';
 import { UserInfoWrapper } from '../styles/ReusableStyles';
 import ChangeName from '../components/ChangeName';
 import ChangeSprite from '../components/ChangeSprite';
+import SpriteContainer from '../styles/SpriteContainer';
+import { switchSpriteSheet } from '../utils/functions';
 
 function UserInfo() {
   const dispatch = useDispatch();
@@ -46,7 +47,10 @@ function UserInfo() {
         <h2>Account Info</h2>
         <section className="details">
           <section className="img-name">
-            <BiUser size={70} />
+            <SpriteContainer
+              src={switchSpriteSheet(playerSprite)}
+              alt="Users current player"
+            />
             <p>{name}</p>
           </section>
           <section className="username">

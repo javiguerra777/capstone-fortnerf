@@ -13,4 +13,20 @@ const convertToDate = (number: number, first: boolean) => {
   // returns the exact time ex: 1:01 pm
   return `${time} ${amOrPm}`;
 };
+export const switchSpriteSheet = (sprite: string) => {
+  switch (sprite) {
+    case 'player':
+      return '/assets/characters/male_player.png';
+    case 'pumpkin':
+      return '/assets/characters/pumpkin.png';
+    case 'soldier':
+      return '/assets/characters/soldier.png';
+    case 'robeman':
+      return '/assets/characters/robeman.png';
+    case 'npc':
+      return '/assets/characters/npc.png';
+    default:
+      return '/assets/characters/male_player.png';
+  }
+};
 export default convertToDate;

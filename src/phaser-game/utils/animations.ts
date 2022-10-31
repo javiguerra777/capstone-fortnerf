@@ -19,7 +19,7 @@ const createAnimation = (
   });
 };
 
-export const handleOtherPlayerAnims = (otherPlayer: any) => {
+export const handleOtherPlayerAnims = async (otherPlayer: any) => {
   try {
     if (otherPlayer.moving) {
       if (otherPlayer.direction === 'right') {

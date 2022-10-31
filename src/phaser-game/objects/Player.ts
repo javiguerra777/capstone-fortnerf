@@ -19,10 +19,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     texture: string,
   ) {
     super(scene, x, y, texture);
-    this.keys = this.scene.input.keyboard.createCursorKeys();
-    this.scene.physics.world.enable(this);
-    this.scene.add.existing(this);
-    this.playerText = this.scene.add.text(
+    this.keys = scene.input.keyboard.createCursorKeys();
+    scene.physics.world.enable(this);
+    scene.add.existing(this);
+    this.playerText = scene.add.text(
       this.getTopLeft().x - 5,
       this.getTopCenter().y - 20,
       text,
@@ -34,7 +34,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     createAnimation(this.anims, 'down', texture, 'down', 1, 3);
     createAnimation(this.anims, 'up', texture, 'up', 1, 3);
     // still animations
-    createAnimation(this.anims, 'leftStill', 'player', 'left', 3, 3);
+    createAnimation(this.anims, 'leftStill', texture, 'left', 3, 3);
     createAnimation(this.anims, 'rightStill', texture, 'right', 3, 3);
     createAnimation(this.anims, 'downStill', texture, 'down', 3, 3);
     createAnimation(this.anims, 'upStill', texture, 'up', 3, 3);
@@ -49,7 +49,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
     // player movement
     if (this.keys.up.isDown) {
-      console.log(this.keys);
       playerMoved = true;
       this.direction = 'up';
       this.setVelocityY(-PLAYER_MOVEMENT * speed);

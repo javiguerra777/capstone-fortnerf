@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import store from '../../store';
 import { socket } from '../../service/socket';
-import createAnimation, {
-  handleOtherPlayerAnims,
-} from '../utils/animations';
 import Player from '../objects/Player';
 import TextBox from '../objects/TextBox';
+import OtherPlayer from '../objects/OtherPlayer';
 
 class HomeScene extends Phaser.Scene {
   homePlayer!: Player;
+
+  sprite!: string;
 
   otherPlayers!: Phaser.Physics.Arcade.Group;
 
@@ -27,9 +27,10 @@ class HomeScene extends Phaser.Scene {
   preload() {
     const state = store.getState();
     const { id } = state.game;
-    const { username } = state.user;
+    const { username, playerSprite } = state.user;
     this.homePlayerName = username;
     this.homeGameRoom = id;
+    this.sprite = playerSprite;
     this.load.image('tileSet', '/assets/tiles-img/tilesheet.png');
     this.load.tilemapTiledJSON(
       'homeMap',
@@ -39,6 +40,26 @@ class HomeScene extends Phaser.Scene {
       'player',
       '/assets/characters/male_player.png',
       '/assets/characters/male_player.json',
+    );
+    this.load.atlas(
+      'npc',
+      '/assets/characters/npc.png',
+      '/assets/characters/npc.json',
+    );
+    this.load.atlas(
+      'soldier',
+      '/assets/characters/soldier.png',
+      '/assets/characters/soldier.json',
+    );
+    this.load.atlas(
+      'pumpkin',
+      '/assets/characters/pumpkin.png',
+      '/assets/characters/pumpkin.json',
+    );
+    this.load.atlas(
+      'robeman',
+      '/assets/characters/robeman.png',
+      '/assets/characters/robeman.json',
     );
   }
 
@@ -67,8 +88,8 @@ class HomeScene extends Phaser.Scene {
       500,
       500,
       this.homePlayerName,
-      'player',
-    );
+      this.sprite,
+    ).setScale(1.5);
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
     const { height, width } = this.sys.game.canvas;
@@ -76,23 +97,6 @@ class HomeScene extends Phaser.Scene {
       await socket.emit('start_game', this.homeGameRoom);
       await this.scene.stop('HomeScene').launch('FortNerf');
     };
-    // movement animations
-    createAnimation(this.anims, 'left', 'player', 'left', 1, 3);
-    createAnimation(this.anims, 'right', 'player', 'right', 1, 3);
-    createAnimation(this.anims, 'down', 'player', 'down', 1, 3);
-    createAnimation(this.anims, 'up', 'player', 'up', 1, 3);
-    // still animations
-    createAnimation(this.anims, 'leftStill', 'player', 'left', 3, 3);
-    createAnimation(
-      this.anims,
-      'rightStill',
-      'player',
-      'right',
-      3,
-      3,
-    );
-    createAnimation(this.anims, 'downStill', 'player', 'down', 3, 3);
-    createAnimation(this.anims, 'upStill', 'player', 'up', 3, 3);
     const playerCollider = () => {
       this.homePlayer.setVelocity(0);
     };
@@ -109,27 +113,26 @@ class HomeScene extends Phaser.Scene {
     socket.emit('join_home', {
       room: this.homeGameRoom,
       username: this.homePlayerName,
+      sprite: this.sprite,
     });
-    socket.on('new_player', async ({ username, socketId }) => {
-      try {
-        const otherPlayer: any = this.physics.add.sprite(
-          500,
-          500,
-          'player',
-        );
-        otherPlayer.socketId = socketId;
-        otherPlayer.text = new TextBox(
-          this,
-          otherPlayer.getTopLeft().x - 5,
-          otherPlayer.getTopCenter().y - 20,
-          username,
-        );
-        otherPlayer.moving = false;
-        this.otherPlayers.add(otherPlayer);
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
+    socket.on(
+      'new_player',
+      async ({ username, socketId, sprite }) => {
+        try {
+          const otherPlayer: OtherPlayer = new OtherPlayer(
+            this,
+            500,
+            500,
+            username,
+            sprite,
+          ).setScale(1.5);
+          otherPlayer.socketId = socketId;
+          this.otherPlayers.add(otherPlayer);
+        } catch (err) {
+          // want catch block to do nothing
+        }
+      },
+    );
     socket.on('existingPlayers', async (data) => {
       try {
         data.forEach(
@@ -138,20 +141,16 @@ class HomeScene extends Phaser.Scene {
             y: number;
             id: string;
             username: string;
+            sprite: string;
           }) => {
-            const otherPlayer: any = this.physics.add.sprite(
+            const otherPlayer: OtherPlayer = new OtherPlayer(
+              this,
               player.x,
               player.y,
-              'player',
-            );
-            otherPlayer.socketId = player.id;
-            otherPlayer.text = new TextBox(
-              this,
-              otherPlayer.getTopLeft().x - 5,
-              otherPlayer.getTopCenter().y - 20,
               player.username,
-            );
-            otherPlayer.moving = false;
+              player.sprite,
+            ).setScale(1.5);
+            otherPlayer.socketId = player.id;
             this.otherPlayers.add(otherPlayer);
           },
         );
@@ -265,8 +264,8 @@ class HomeScene extends Phaser.Scene {
       this.homePlayer.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
-      this.otherPlayers.children.entries.forEach((player) => {
-        handleOtherPlayerAnims(player);
+      this.otherPlayers.children.entries.forEach((player: any) => {
+        player?.handleAnimations();
       });
     }
   }
