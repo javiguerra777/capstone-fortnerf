@@ -128,6 +128,7 @@ class FortNerf extends Phaser.Scene {
       this.startingX,
       this.startingY,
       this.playerOneUsername,
+      'player',
     );
     this.otherPlayers = this.physics.add.group({
       immovable: true,

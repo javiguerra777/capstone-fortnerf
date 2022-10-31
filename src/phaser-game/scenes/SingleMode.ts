@@ -1,12 +1,10 @@
 import Phaser from 'phaser';
-import {
-  BULLET_MOVEMENT,
-  BULLET_OFFSET,
-  NPC_DIMENSIONS,
-} from '../utils/constants';
+import { BULLET_MOVEMENT, BULLET_OFFSET } from '../utils/constants';
 import npcData from '../../json/NPC.json';
 import Player from '../objects/Player';
 import TextBox from '../objects/TextBox';
+import NPC from '../objects/Npc';
+import store from '../../store';
 
 class SingleMode extends Phaser.Scene {
   player!: Player;
@@ -19,6 +17,8 @@ class SingleMode extends Phaser.Scene {
 
   spaceBar!: Phaser.Input.Keyboard.Key;
 
+  playerSprite!: string;
+
   // eslint-disable-next-line no-unused-vars
   shootBullet!: (x: number, y: number, direction: string) => void;
 
@@ -28,20 +28,26 @@ class SingleMode extends Phaser.Scene {
 
   timerText!: Phaser.GameObjects.Text;
 
+  npcs!: Phaser.Physics.Arcade.Group;
+
   constructor() {
     super('FortNerf');
   }
 
   preload() {
+    const state = store.getState();
+    const { playerSprite } = state.user;
+    this.playerSprite = playerSprite;
     this.load.atlas(
       'player',
       '/assets/characters/male_player.png',
       '/assets/characters/male_player.json',
     );
-    this.load.spritesheet('npc', '/assets/characters/npc.png', {
-      frameWidth: 48,
-      frameHeight: 48,
-    });
+    this.load.atlas(
+      'npc',
+      '/assets/characters/npc.png',
+      '/assets/characters/npc.json',
+    );
     this.load.atlas(
       'bullet',
       '/assets/bullets/nerfBullet.png',
@@ -85,7 +91,23 @@ class SingleMode extends Phaser.Scene {
         },
       );
     // player methods
-    this.player = new Player(this, 400, 400, 'player');
+    this.player = new Player(
+      this,
+      400,
+      400,
+      'MyPlayer',
+      this.playerSprite,
+    );
+    // npc
+    this.npcs = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+
+    npcData.forEach((anNpc) => {
+      const npcSprite: NPC = new NPC(this, anNpc.x, anNpc.y, 'npc');
+      this.npcs.add(npcSprite);
+    });
     // bullet group
     this.bullets = this.physics.add.group();
     // shoot bullet method
@@ -128,16 +150,6 @@ class SingleMode extends Phaser.Scene {
         }
       }
     };
-    // npc
-    const npc = this.physics.add.group({
-      allowGravity: false,
-      immovable: true,
-    });
-
-    npcData.forEach((anNpc) => {
-      const npcSprite = npc.create(anNpc.x, anNpc.y, 'npc');
-      npcSprite.body.setSize(NPC_DIMENSIONS, NPC_DIMENSIONS);
-    });
     // text
     this.timer = 180 * 60;
     const { width } = this.sys.game.canvas;
@@ -167,14 +179,14 @@ class SingleMode extends Phaser.Scene {
     };
     this.physics.add.collider(
       this.player,
-      [npc, this.trees],
+      [this.npcs, this.trees],
       playerHit,
       undefined,
       this,
     );
     this.physics.add.collider(
       this.bullets,
-      npc,
+      this.npcs,
       (bullet) => {
         bullet.destroy();
         this.score += 10;
@@ -218,6 +230,10 @@ class SingleMode extends Phaser.Scene {
       this.player.y,
       this.player.direction,
     );
+
+    this.npcs?.children.entries.forEach((npc: any) => {
+      npc.handleAnimation();
+    });
   }
 }
 

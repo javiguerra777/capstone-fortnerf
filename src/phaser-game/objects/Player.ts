@@ -16,8 +16,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     x: number,
     y: number,
     text: string,
+    texture: string,
   ) {
-    super(scene, x, y, text, 'player');
+    super(scene, x, y, texture);
     this.keys = this.scene.input.keyboard.createCursorKeys();
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -28,31 +29,27 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       style,
     );
     // movement animations
-    createAnimation(this.anims, 'left', 'player', 'left', 1, 3);
-    createAnimation(this.anims, 'right', 'player', 'right', 1, 3);
-    createAnimation(this.anims, 'down', 'player', 'down', 1, 3);
-    createAnimation(this.anims, 'up', 'player', 'up', 1, 3);
+    createAnimation(this.anims, 'left', texture, 'left', 1, 3);
+    createAnimation(this.anims, 'right', texture, 'right', 1, 3);
+    createAnimation(this.anims, 'down', texture, 'down', 1, 3);
+    createAnimation(this.anims, 'up', texture, 'up', 1, 3);
     // still animations
     createAnimation(this.anims, 'leftStill', 'player', 'left', 3, 3);
-    createAnimation(
-      this.anims,
-      'rightStill',
-      'player',
-      'right',
-      3,
-      3,
-    );
-    createAnimation(this.anims, 'downStill', 'player', 'down', 3, 3);
-    createAnimation(this.anims, 'upStill', 'player', 'up', 3, 3);
+    createAnimation(this.anims, 'rightStill', texture, 'right', 3, 3);
+    createAnimation(this.anims, 'downStill', texture, 'down', 3, 3);
+    createAnimation(this.anims, 'upStill', texture, 'up', 3, 3);
   }
 
   movePlayer() {
     let playerMoved = false;
     let speed = 1;
+    // player speed changes based on if shift is down
     if (this.keys.shift.isDown) {
       speed = 1.5;
     }
+    // player movement
     if (this.keys.up.isDown) {
+      console.log(this.keys);
       playerMoved = true;
       this.direction = 'up';
       this.setVelocityY(-PLAYER_MOVEMENT * speed);

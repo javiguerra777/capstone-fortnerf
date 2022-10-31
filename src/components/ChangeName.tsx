@@ -8,7 +8,8 @@ import { ChangeNameWrapper } from '../styles/ReusableStyles';
 type NameComponentProps = {
   username: string;
   docId: string;
-  toggleActiveComponent: () => void;
+  // eslint-disable-next-line no-unused-vars
+  toggleActiveComponent: (option: string) => void;
 };
 function ChangeName({
   username,
@@ -40,7 +41,10 @@ function ChangeName({
         <header>
           <p />
           <h1>Current Username: {username}</h1>
-          <button type="button" onClick={toggleActiveComponent}>
+          <button
+            type="button"
+            onClick={() => toggleActiveComponent('name')}
+          >
             X
           </button>
         </header>

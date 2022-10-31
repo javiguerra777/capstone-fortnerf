@@ -10,6 +10,7 @@ type User = {
   connected: boolean;
   x: number;
   y: number;
+  playerSprite: string;
 };
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
   connected: false,
   x: 0,
   y: 0,
+  playerSprite: 'player',
 } as User;
 
 export const userSlice = createSlice({
@@ -46,9 +48,17 @@ export const userSlice = createSlice({
     updateUsername(state, { payload }) {
       state.username = payload;
     },
+    changePlayerSprite(state, { payload }) {
+      state.playerSprite = payload;
+    },
   },
 });
 
-export const { setUser, setConnected, setCoords, updateUsername } =
-  userSlice.actions;
+export const {
+  setUser,
+  setConnected,
+  setCoords,
+  updateUsername,
+  changePlayerSprite,
+} = userSlice.actions;
 export default userSlice.reducer;

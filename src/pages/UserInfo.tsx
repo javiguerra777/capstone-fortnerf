@@ -6,19 +6,38 @@ import { RootState } from '../store';
 import { setUser } from '../store/UserSlice';
 import { UserInfoWrapper } from '../styles/ReusableStyles';
 import ChangeName from '../components/ChangeName';
+import ChangeSprite from '../components/ChangeSprite';
 
 function UserInfo() {
   const dispatch = useDispatch();
-  const { name, username, email, docId } = useSelector(
+  const { name, username, email, docId, playerSprite } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
   );
-  const [componentActive, setComponentActive] = useState(false);
+  const [state, setState] = useState({
+    nameComponent: false,
+    spriteComponent: false,
+  });
   const signOut = () => {
     dispatch(setUser({}));
   };
-  const toggleActiveComponent = () => {
-    setComponentActive(!componentActive);
+  const toggleActiveComponent = (option: string) => {
+    switch (option) {
+      case 'name':
+        setState({
+          ...state,
+          nameComponent: !state.nameComponent,
+        });
+        break;
+      case 'sprite':
+        setState({
+          ...state,
+          spriteComponent: !state.spriteComponent,
+        });
+        break;
+      default:
+        break;
+    }
   };
   return (
     <UserInfoWrapper>
@@ -43,15 +62,31 @@ function UserInfo() {
           <button type="button" onClick={signOut}>
             Sign Out
           </button>
-          <button type="button" onClick={toggleActiveComponent}>
+          <button
+            type="button"
+            onClick={() => toggleActiveComponent('sprite')}
+          >
+            {' '}
+            Change Player
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleActiveComponent('name')}
+          >
             Change Name
           </button>
         </footer>
       </section>
-      {componentActive && (
+      {state.nameComponent && (
         <ChangeName
           username={username}
           docId={docId}
+          toggleActiveComponent={toggleActiveComponent}
+        />
+      )}
+      {state.spriteComponent && (
+        <ChangeSprite
+          sprite={playerSprite}
           toggleActiveComponent={toggleActiveComponent}
         />
       )}

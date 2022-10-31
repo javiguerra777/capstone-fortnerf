@@ -62,7 +62,13 @@ class HomeScene extends Phaser.Scene {
     const walls = homeMap.createLayer('walls', homeTileSet, 50, 20);
     homeMap.setCollisionBetween(1, 999, true, 'colliders');
     // player and other player groups
-    this.homePlayer = new Player(this, 500, 500, this.homePlayerName);
+    this.homePlayer = new Player(
+      this,
+      500,
+      500,
+      this.homePlayerName,
+      'player',
+    );
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
     const { height, width } = this.sys.game.canvas;
