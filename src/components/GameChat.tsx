@@ -1,12 +1,11 @@
-import React, { useRef, useEffect } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import React, { useRef, useEffect, FormEvent, useState } from 'react';
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
-import { AiOutlineUser } from 'react-icons/ai';
-import convertToDate from '../utils/functions';
+import convertToDate, { switchSpriteSheet } from '../utils/functions';
 import { Message } from '../types/AppTypes';
 import { socket } from '../service/socket';
 import { RootState } from '../store';
-import chatOptions from '../json/ChatOptions.json';
+import { disableKeyBoard } from '../store/GameSlice';
 
 type ChatProps = {
   toggleAside: () => void;
@@ -23,7 +22,8 @@ function useChatScroll<T>(dep: T) {
   return ref;
 }
 function GameChat({ toggleAside, messages }: ChatProps) {
-  const { username } = useSelector(
+  const dispatch = useDispatch();
+  const { username, playerSprite } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
   );
@@ -31,15 +31,23 @@ function GameChat({ toggleAside, messages }: ChatProps) {
     (state: RootState) => state.game,
     shallowEqual,
   );
-  const sendChat = (message: string) => {
+  const [msg, setMessage] = useState('');
+  const ref = useChatScroll(messages);
+  const inputRef = useRef<any>(null);
+  const sendChat = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     socket.emit('chat', {
       username,
-      message,
+      message: msg,
       date: Date.now(),
       room: id,
+      sprite: playerSprite,
     });
+    setMessage('');
   };
-  const ref = useChatScroll(messages);
+  const disablePhaserKeyboard = () => {
+    dispatch(disableKeyBoard());
+  };
   return (
     <aside className="chat-bar background-color">
       <header className="chat-header">
@@ -55,7 +63,10 @@ function GameChat({ toggleAside, messages }: ChatProps) {
           messages.map((message: Message) => (
             <section key={nanoid()} className="ind-message">
               <header className="ind-msg-header">
-                <AiOutlineUser size="25px" />
+                <img
+                  src={switchSpriteSheet(message.sprite)}
+                  alt={message.sprite}
+                />
                 <h5>
                   {convertToDate(Date.now(), true) ===
                   convertToDate(message.date, true)
@@ -70,18 +81,16 @@ function GameChat({ toggleAside, messages }: ChatProps) {
             </section>
           ))}
       </div>
-      <section className="chat-options">
-        {chatOptions.map((option) => (
-          <button
-            className="option-btn"
-            type="button"
-            onClick={() => sendChat(option.response)}
-            key={nanoid()}
-          >
-            {option.response}
-          </button>
-        ))}
-      </section>
+      <form className="message-form" onSubmit={sendChat}>
+        <input
+          type="text"
+          onClick={disablePhaserKeyboard}
+          value={msg}
+          placeholder="Message..."
+          onChange={(e) => setMessage(e.target.value)}
+          ref={inputRef}
+        />
+      </form>
     </aside>
   );
 }

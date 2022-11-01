@@ -52,7 +52,7 @@ const GameWrapper = styled.main`
     }
     .main-chat {
       background: #3b3c36;
-      height: 60%;
+      height: 88%;
       overflow-y: scroll;
       overflow-x: hidden;
       display: flex;

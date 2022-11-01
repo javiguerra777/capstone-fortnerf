@@ -20,6 +20,8 @@ class HomeScene extends Phaser.Scene {
 
   playButton!: Phaser.GameObjects.Text;
 
+  keyBoardDisabled!: boolean;
+
   constructor() {
     super('HomeScene');
   }
@@ -241,6 +243,17 @@ class HomeScene extends Phaser.Scene {
   }
 
   update() {
+    const state = store.getState();
+    const { disableKeyBoard } = state.game;
+    this.keyBoardDisabled = disableKeyBoard;
+    // this allows for users to be able to use the keyboard if they click on another DOM element
+    if (this.keyBoardDisabled) {
+      this.input.keyboard.enabled = false;
+      this.input.keyboard.disableGlobalCapture();
+    } else {
+      this.input.keyboard.enabled = true;
+      this.input.keyboard.enableGlobalCapture();
+    }
     this.cameras.main.startFollow(this.homePlayer);
     if (this.playButton) {
       const { height, width } = this.sys.game.canvas;

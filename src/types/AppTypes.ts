@@ -2,6 +2,7 @@ export type Message = {
   username: string;
   message: string;
   date: number;
+  sprite: string;
 };
 export interface RoomData {
   users: [];

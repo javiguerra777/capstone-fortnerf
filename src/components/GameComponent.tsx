@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
+import { useDispatch } from 'react-redux';
 import FortNerf from '../phaser-game/scenes/FortNerf';
 import EndGame from '../phaser-game/scenes/EndGame';
 import HomeScene from '../phaser-game/scenes/HomeScene';
+import { enableKeyBoard } from '../store/GameSlice';
 
 const config = {
   type: Phaser.AUTO,
@@ -24,11 +26,13 @@ type styleProps = {
 };
 
 function GameComponent({ width }: styleProps) {
+  const dispatch = useDispatch();
   const canvasRef = useRef<HTMLDivElement>(null);
   const clickEvent = () => {
     if (canvasRef.current) {
       canvasRef.current.focus();
     }
+    dispatch(enableKeyBoard());
   };
   useEffect(() => {
     const phaserGame = new Phaser.Game(config);
