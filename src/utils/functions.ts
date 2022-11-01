@@ -1,3 +1,9 @@
+import MalePlayer from '../img/player-img/male_player.png';
+import NPC from '../img/player-img/npc.png';
+import Pumpkin from '../img/player-img/pumpkin.png';
+import Robeman from '../img/player-img/robeman.png';
+import Soldier from '../img/player-img/soldier.png';
+
 const convertToDate = (number: number, first: boolean) => {
   const date: Date = new Date(number);
   const dateToString: string = date.toLocaleString('en-us');
@@ -16,17 +22,17 @@ const convertToDate = (number: number, first: boolean) => {
 export const switchSpriteSheet = (sprite: string) => {
   switch (sprite) {
     case 'player':
-      return '/assets/characters/male_player.png';
+      return MalePlayer;
     case 'pumpkin':
-      return '/assets/characters/pumpkin.png';
+      return Pumpkin;
     case 'soldier':
-      return '/assets/characters/soldier.png';
+      return Soldier;
     case 'robeman':
-      return '/assets/characters/robeman.png';
+      return Robeman;
     case 'npc':
-      return '/assets/characters/npc.png';
+      return NPC;
     default:
-      return '/assets/characters/male_player.png';
+      return MalePlayer;
   }
 };
 export default convertToDate;

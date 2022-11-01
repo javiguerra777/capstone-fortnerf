@@ -36,6 +36,7 @@ export const userSlice = createSlice({
       state.username = payload.username;
       state.name = payload.name;
       state.email = payload.email;
+      state.playerSprite = payload.sprite || 'player';
       state.loggedIn = !state.loggedIn;
     },
     setConnected(state) {

@@ -91,6 +91,7 @@ function UserInfo() {
       {state.spriteComponent && (
         <ChangeSprite
           sprite={playerSprite}
+          docId={docId}
           toggleActiveComponent={toggleActiveComponent}
         />
       )}

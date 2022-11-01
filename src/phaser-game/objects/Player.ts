@@ -11,8 +11,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   movedLastFrame = false;
 
-  moved = false;
-
   pressedKeys: number[] = [];
 
   constructor(

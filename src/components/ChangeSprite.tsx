@@ -1,18 +1,26 @@
 import React, { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase/FirebaseTS';
 import { changePlayerSprite } from '../store/UserSlice';
 import { ChangeNameWrapper } from '../styles/ReusableStyles';
+import SpriteRadio from './SpriteRadio';
+import { switchSpriteSheet } from '../utils/functions';
+import SpriteContainer from '../styles/SpriteContainer';
 
 type SpriteProps = {
   sprite: string;
+  docId: string;
   // eslint-disable-next-line no-unused-vars
   toggleActiveComponent: (option: string) => void;
 };
 function ChangeSprite({
   sprite,
+  docId,
   toggleActiveComponent,
 }: SpriteProps) {
   const dispatch = useDispatch();
+  const userDoc = doc(db, 'users', docId);
   const [newSprite, setNewSprite] = useState('');
   const [error, setError] = useState('');
   const updatePlayerSprite = async (
@@ -20,7 +28,11 @@ function ChangeSprite({
   ) => {
     e.preventDefault();
     try {
-      dispatch(changePlayerSprite(newSprite));
+      const data = {
+        sprite: newSprite,
+      };
+      await updateDoc(userDoc, data);
+      await dispatch(changePlayerSprite(newSprite));
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -32,7 +44,13 @@ function ChangeSprite({
       <section className="container">
         <header>
           <p />
-          <h1>Current Sprite: {sprite} </h1>
+          <div className="player-sprite">
+            <h1>Current Sprite:</h1>
+            <SpriteContainer
+              src={switchSpriteSheet(sprite)}
+              alt={sprite}
+            />
+          </div>
           <button
             type="button"
             onClick={() => toggleActiveComponent('sprite')}
@@ -42,62 +60,37 @@ function ChangeSprite({
         </header>
         {error && <h1>{error}</h1>}
         <form onSubmit={updatePlayerSprite}>
-          <div className="radio">
-            <label htmlFor="player">
-              <input
-                type="radio"
-                value="player"
-                checked={newSprite === 'player'}
-                onChange={(e) => setNewSprite(e.target.value)}
-              />
-              player
-            </label>
-          </div>
-          <div className="radio">
-            <label htmlFor="npc">
-              <input
-                type="radio"
-                value="npc"
-                checked={newSprite === 'npc'}
-                onChange={(e) => setNewSprite(e.target.value)}
-              />
-              npc
-            </label>
-          </div>
-          <div className="radio">
-            <label htmlFor="pumpkin">
-              <input
-                type="radio"
-                value="pumpkin"
-                checked={newSprite === 'pumpkin'}
-                onChange={(e) => setNewSprite(e.target.value)}
-              />
-              Pumpkin
-            </label>
-          </div>
-          <div className="radio">
-            <label htmlFor="soldier">
-              <input
-                type="radio"
-                value="soldier"
-                checked={newSprite === 'soldier'}
-                onChange={(e) => setNewSprite(e.target.value)}
-              />
-              Soldier
-            </label>
-          </div>
-          <div className="radio">
-            <label htmlFor="robeman">
-              <input
-                type="radio"
-                value="robeman"
-                checked={newSprite === 'robeman'}
-                onChange={(e) => setNewSprite(e.target.value)}
-              />
-              Robeman
-            </label>
-          </div>
-          <button type="submit" disabled={newSprite === ''}>
+          <h2>Player Options</h2>
+          <SpriteRadio
+            newSprite={newSprite}
+            spriteName="player"
+            setNewSprite={setNewSprite}
+          />
+          <SpriteRadio
+            newSprite={newSprite}
+            spriteName="npc"
+            setNewSprite={setNewSprite}
+          />
+          <SpriteRadio
+            newSprite={newSprite}
+            spriteName="pumpkin"
+            setNewSprite={setNewSprite}
+          />
+          <SpriteRadio
+            newSprite={newSprite}
+            spriteName="soldier"
+            setNewSprite={setNewSprite}
+          />
+          <SpriteRadio
+            newSprite={newSprite}
+            spriteName="robeman"
+            setNewSprite={setNewSprite}
+          />
+          <button
+            type="submit"
+            className="submit-btn"
+            disabled={newSprite === ''}
+          >
             Change Sprite
           </button>
         </form>
