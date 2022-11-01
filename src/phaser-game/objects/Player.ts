@@ -5,11 +5,15 @@ import createAnimation from '../utils/animations';
 class Player extends Phaser.Physics.Arcade.Sprite {
   direction = 'down';
 
-  keys!: Phaser.Types.Input.Keyboard.CursorKeys;
+  keys!: any;
 
   playerText;
 
   movedLastFrame = false;
+
+  moved = false;
+
+  pressedKeys: number[] = [];
 
   constructor(
     scene: Phaser.Scene,
@@ -19,7 +23,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     texture: string,
   ) {
     super(scene, x, y, texture);
-    this.keys = scene.input.keyboard.createCursorKeys();
+    this.keys = {
+      ...scene.input.keyboard.createCursorKeys(),
+      ...scene.input.keyboard.addKeys('W,S,A,D'),
+    };
     scene.physics.world.enable(this);
     scene.add.existing(this);
     this.playerText = scene.add.text(
@@ -47,26 +54,47 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.keys.shift.isDown) {
       speed = 1.5;
     }
+    Object.entries(this.keys).forEach((key: any) => {
+      if (key[1].isDown) {
+        if (
+          !this.pressedKeys.includes(key[1].keyCode) &&
+          key[0] !== 'shift' &&
+          key[0] !== 'space'
+        ) {
+          this.pressedKeys.push(key[1].keyCode);
+        }
+      }
+      if (key[1].isUp) {
+        this.pressedKeys = this.pressedKeys.filter(
+          (theKey: number) => theKey !== key[1].keyCode,
+        );
+      }
+    });
+    const lastKey = this.pressedKeys.slice(-1)[0];
+    if (this.playerText) {
+      this.playerText?.setX(this.getTopLeft().x - 5);
+      this.playerText?.setY(this.getTopCenter().y - 20);
+    }
     // player movement
-    if (this.keys.up.isDown) {
+    if (lastKey === 38 || lastKey === 87) {
       playerMoved = true;
       this.direction = 'up';
       this.setVelocityY(-PLAYER_MOVEMENT * speed);
       this.setVelocityX(0);
       this.anims.play('up', true);
-    } else if (this.keys.down.isDown) {
+    } else if (lastKey === 40 || lastKey === 83) {
       playerMoved = true;
       this.direction = 'down';
       this.setVelocityY(PLAYER_MOVEMENT * speed);
       this.setVelocityX(0);
       this.anims.play('down', true);
-    } else if (this.keys.left.isDown) {
+    } else if (lastKey === 37 || lastKey === 65) {
       playerMoved = true;
       this.direction = 'left';
       this.setVelocityX(-PLAYER_MOVEMENT * speed);
       this.setVelocityY(0);
       this.anims.play('left', true);
-    } else if (this.keys.right.isDown) {
+    } else if (lastKey === 39 || lastKey === 68) {
       playerMoved = true;
       this.direction = 'right';
       this.setVelocityX(PLAYER_MOVEMENT * speed);
@@ -84,10 +112,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       } else if (this.direction === 'right') {
         this.anims.play('rightStill', true);
       }
-    }
-    if (this.playerText) {
-      this.playerText?.setX(this.getTopLeft().x - 5);
-      this.playerText?.setY(this.getTopCenter().y - 20);
     }
     return playerMoved;
   }
