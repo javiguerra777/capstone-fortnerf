@@ -388,6 +388,7 @@ class FortNerf extends Phaser.Scene {
         respawn: false,
       });
       this.player.movedLastFrame = true;
+
     } else {
       if (this.player.movedLastFrame) {
         socket.emit('moveEnd', {
