@@ -6,7 +6,7 @@ import { changePlayerSprite } from '../../../app/redux/UserSlice';
 import ChangeNameWrapper from '../styles/ChangeName';
 import SpriteRadio from './SpriteRadio';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
-import SpriteContainer from '../../../styles/SpriteContainer';
+import SpriteContainer from '../../../common/styles/SpriteContainer';
 
 type SpriteProps = {
   sprite: string;

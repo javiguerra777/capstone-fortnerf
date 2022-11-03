@@ -1,44 +1,11 @@
 import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
-import styled from 'styled-components';
 import UserNavBar from '../../../common/components/UserNavBar';
 import createNewRoom from '../api/createNewRoom';
 import { RootState } from '../../../app/redux';
 import { socket } from '../../../service/socket';
-
-const NewServerWrapper = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  button:hover {
-    cursor: pointer;
-  }
-  .game-Error {
-    color: white;
-  }
-  .game-form {
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    label {
-      margin-bottom: 1em;
-      input {
-        margin-left: 0.5em;
-      }
-    }
-    button {
-      background: none;
-      color: white;
-      border: solid 1px white;
-      border-radius: 0.5em;
-      padding: 5px;
-    }
-  }
-`;
+import NewServerWrapper from '../styles/NewServer';
 
 function CreateNewServer() {
   const navigate = useNavigate();

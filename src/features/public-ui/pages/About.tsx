@@ -1,6 +1,6 @@
 import React from 'react';
 import HomeNavBar from '../../../common/components/HomeNavBar';
-import { AboutWrapper } from '../../../styles/ReusableStyles';
+import AboutWrapper from '../styles/About';
 
 function About() {
   return (

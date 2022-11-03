@@ -14,7 +14,7 @@ import ValidateEmail from '../features/authenticate/pages/ValidateEmail';
 import Game from '../features/game/pages/Game';
 import SinglePlayer from '../features/game/pages/SinglePlayer';
 import NotFound from '../common/components/NotFound';
-import ProtectedRoutes from '../common/ProtectedRoutes';
+import ProtectedRoutes from '../common/components/ProtectedRoutes';
 import { socket } from '../service/socket';
 import { RootState } from './redux';
 import { setConnected } from './redux/UserSlice';

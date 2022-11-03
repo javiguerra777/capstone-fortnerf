@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { NavBarWrapper } from '../../styles/ReusableStyles';
+import NavBarWrapper from '../styles/NavBarStyles';
 
 function UserNavBar() {
   return (

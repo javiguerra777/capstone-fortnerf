@@ -1,6 +1,6 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
-import { UsersWrapper } from '../../../styles/ReusableStyles';
+import UsersWrapper from '../styles/UsersWrapper';
 
 type Users = {
   users: [];

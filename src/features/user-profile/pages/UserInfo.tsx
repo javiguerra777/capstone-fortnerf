@@ -3,10 +3,10 @@ import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import UserNavBar from '../../../common/components/UserNavBar';
 import { RootState } from '../../../app/redux';
 import { setUser } from '../../../app/redux/UserSlice';
-import { UserInfoWrapper } from '../../../styles/ReusableStyles';
+import UserInfoWrapper from '../styles/UserInfoWrapper';
 import ChangeName from '../components/ChangeName';
 import ChangeSprite from '../components/ChangeSprite';
-import SpriteContainer from '../../../styles/SpriteContainer';
+import SpriteContainer from '../../../common/styles/SpriteContainer';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
 
 function UserInfo() {

@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react';
 import HomeNavBar from '../../../common/components/HomeNavBar';
-import { ContactWrapper } from '../../../styles/ReusableStyles';
+import ContactWrapper from '../styles/Contact';
 
 function Contact() {
   const sendEmail = (e: FormEvent<HTMLFormElement>) => {

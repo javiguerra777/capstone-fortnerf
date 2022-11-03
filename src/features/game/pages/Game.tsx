@@ -1,24 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { shallowEqual } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import UsersAside from '../components/UsersAside';
 import GameFooter from '../components/GameFooter';
-import GameWrapper from '../../../styles/GameStyle';
-import { Message, RoomData } from '../../../types/AppTypes';
-import { RootState } from '../../../app/redux';
+import GameWrapper from '../styles/GameWrapper';
+import { Message, RoomData } from '../../../common/models';
 import { setId } from '../../../app/redux/GameSlice';
 import { socket } from '../../../service/socket';
 import { setCoords } from '../../../app/redux/UserSlice';
 import getRoomData from '../api/GetRoomData';
+import {
+  useAppSelector,
+  useAppDispatch,
+} from '../../../app/redux/hooks';
 
 function Game() {
   const maxWidth = '100%';
   const width = '85%';
-  const dispatch = useDispatch();
-  const { username, playerSprite } = useSelector(
-    (state: RootState) => state.user,
+  const dispatch = useAppDispatch();
+  const { username, playerSprite } = useAppSelector(
+    (state) => state.user,
     shallowEqual,
   );
   const navigate = useNavigate();
@@ -32,6 +35,10 @@ function Game() {
   const [myStream, setMyStream] = useState<MediaStream>();
   const [roomData, setRoomData] = useState<RoomData>();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const closeTab = () => {
+    // eslint-disable-next-line no-restricted-globals
+    close();
+  };
   const toggleAside = () => {
     if (displayAside) {
       setDisplayAside(false);
@@ -112,7 +119,7 @@ function Game() {
       setRoomData(data);
     });
     socket.on('lobby', () => {
-      navigate('/dashboard');
+      closeTab();
     });
   }, []);
   // functions
@@ -150,9 +157,6 @@ function Game() {
       });
     }
   };
-  const navToDashboard = () => {
-    navigate('/dashboard');
-  };
   if (message) {
     setTimeout(() => {
       setMessage('');
@@ -188,7 +192,7 @@ function Game() {
           toggleAside={toggleAside}
           toggleDisplayUsers={toggleDisplayUsers}
           users={roomData?.users || []}
-          navToDashboard={navToDashboard}
+          closeTab={closeTab}
         />
       </footer>
     </GameWrapper>

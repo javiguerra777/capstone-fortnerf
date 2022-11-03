@@ -9,11 +9,11 @@ import {
   where,
   query,
 } from 'firebase/firestore';
-import LoginWrapper from '../../../styles/ReusableStyles';
+import LoginWrapper from '../styles/AuthWrapper';
 import HomeNavBar from '../../../common/components/HomeNavBar';
 import { db, auth } from '../../firebase/FirebaseTS';
 import { setUser } from '../../../app/redux/UserSlice';
-import AnimateCharacter from '../../../styles/AnimSprite';
+import AnimateCharacter from '../styles/AnimSprite';
 import useLoggedIn from '../hooks/useLoggedin';
 
 function LoginPage() {

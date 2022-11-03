@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BiLeftArrowCircle } from 'react-icons/bi';
-import NotFoundWrapper from '../../styles/NotFound';
+import NotFoundWrapper from '../styles/NotFound';
 
 function NotFound() {
   const navigate = useNavigate();

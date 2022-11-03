@@ -11,7 +11,7 @@ import {
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '../../../app/redux/hooks';
 import { auth, db } from '../../firebase/FirebaseTS';
-import LoginWrapper from '../../../styles/ReusableStyles';
+import LoginWrapper from '../styles/AuthWrapper';
 import { setUser } from '../../../app/redux/UserSlice';
 import { setEmail } from '../../../app/redux/Registrations';
 import useLoggedIn from '../hooks/useLoggedin';

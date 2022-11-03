@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SinglePlayerGame from '../components/SinglePlayerGame';
-import { SinglePlayerWrapper } from '../../../styles/GameStyle';
+import SinglePlayerWrapper from '../styles/SinglePlayerWrapper';
 
 function SinglePlayer() {
   const navigate = useNavigate();

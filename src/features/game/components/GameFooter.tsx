@@ -18,7 +18,7 @@ type Footer = {
   toggleVideo: () => void;
   toggleAside: () => void;
   toggleDisplayUsers: () => void;
-  navToDashboard: () => void;
+  closeTab: () => void;
 };
 function GameFooter({
   videoRef,
@@ -30,7 +30,7 @@ function GameFooter({
   toggleAside,
   toggleDisplayUsers,
   users,
-  navToDashboard,
+  closeTab,
 }: Footer) {
   return (
     <>
@@ -63,7 +63,7 @@ function GameFooter({
           </button>
         </section>
         <div>
-          <button type="button" onClick={navToDashboard}>
+          <button type="button" onClick={closeTab}>
             <GiExitDoor />
           </button>
         </div>

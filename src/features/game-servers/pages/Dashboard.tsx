@@ -6,10 +6,7 @@ import nerfTarget from '../../../assets/img/nerf_target.png';
 import UserNavBar from '../../../common/components/UserNavBar';
 import getAllRooms from '../api/getAllRooms';
 import { socket } from '../../../service/socket';
-import {
-  DashboardWrapper,
-  GameDetails,
-} from '../../../styles/ReusableStyles';
+import DashboardWrapper, { GameDetails } from '../styles';
 
 type Game = {
   name: string;
