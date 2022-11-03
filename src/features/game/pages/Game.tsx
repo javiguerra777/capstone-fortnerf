@@ -79,7 +79,8 @@ function Game() {
   useEffect(() => {
     const resolveRoom = async () => {
       try {
-        getRoomData(id || '').then((res) => setRoomData(res.data));
+        const { data } = await getRoomData(id || '');
+        setRoomData(data);
       } catch (err) {
         if (err instanceof Error) {
           setMessage(err.message);

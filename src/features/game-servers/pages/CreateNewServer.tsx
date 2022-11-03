@@ -26,7 +26,8 @@ function CreateNewServer() {
     try {
       const { data } = await createNewRoom(gameData);
       await socket.emit('updateRooms');
-      await navigate(`/game/${data._id}`);
+      await window.open(`http://localhost:3000/game/${data._id}`);
+      navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
