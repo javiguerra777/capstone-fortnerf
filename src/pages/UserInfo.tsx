@@ -20,7 +20,7 @@ function UserInfo() {
     spriteComponent: false,
   });
   const signOut = () => {
-    dispatch(setUser({}));
+    dispatch(setUser({ loggedIn: false }));
   };
   const toggleActiveComponent = (option: string) => {
     switch (option) {

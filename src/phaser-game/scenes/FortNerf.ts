@@ -4,16 +4,16 @@ import {
   BULLET_OFFSET,
   BULLET_MOVEMENT,
   HEALTH_DECREMENT,
+  MAP_SCALE,
   style,
 } from '../utils/constants';
 import { socket } from '../../service/socket';
-import createAnimation, {
-  handleOtherPlayerAnims,
-} from '../utils/animations';
 import randomRespawn from '../utils/respawn';
 import Player from '../objects/Player';
+import OtherPlayer from '../objects/OtherPlayer';
 import TextBox from '../objects/TextBox';
 import { postScore } from '../../utils/api';
+import loadCharacters from '../utils/loadAssets';
 
 class FortNerf extends Phaser.Scene {
   player!: Player;
@@ -47,11 +47,11 @@ class FortNerf extends Phaser.Scene {
 
   score!: number;
 
-  trees!: Phaser.Physics.Arcade.Group;
-
   clock!: number;
 
   clockText!: Phaser.GameObjects.Text;
+
+  sprite!: string;
 
   constructor() {
     super('FortNerf');
@@ -59,27 +59,23 @@ class FortNerf extends Phaser.Scene {
 
   preload() {
     const state = store.getState();
-    const { username, x, y } = state.user;
+    const { username, x, y, playerSprite } = state.user;
     this.playerOneUsername = username;
+    this.sprite = playerSprite;
     this.startingX = x;
     this.startingY = y;
     const { id } = state.game;
     this.gameRoom = id;
-    this.load.atlas(
-      'player',
-      '/assets/characters/male_player.png',
-      '/assets/characters/male_player.json',
-    );
+    loadCharacters(this);
     this.load.atlas(
       'bullet',
       '/assets/bullets/nerfBullet.png',
       '/assets/bullets/nerfBullet.json',
     );
-    this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
-    this.load.image('tree', '/assets/tiles-img/tree.png');
+    this.load.image('tiles', '/assets/tiles-img/sTiles.png');
     this.load.tilemapTiledJSON(
-      'map',
-      '/assets/tile-map/single-player.json',
+      'gameMap',
+      '/assets/tile-map/homemap.json',
     );
   }
 
@@ -87,48 +83,39 @@ class FortNerf extends Phaser.Scene {
     this.health = 100;
     this.score = 0;
     this.clock = 180 * 60;
-    const map: any = this.make.tilemap({ key: 'map' });
-    this.cameras.main.setBounds(
-      0,
-      0,
-      map.displayWidth,
-      map.displayHeight,
-    );
+    const map: any = this.make.tilemap({ key: 'gameMap' });
     this.physics.world.setBounds(
       0,
       0,
-      map.displayWidth,
-      map.displayHeight,
+      map.widthInPixels * MAP_SCALE,
+      map.heightInPixels * MAP_SCALE,
     );
-    const tileSet = map.addTilesetImage('tilesOne', 'tiles');
-    map.createLayer('floor', tileSet, 50, 20);
-    // all the trees object
-    this.trees = this.physics.add.group({
-      allowGravity: false,
-      immovable: true,
-    });
-    map
-      .getObjectLayer('trees')
-      .objects.forEach(
-        (tree: {
-          x: number;
-          y: number;
-          width: number;
-          height: number;
-        }) => {
-          const treeSprite = this.trees
-            .create(tree.x + 50, tree.y - 45, 'tree')
-            .setOrigin(0);
-          treeSprite.body.setSize(tree.width - 5, tree.height);
-        },
-      );
+    this.cameras.main.setBounds(
+      0,
+      0,
+      map.widthInPixels * MAP_SCALE,
+      map.heightInPixels * MAP_SCALE,
+    );
+    const tileSet = map.addTilesetImage('tilesOne', 'tileSet');
+    const floor = map.createLayer('Floor', tileSet, 0, 0);
+    const second = map.createLayer('Second', tileSet, 0, 0);
+    floor.setScale(MAP_SCALE);
+    second.setScale(MAP_SCALE);
+    const collidableObjects = map.createLayer(
+      'Collide',
+      tileSet,
+      0,
+      0,
+    );
+    collidableObjects.setScale(MAP_SCALE);
+    collidableObjects.setCollisionByExclusion(-1, true);
     // player and other players group
     this.player = new Player(
       this,
       this.startingX,
       this.startingY,
       this.playerOneUsername,
-      'player',
+      this.sprite,
     );
     this.otherPlayers = this.physics.add.group({
       immovable: true,
@@ -187,9 +174,9 @@ class FortNerf extends Phaser.Scene {
             .sprite(x, y - BULLET_OFFSET, 'bullet')
             .setScale(0.2);
         }
-        this.physics.add.overlap(
+        this.physics.add.collider(
           this.bullet,
-          this.trees,
+          collidableObjects,
           (theBullet) => {
             theBullet.destroy();
           },
@@ -225,36 +212,17 @@ class FortNerf extends Phaser.Scene {
       }
       return bulletShot;
     };
-    // movement animations
-    createAnimation(this.anims, 'left', 'player', 'left', 1, 3);
-    createAnimation(this.anims, 'right', 'player', 'right', 1, 3);
-    createAnimation(this.anims, 'down', 'player', 'down', 1, 3);
-    createAnimation(this.anims, 'up', 'player', 'up', 1, 3);
-    // still animations
-    createAnimation(this.anims, 'leftStill', 'player', 'left', 3, 3);
-    createAnimation(
-      this.anims,
-      'rightStill',
-      'player',
-      'right',
-      3,
-      3,
-    );
-    createAnimation(this.anims, 'downStill', 'player', 'down', 3, 3);
-    createAnimation(this.anims, 'upStill', 'player', 'up', 3, 3);
-    // bullet animation
-    createAnimation(this.anims, 'shoot', 'bullet', 'bullet', 1, 1);
     // collision
     const playerCollision = async () => {
       try {
         this.player.setVelocityY(0);
       } catch (err) {
-        // do nothing
+        console.log(err.message);
       }
     };
     this.physics.add.collider(
       this.player,
-      this.trees,
+      collidableObjects,
       playerCollision,
       undefined,
       this,
@@ -273,29 +241,19 @@ class FortNerf extends Phaser.Scene {
     });
     socket.on('existing_game_players', async (data) => {
       try {
-        data.forEach(
-          (player: {
-            startingCoords: { x: number; y: number };
-            id: string;
-            username: string | string[];
-          }) => {
-            const otherPlayer: any = this.physics.add.sprite(
-              player.startingCoords.x,
-              player.startingCoords.y,
-              'player',
-            );
-            otherPlayer.socketId = player.id;
-            otherPlayer.text = this.add.text(
-              otherPlayer.getTopLeft().x - 5,
-              otherPlayer.getTopCenter().y - 20,
-              player.username,
-              style,
-            );
-            this.otherPlayers.add(otherPlayer);
-          },
-        );
+        data.forEach((player: any) => {
+          const otherPlayer: any = new OtherPlayer(
+            this,
+            player.startingCoords.x,
+            player.startingCoords.y,
+            player.username,
+            player.sprite,
+          );
+          otherPlayer.socketId = player.id;
+          this.otherPlayers.add(otherPlayer);
+        });
       } catch (err) {
-        // want catch block to do nothing
+        console.log(err.message);
       }
     });
     socket.on(
@@ -315,7 +273,7 @@ class FortNerf extends Phaser.Scene {
             },
           );
         } catch (err) {
-          // want catch block to do nothing
+          console.log(err.message);
         }
       },
     );
@@ -329,7 +287,7 @@ class FortNerf extends Phaser.Scene {
           }
         });
       } catch (err) {
-        // want catch block to do nothing
+        console.log(err.message);
       }
     });
 
@@ -338,20 +296,20 @@ class FortNerf extends Phaser.Scene {
         this.otherBullet = this.physics.add
           .sprite(x, y, 'bullet')
           .setScale(0.2);
-        this.physics.add.overlap(
+        this.physics.add.collider(
           this.otherBullet,
-          this.trees,
+          collidableObjects,
           async (theBullet) => {
             try {
               theBullet.destroy();
             } catch (err) {
-              // do nothing
+              console.log(err.message);
             }
           },
           undefined,
           this,
         );
-        this.physics.add.overlap(
+        this.physics.add.collider(
           this.otherBullet,
           this.player,
           async (theBullet) => {
@@ -379,7 +337,7 @@ class FortNerf extends Phaser.Scene {
                 });
               }
             } catch (err) {
-              // want catch block to do nothing
+              console.log(err.message);
             }
           },
           undefined,
@@ -398,7 +356,7 @@ class FortNerf extends Phaser.Scene {
           this.otherBullet.setVelocityY(-BULLET_MOVEMENT);
         }
       } catch (err) {
-        // want catch block to do nothing
+        console.log(err.message);
       }
     });
   }
@@ -440,8 +398,8 @@ class FortNerf extends Phaser.Scene {
       this.player.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
-      this.otherPlayers.children.entries.forEach((player) => {
-        handleOtherPlayerAnims(player);
+      this.otherPlayers.children.entries.forEach((player: any) => {
+        player?.handleAnimations();
       });
     }
     // controls bullet updates on space press

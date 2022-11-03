@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import Main from './pages/Main';
 import HomePage from './pages/HomePage';
@@ -20,6 +20,7 @@ import { RootState } from './store';
 import { setConnected } from './store/UserSlice';
 
 function App() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loggedIn } = useSelector(
     (state: RootState) => state.user,
@@ -28,8 +29,11 @@ function App() {
   useEffect(() => {
     // only connect once in entire app when the app loads
     socket.on('connect', () => {
-      dispatch(setConnected);
+      dispatch(setConnected());
     });
+    if (loggedIn) {
+      navigate('/dashboard');
+    }
     return () => {
       socket.off('connect');
     };

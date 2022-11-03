@@ -33,7 +33,7 @@ function GameChat({ toggleAside, messages }: ChatProps) {
   );
   const [msg, setMessage] = useState('');
   const ref = useChatScroll(messages);
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const sendChat = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     socket.emit('chat', {

@@ -1,4 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
+import {
+  updateLocalStorage,
+  deleteLocalStorage,
+} from '../utils/functions';
 
 type User = {
   docId: string;
@@ -14,16 +18,16 @@ type User = {
 };
 
 const initialState = {
-  docId: '',
-  username: '',
-  name: '',
-  email: '',
+  docId: localStorage.getItem('id') || '',
+  username: localStorage.getItem('username') || '',
+  name: localStorage.getItem('name') || '',
+  email: localStorage.getItem('email') || '',
   host: false,
-  loggedIn: false,
+  loggedIn: localStorage.getItem('loggedIn') || false,
   connected: false,
   x: 0,
   y: 0,
-  playerSprite: 'player',
+  playerSprite: localStorage.getItem('sprite') || 'player',
 } as User;
 
 export const userSlice = createSlice({
@@ -37,7 +41,12 @@ export const userSlice = createSlice({
       state.name = payload.name;
       state.email = payload.email;
       state.playerSprite = payload.sprite || 'player';
-      state.loggedIn = !state.loggedIn;
+      state.loggedIn = payload.loggedIn;
+      if (payload.loggedIn) {
+        updateLocalStorage(payload);
+      } else {
+        deleteLocalStorage();
+      }
     },
     setConnected(state) {
       state.connected = true;
@@ -48,9 +57,11 @@ export const userSlice = createSlice({
     },
     updateUsername(state, { payload }) {
       state.username = payload;
+      localStorage.setItem('username', payload);
     },
     changePlayerSprite(state, { payload }) {
       state.playerSprite = payload;
+      localStorage.setItem('sprite', payload);
     },
   },
 });

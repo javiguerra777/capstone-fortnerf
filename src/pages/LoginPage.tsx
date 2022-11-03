@@ -35,12 +35,12 @@ function LoginPage() {
         const q = query(userCollection, where('email', '==', email));
 
         const getUserFromDB = async () => {
-          let userData = {};
+          let userData: any = {};
           const querySnapshot = await getDocs(q);
           querySnapshot.forEach((doc) => {
             userData = { ...doc.data(), id: doc.id };
           });
-          dispatch(setUser({ ...userData }));
+          await dispatch(setUser({ ...userData, loggedIn: true }));
         };
         await getUserFromDB();
         navigate('/dashboard');

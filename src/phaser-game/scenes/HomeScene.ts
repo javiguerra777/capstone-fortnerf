@@ -1,22 +1,21 @@
 import Phaser from 'phaser';
 import store from '../../store';
 import { socket } from '../../service/socket';
+import { MAP_SCALE } from '../utils/constants';
 import Player from '../objects/Player';
 import TextBox from '../objects/TextBox';
 import OtherPlayer from '../objects/OtherPlayer';
 
 class HomeScene extends Phaser.Scene {
-  homePlayer!: Player;
+  player!: Player;
 
   sprite!: string;
 
   otherPlayers!: Phaser.Physics.Arcade.Group;
 
-  homePlayerName!: string;
+  playerName!: string;
 
-  homeGameRoom!: string;
-
-  homeCursor!: Phaser.Types.Input.Keyboard.CursorKeys;
+  gameRoom!: string;
 
   playButton!: Phaser.GameObjects.Text;
 
@@ -30,10 +29,10 @@ class HomeScene extends Phaser.Scene {
     const state = store.getState();
     const { id } = state.game;
     const { username, playerSprite } = state.user;
-    this.homePlayerName = username;
-    this.homeGameRoom = id;
+    this.playerName = username;
+    this.gameRoom = id;
     this.sprite = playerSprite;
-    this.load.image('tileSet', '/assets/tiles-img/tilesheet.png');
+    this.load.image('tileSet', '/assets/tiles-img/sTiles.png');
     this.load.tilemapTiledJSON(
       'homeMap',
       '/assets/tile-map/homemap.json',
@@ -67,54 +66,63 @@ class HomeScene extends Phaser.Scene {
 
   create() {
     // map
-    const homeMap: any = this.make.tilemap({ key: 'homeMap' });
-    this.cameras.main.setBounds(
-      0,
-      0,
-      homeMap.displayWidth,
-      homeMap.displayHeight,
-    );
+    const map: any = this.make.tilemap({ key: 'homeMap' });
     this.physics.world.setBounds(
       0,
       0,
-      homeMap.displayWidth,
-      homeMap.displayHeight,
+      map.widthInPixels * MAP_SCALE,
+      map.heightInPixels * MAP_SCALE,
     );
-    const homeTileSet = homeMap.addTilesetImage('tiles', 'tileSet');
-    homeMap.createLayer('floor', homeTileSet, 50, 20);
-    const walls = homeMap.createLayer('walls', homeTileSet, 50, 20);
-    homeMap.setCollisionBetween(1, 999, true, 'colliders');
+    this.cameras.main.setBounds(
+      0,
+      0,
+      map.widthInPixels * MAP_SCALE,
+      map.heightInPixels * MAP_SCALE,
+    );
+    const tileSet = map.addTilesetImage('tilesOne', 'tileSet');
+    const floor = map.createLayer('Floor', tileSet, 0, 0);
+    const second = map.createLayer('Second', tileSet, 0, 0);
+    floor.setScale(MAP_SCALE);
+    second.setScale(MAP_SCALE);
+    const collidableObjects = map.createLayer(
+      'Collide',
+      tileSet,
+      0,
+      0,
+    );
+    collidableObjects.setScale(MAP_SCALE);
+    collidableObjects.setCollisionByExclusion(-1, true);
     // player and other player groups
-    this.homePlayer = new Player(
+    this.player = new Player(
       this,
       500,
       500,
-      this.homePlayerName,
+      this.playerName,
       this.sprite,
     ).setScale(1.5);
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
     const { height, width } = this.sys.game.canvas;
     const startFortNerf = async () => {
-      await socket.emit('start_game', this.homeGameRoom);
+      await socket.emit('start_game', this.gameRoom);
       await this.scene.stop('HomeScene').launch('FortNerf');
     };
-    const playerCollider = () => {
-      this.homePlayer.setVelocity(0);
+    // collision
+    const playerCollision = () => {
+      this.player.setVelocity(0);
     };
+    this.player.setCollideWorldBounds(true);
     this.physics.add.collider(
-      this.homePlayer,
-      walls,
-      playerCollider,
+      this.player,
+      collidableObjects,
+      playerCollision,
       undefined,
       this,
     );
-    this.homeCursor = this.input.keyboard.createCursorKeys();
-
     // socket methods
     socket.emit('join_home', {
-      room: this.homeGameRoom,
-      username: this.homePlayerName,
+      room: this.gameRoom,
+      username: this.playerName,
       sprite: this.sprite,
     });
     socket.on(
@@ -129,9 +137,9 @@ class HomeScene extends Phaser.Scene {
             sprite,
           ).setScale(1.5);
           otherPlayer.socketId = socketId;
-          this.otherPlayers.add(otherPlayer);
+          await this.otherPlayers?.add(otherPlayer);
         } catch (err) {
-          // want catch block to do nothing
+          // console.log('new_player', err.message);
         }
       },
     );
@@ -153,18 +161,18 @@ class HomeScene extends Phaser.Scene {
               player.sprite,
             ).setScale(1.5);
             otherPlayer.socketId = player.id;
-            this.otherPlayers.add(otherPlayer);
+            this.otherPlayers?.add(otherPlayer);
           },
         );
       } catch (err) {
-        // want catch block to do nothing
+        // console.log('existing player', err.message);
       }
     });
     socket.on(
       'playerMoveHome',
       async ({ x, y, direction, socketId }) => {
         try {
-          this.otherPlayers.children.entries.forEach(
+          this.otherPlayers.children.entries?.forEach(
             (player: any) => {
               if (player.socketId === socketId) {
                 player.x = x;
@@ -177,20 +185,20 @@ class HomeScene extends Phaser.Scene {
             },
           );
         } catch (err) {
-          // want catch block to do nothing
+          // console.log('move home', err.message);
         }
       },
     );
     socket.on('moveHomeEnd', async ({ direction, socketId }) => {
       try {
-        this.otherPlayers.children.entries.forEach((player: any) => {
+        this.otherPlayers.children.entries?.forEach((player: any) => {
           if (player.socketId === socketId) {
             player.direction = direction;
             player.moving = false;
           }
         });
       } catch (err) {
-        // want catch block to do nothing
+        // console.log('move end', err.message);
       }
     });
     socket.on('playerLeft', async (socketId) => {
@@ -202,14 +210,14 @@ class HomeScene extends Phaser.Scene {
           }
         });
       } catch (err) {
-        // want catch block to do nothing
+        // console.log('player left', err.message);
       }
     });
     socket.on('play_game', async () => {
       try {
         this.scene.stop('HomeScene').launch('FortNerf');
       } catch (err) {
-        // want catch block to do nothing
+        // console.log(err.message);
       }
     });
     socket.on('can_start', async () => {
@@ -254,27 +262,27 @@ class HomeScene extends Phaser.Scene {
       this.input.keyboard.enabled = true;
       this.input.keyboard.enableGlobalCapture();
     }
-    this.cameras.main.startFollow(this.homePlayer);
+    this.cameras.main.startFollow(this.player);
     if (this.playButton) {
       const { height, width } = this.sys.game.canvas;
       this.playButton.setX(width / 2);
       this.playButton.setY(height / 2 + 100);
     }
-    const playerMoved = this.homePlayer.movePlayer();
+    const playerMoved = this.player.movePlayer();
     if (playerMoved) {
       socket.emit('moveHome', {
-        x: this.homePlayer.x,
-        y: this.homePlayer.y,
-        direction: this.homePlayer.direction,
-        room: this.homeGameRoom,
+        x: this.player.x,
+        y: this.player.y,
+        direction: this.player.direction,
+        room: this.gameRoom,
       });
-      this.homePlayer.movedLastFrame = true;
+      this.player.movedLastFrame = true;
     } else {
       socket.emit('moveHomeEnd', {
-        direction: this.homePlayer.direction,
-        room: this.homeGameRoom,
+        direction: this.player.direction,
+        room: this.gameRoom,
       });
-      this.homePlayer.movedLastFrame = false;
+      this.player.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
       this.otherPlayers.children.entries.forEach((player: any) => {

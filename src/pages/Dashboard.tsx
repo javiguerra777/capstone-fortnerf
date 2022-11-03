@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { HiOutlineUsers } from 'react-icons/hi';
 import { nanoid } from 'nanoid';
 import nerfTarget from '../img/nerf_target.png';
@@ -31,16 +31,6 @@ function Dashboard() {
     });
   }, []);
   // functions
-  const navToGame = (
-    gameId: string,
-    usersInGame: number,
-    maxUsers: number,
-  ) => {
-    if (usersInGame === maxUsers) {
-      return;
-    }
-    navigate(`/game/${gameId}`);
-  };
   const playSoloGame = () => {
     navigate('/singleplayer');
   };
@@ -67,12 +57,7 @@ function Dashboard() {
         {gameServers
           ?.filter((game: Game) => !game.started)
           .map((game: Game) => (
-            <GameDetails
-              key={nanoid()}
-              onClick={() =>
-                navToGame(game._id, game.users.length, game.maxUsers)
-              }
-            >
+            <GameDetails key={nanoid()}>
               <section id="item1">
                 <p>Fort Nerf</p>
                 <img src={nerfTarget} alt="game-logo" />
@@ -85,6 +70,14 @@ function Dashboard() {
                   {game.users.length}/{game.maxUsers}
                 </p>
                 <HiOutlineUsers size={28} />
+                <NavLink
+                  className="navLink-btn"
+                  to={`/game/${game._id}`}
+                  target="_blank"
+                >
+                  {' '}
+                  Join Game
+                </NavLink>
               </section>
             </GameDetails>
           ))}

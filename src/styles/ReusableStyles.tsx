@@ -300,7 +300,6 @@ export const GameDetails = styled.section`
   border-radius: 0.5em;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
-  cursor: pointer;
   #item1 {
     margin-left: 1em;
     display: flex;

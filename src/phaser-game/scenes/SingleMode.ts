@@ -1,9 +1,13 @@
 import Phaser from 'phaser';
-import { BULLET_MOVEMENT, BULLET_OFFSET } from '../utils/constants';
-import npcData from '../../json/NPC.json';
+import {
+  BULLET_MOVEMENT,
+  BULLET_OFFSET,
+  MAP_SCALE,
+} from '../utils/constants';
+// import npcData from '../../json/NPC.json';
 import Player from '../objects/Player';
 import TextBox from '../objects/TextBox';
-import NPC from '../objects/Npc';
+// import NPC from '../objects/Npc';
 import store from '../../store';
 
 class SingleMode extends Phaser.Scene {
@@ -21,8 +25,6 @@ class SingleMode extends Phaser.Scene {
 
   // eslint-disable-next-line no-unused-vars
   shootBullet!: (x: number, y: number, direction: string) => void;
-
-  trees!: Phaser.Physics.Arcade.Group;
 
   timer = 0;
 
@@ -70,43 +72,41 @@ class SingleMode extends Phaser.Scene {
       '/assets/bullets/nerfBullet.png',
       '/assets/bullets/nerfBullet.json',
     );
-    this.load.image('tiles', '/assets/tiles-img/tilesheet.png');
-    this.load.image('tree', '/assets/tiles-img/tree.png');
+    this.load.image('tiles', '/assets/tiles-img/sTiles.png');
     this.load.tilemapTiledJSON(
       'map',
-      '/assets/tile-map/single-player.json',
+      '/assets/tile-map/homemap.json',
     );
   }
 
   create() {
+    // map
     const map: any = this.make.tilemap({ key: 'map' });
     this.physics.world.setBounds(
       0,
       0,
-      map.displayWidth,
-      map.displayHeight,
+      map.widthInPixels * MAP_SCALE,
+      map.heightInPixels * MAP_SCALE,
+    );
+    this.cameras.main.setBounds(
+      0,
+      0,
+      map.widthInPixels * MAP_SCALE,
+      map.heightInPixels * MAP_SCALE,
     );
     const tileSet = map.addTilesetImage('tilesOne', 'tiles');
-    map.createLayer('floor', tileSet, 50, 20);
-    this.trees = this.physics.add.group({
-      allowGravity: false,
-      immovable: true,
-    });
-    map
-      .getObjectLayer('trees')
-      .objects.forEach(
-        (tree: {
-          x: number;
-          y: number;
-          width: number;
-          height: number;
-        }) => {
-          const treeSprite = this.trees
-            .create(tree.x + 50, tree.y - 45, 'tree')
-            .setOrigin(0);
-          treeSprite.body.setSize(tree.width - 5, tree.height);
-        },
-      );
+    const floor = map.createLayer('Floor', tileSet, 0, 0);
+    const second = map.createLayer('Second', tileSet, 0, 0);
+    floor.setScale(MAP_SCALE);
+    second.setScale(MAP_SCALE);
+    const collidableObjects = map.createLayer(
+      'Collide',
+      tileSet,
+      0,
+      0,
+    );
+    collidableObjects.setScale(MAP_SCALE);
+    collidableObjects.setCollisionByExclusion(-1, true);
     // player methods
     this.player = new Player(
       this,
@@ -116,20 +116,20 @@ class SingleMode extends Phaser.Scene {
       this.playerSprite,
     ).setScale(1.5);
     // npc
-    this.npcs = this.physics.add.group({
-      allowGravity: false,
-      immovable: true,
-    });
+    // this.npcs = this.physics.add.group({
+    //   allowGravity: false,
+    //   immovable: true,
+    // });
 
-    npcData.forEach((anNpc) => {
-      const npcSprite: NPC = new NPC(
-        this,
-        anNpc.x,
-        anNpc.y,
-        'npc',
-      ).setScale(1.5);
-      this.npcs.add(npcSprite);
-    });
+    // npcData.forEach((anNpc) => {
+    //   const npcSprite: NPC = new NPC(
+    //     this,
+    //     anNpc.x,
+    //     anNpc.y,
+    //     'npc',
+    //   ).setScale(1.5);
+    //   this.npcs.add(npcSprite);
+    // });
     // bullet group
     this.bullets = this.physics.add.group();
     // shoot bullet method
@@ -201,25 +201,14 @@ class SingleMode extends Phaser.Scene {
     };
     this.physics.add.collider(
       this.player,
-      [this.npcs, this.trees],
+      [this.npcs, collidableObjects],
       playerHit,
       undefined,
       this,
     );
     this.physics.add.collider(
       this.bullets,
-      this.npcs,
-      (bullet) => {
-        bullet.destroy();
-        this.score += 10;
-        scoreText.setText(`Score ${this.score}`);
-      },
-      undefined,
-      this,
-    );
-    this.physics.add.collider(
-      this.bullets,
-      this.trees,
+      collidableObjects,
       (bullet) => {
         bullet.destroy();
       },
