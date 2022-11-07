@@ -3,10 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 type GameState = {
   id: string;
   disableKeyBoard: boolean;
+  leftGame: boolean;
 };
 const initialState = {
   id: '',
   disableKeyBoard: false,
+  leftGame: false,
 } as GameState;
 
 export const gameSlice = createSlice({
@@ -23,9 +25,12 @@ export const gameSlice = createSlice({
     enableKeyBoard(state) {
       state.disableKeyBoard = false;
     },
+    leaveGame(state) {
+      state.leftGame = true;
+    },
   },
 });
 
-export const { setId, disableKeyBoard, enableKeyBoard } =
+export const { setId, disableKeyBoard, enableKeyBoard, leaveGame } =
   gameSlice.actions;
 export default gameSlice.reducer;

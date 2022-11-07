@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { HiOutlineUsers } from 'react-icons/hi';
 import { nanoid } from 'nanoid';
 import nerfTarget from '../../../assets/img/nerf_target.png';
@@ -30,6 +30,17 @@ function Dashboard() {
   // functions
   const playSoloGame = () => {
     navigate('/singleplayer');
+  };
+  const toGame = (
+    route: string,
+    usersInGame: number,
+    maxUsers: number,
+  ) => {
+    if (usersInGame >= maxUsers) {
+      return true;
+    }
+    navigate(`/game/${route}`);
+    return true;
   };
   return (
     <DashboardWrapper>
@@ -67,14 +78,16 @@ function Dashboard() {
                   {game.users.length}/{game.maxUsers}
                 </p>
                 <HiOutlineUsers size={28} />
-                <NavLink
+                <button
+                  type="button"
+                  onClick={() =>
+                    toGame(game._id, game.users.length, game.maxUsers)
+                  }
                   className="navLink-btn"
-                  to={`/game/${game._id}`}
-                  target="_blank"
                 >
                   {' '}
                   Join Game
-                </NavLink>
+                </button>
               </section>
             </GameDetails>
           ))}

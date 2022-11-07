@@ -23,6 +23,8 @@ class HomeScene extends Phaser.Scene {
 
   keyBoardDisabled!: boolean;
 
+  error!: string;
+
   constructor() {
     super('HomeScene');
   }
@@ -71,7 +73,7 @@ class HomeScene extends Phaser.Scene {
     const { height, width } = this.sys.game.canvas;
     const startFortNerf = async () => {
       await socket.emit('start_game', this.gameRoom);
-      await this.scene.stop('HomeScene').launch('FortNerf');
+      await this.scene.start('FortNerf');
     };
     // collision
     const playerCollision = () => {
@@ -105,7 +107,7 @@ class HomeScene extends Phaser.Scene {
           otherPlayer.socketId = socketId;
           await this.otherPlayers?.add(otherPlayer);
         } catch (err) {
-          // console.log('new_player', err.message);
+          console.log('new_player', err.message);
         }
       },
     );
@@ -131,7 +133,7 @@ class HomeScene extends Phaser.Scene {
           },
         );
       } catch (err) {
-        // console.log('existing player', err.message);
+        console.log('existing player', err.message);
       }
     });
     socket.on(
@@ -151,7 +153,7 @@ class HomeScene extends Phaser.Scene {
             },
           );
         } catch (err) {
-          // console.log('move home', err.message);
+          console.log('move home', err.message);
         }
       },
     );
@@ -164,7 +166,7 @@ class HomeScene extends Phaser.Scene {
           }
         });
       } catch (err) {
-        // console.log('move end', err.message);
+        console.log('move end', err.message);
       }
     });
     socket.on('playerLeft', async (socketId) => {
@@ -176,14 +178,14 @@ class HomeScene extends Phaser.Scene {
           }
         });
       } catch (err) {
-        // console.log('player left', err.message);
+        console.log('player left', err.message);
       }
     });
     socket.on('play_game', async () => {
       try {
-        this.scene.stop('HomeScene').launch('FortNerf');
+        this.scene.start('FortNerf');
       } catch (err) {
-        // console.log(err.message);
+        console.log(err.message);
       }
     });
     socket.on('can_start', async () => {
@@ -220,7 +222,7 @@ class HomeScene extends Phaser.Scene {
     const state = store.getState();
     const { disableKeyBoard } = state.game;
     this.keyBoardDisabled = disableKeyBoard;
-    // this allows for users to be able to use the keyboard if they click on another DOM element
+    // allows for users to be able to use the keyboard if they click on another DOM element
     if (this.keyBoardDisabled) {
       this.input.keyboard.enabled = false;
       this.input.keyboard.disableGlobalCapture();
@@ -251,7 +253,7 @@ class HomeScene extends Phaser.Scene {
       this.player.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
-      this.otherPlayers.children.entries.forEach((player: any) => {
+      this.otherPlayers.children.entries?.forEach((player: any) => {
         player?.handleAnimations();
       });
     }

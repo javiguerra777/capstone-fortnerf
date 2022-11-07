@@ -2,10 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SinglePlayerGame from '../components/SinglePlayerGame';
 import SinglePlayerWrapper from '../styles/SinglePlayerWrapper';
+import UseLeaveGame from '../hooks/UseLeaveGame';
 
 function SinglePlayer() {
   const navigate = useNavigate();
-
+  UseLeaveGame();
   const returnHome = () => {
     navigate('/dashboard');
   };

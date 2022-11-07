@@ -15,6 +15,7 @@ import {
   useAppSelector,
   useAppDispatch,
 } from '../../../app/redux/hooks';
+import UseLeaveGame from '../hooks/UseLeaveGame';
 
 function Game() {
   const maxWidth = '100%';
@@ -37,7 +38,7 @@ function Game() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const closeTab = () => {
     // eslint-disable-next-line no-restricted-globals
-    close();
+    navigate('/dashboard');
   };
   const toggleAside = () => {
     if (displayAside) {
@@ -58,6 +59,7 @@ function Game() {
     }
   };
   // useEffects
+  UseLeaveGame();
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: { width: 300 }, audio: true })

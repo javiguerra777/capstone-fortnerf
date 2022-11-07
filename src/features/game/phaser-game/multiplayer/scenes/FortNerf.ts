@@ -14,6 +14,7 @@ import OtherPlayer from '../../objects/OtherPlayer';
 import TextBox from '../../objects/TextBox';
 import postScore from '../../../api/PostScore';
 import loadCharacters from '../../utils/loadAssets';
+import { createMap } from '../../utils/createMap';
 
 class FortNerf extends Phaser.Scene {
   player!: Player;
@@ -33,7 +34,11 @@ class FortNerf extends Phaser.Scene {
 
   bullet!: Phaser.Physics.Arcade.Sprite;
 
+  bullets!: Phaser.Physics.Arcade.Group;
+
   otherBullet!: Phaser.Physics.Arcade.Sprite;
+
+  otherBullets!: Phaser.Physics.Arcade.Group;
 
   cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -83,19 +88,14 @@ class FortNerf extends Phaser.Scene {
     this.health = 100;
     this.score = 0;
     this.clock = 180 * 60;
-    const map: any = this.make.tilemap({ key: 'gameMap' });
-    this.physics.world.setBounds(
-      0,
-      0,
-      map.widthInPixels * MAP_SCALE,
-      map.heightInPixels * MAP_SCALE,
-    );
-    this.cameras.main.setBounds(
-      0,
-      0,
-      map.widthInPixels * MAP_SCALE,
-      map.heightInPixels * MAP_SCALE,
-    );
+    // physic groups
+    this.bullets = this.physics.add.group();
+    this.otherBullets = this.physics.add.group();
+    this.otherPlayers = this.physics.add.group({
+      immovable: true,
+    });
+    // map creation and tiles
+    const map = createMap(this, 'gameMap');
     const tileSet = map.addTilesetImage('tilesOne', 'tileSet');
     const floor = map.createLayer('Floor', tileSet, 0, 0);
     const second = map.createLayer('Second', tileSet, 0, 0);
@@ -109,7 +109,7 @@ class FortNerf extends Phaser.Scene {
     );
     collidableObjects.setScale(MAP_SCALE);
     collidableObjects.setCollisionByExclusion(-1, true);
-    // player and other players group
+    // player
     this.player = new Player(
       this,
       this.startingX,
@@ -117,9 +117,7 @@ class FortNerf extends Phaser.Scene {
       this.playerOneUsername,
       this.sprite,
     );
-    this.otherPlayers = this.physics.add.group({
-      immovable: true,
-    });
+    this.player.setPushable(false);
     // text within game
     const { width } = this.sys.game.canvas;
     this.clockText = new TextBox(
@@ -157,57 +155,41 @@ class FortNerf extends Phaser.Scene {
     this.shootBullet = (x: number, y: number, direction: string) => {
       let bulletShot = false;
       if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
-        if (direction === 'right') {
-          this.bullet = this.physics.add
-            .sprite(x + BULLET_OFFSET, y, 'bullet')
-            .setScale(0.2);
-        } else if (direction === 'left') {
-          this.bullet = this.physics.add
-            .sprite(x - BULLET_OFFSET, y, 'bullet')
-            .setScale(0.2);
-        } else if (direction === 'down') {
-          this.bullet = this.physics.add
-            .sprite(x, y + BULLET_OFFSET, 'bullet')
-            .setScale(0.2);
-        } else if (direction === 'up') {
-          this.bullet = this.physics.add
-            .sprite(x, y - BULLET_OFFSET, 'bullet')
-            .setScale(0.2);
-        }
-        this.physics.add.collider(
-          this.bullet,
-          collidableObjects,
-          (theBullet) => {
-            theBullet.destroy();
-          },
-          undefined,
-          this,
-        );
-        this.physics.add.collider(
-          this.bullet,
-          this.otherPlayers,
-          (theBullet) => {
-            this.score += 10;
-            this.scoreText?.setText(
-              `Score: ${this.score.toString()}`,
-            );
-            theBullet.destroy();
-          },
-          undefined,
-          this,
-        );
         bulletShot = true;
-        if (direction === 'right') {
-          this.bullet.setVelocityX(BULLET_MOVEMENT);
-        } else if (direction === 'left') {
-          this.bullet.setVelocityX(-BULLET_MOVEMENT);
-          this.bullet.flipX = true;
-        } else if (direction === 'down') {
-          this.bullet.setVelocityY(BULLET_MOVEMENT);
-          this.bullet.rotation = 1.55;
-        } else if (direction === 'up') {
-          this.bullet.setVelocityY(-BULLET_MOVEMENT);
-          this.bullet.rotation = -1.55;
+        switch (direction) {
+          case 'right':
+            this.bullet = this.physics.add
+              .sprite(x + BULLET_OFFSET, y, 'bullet')
+              .setScale(0.2);
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityX(BULLET_MOVEMENT);
+            return bulletShot;
+          case 'left':
+            this.bullet = this.physics.add
+              .sprite(x - BULLET_OFFSET, y, 'bullet')
+              .setScale(0.2);
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityX(-BULLET_MOVEMENT);
+            this.bullet.flipX = true;
+            return bulletShot;
+          case 'down':
+            this.bullet = this.physics.add
+              .sprite(x, y + BULLET_OFFSET, 'bullet')
+              .setScale(0.2);
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityY(BULLET_MOVEMENT);
+            this.bullet.rotation = 1.55;
+            return bulletShot;
+          case 'up':
+            this.bullet = this.physics.add
+              .sprite(x, y - BULLET_OFFSET, 'bullet')
+              .setScale(0.2);
+            this.bullets.add(this.bullet);
+            this.bullet.setVelocityY(-BULLET_MOVEMENT);
+            this.bullet.rotation = -1.55;
+            return bulletShot;
+          default:
+            return false;
         }
       }
       return bulletShot;
@@ -224,6 +206,70 @@ class FortNerf extends Phaser.Scene {
       this.player,
       collidableObjects,
       playerCollision,
+      undefined,
+      this,
+    );
+    this.physics.add.collider(
+      this.bullets,
+      collidableObjects,
+      (theBullet) => {
+        theBullet.destroy();
+      },
+      undefined,
+      this,
+    );
+    this.physics.add.collider(
+      this.bullets,
+      this.otherPlayers,
+      (theBullet) => {
+        this.score += 10;
+        this.scoreText?.setText(`Score: ${this.score.toString()}`);
+        theBullet.destroy();
+      },
+      undefined,
+      this,
+    );
+    this.physics.add.collider(
+      this.otherBullets,
+      collidableObjects,
+      async (theBullet) => {
+        try {
+          theBullet.destroy();
+        } catch (err) {
+          console.log(err.message);
+        }
+      },
+      undefined,
+      this,
+    );
+    this.physics.add.collider(
+      this.otherBullets,
+      this.player,
+      // the bullet is the second argument so that the collision destroys the correct object
+      async (thePlayer, theBullet) => {
+        try {
+          theBullet?.destroy();
+          this.health -= HEALTH_DECREMENT;
+          this.healthText?.setText(`hp: ${this.health.toString()}`);
+          if (this.health <= 0) {
+            this.health = 100;
+            this.healthText?.setText(`hp: ${this.health.toString()}`);
+            const respawnCoords = randomRespawn();
+            this.player.setX(respawnCoords.x);
+            this.player.setY(respawnCoords.y);
+            this.player.direction = 'down';
+            socket.emit('move', {
+              x: respawnCoords.x,
+              y: respawnCoords.y,
+              direction: 'down',
+              room: this.gameRoom,
+              respawn: true,
+            });
+          }
+        } catch (err) {
+          console.log(err.message);
+        }
+      },
       undefined,
       this,
     );
@@ -260,7 +306,7 @@ class FortNerf extends Phaser.Scene {
       'playerMove',
       async ({ x, y, direction, socketId, respawn }) => {
         try {
-          this.otherPlayers.children.entries.forEach(
+          this.otherPlayers.children.entries?.forEach(
             (player: any) => {
               if (player.socketId === socketId) {
                 player.x = x;
@@ -280,7 +326,7 @@ class FortNerf extends Phaser.Scene {
 
     socket.on('playerMoveEnd', async ({ direction, socketId }) => {
       try {
-        this.otherPlayers.children.entries.forEach((player: any) => {
+        this.otherPlayers.children.entries?.forEach((player: any) => {
           if (player.socketId === socketId) {
             player.direction = direction;
             player.moving = false;
@@ -296,53 +342,7 @@ class FortNerf extends Phaser.Scene {
         this.otherBullet = this.physics.add
           .sprite(x, y, 'bullet')
           .setScale(0.2);
-        this.physics.add.collider(
-          this.otherBullet,
-          collidableObjects,
-          async (theBullet) => {
-            try {
-              theBullet.destroy();
-            } catch (err) {
-              console.log(err.message);
-            }
-          },
-          undefined,
-          this,
-        );
-        this.physics.add.collider(
-          this.otherBullet,
-          this.player,
-          async (theBullet) => {
-            try {
-              theBullet?.destroy();
-              this.health -= HEALTH_DECREMENT;
-              this.healthText?.setText(
-                `hp: ${this.health.toString()}`,
-              );
-              if (this.health <= 0) {
-                this.health = 100;
-                this.healthText?.setText(
-                  `hp: ${this.health.toString()}`,
-                );
-                const respawnCoords = randomRespawn();
-                this.player.setX(respawnCoords.x);
-                this.player.setY(respawnCoords.y);
-                this.player.direction = 'down';
-                socket.emit('move', {
-                  x: respawnCoords.x,
-                  y: respawnCoords.y,
-                  direction: 'down',
-                  room: this.gameRoom,
-                  respawn: true,
-                });
-              }
-            } catch (err) {
-              console.log(err.message);
-            }
-          },
-          undefined,
-          this,
-        );
+        this.otherBullets.add(this.otherBullet);
         if (direction === 'left') {
           this.otherBullet.flipX = true;
           this.otherBullet.setVelocityX(-BULLET_MOVEMENT);
@@ -398,7 +398,7 @@ class FortNerf extends Phaser.Scene {
       this.player.movedLastFrame = false;
     }
     if (this.otherPlayers.children.entries.length > 0) {
-      this.otherPlayers.children.entries.forEach((player: any) => {
+      this.otherPlayers.children.entries?.forEach((player: any) => {
         player?.handleAnimations();
       });
     }

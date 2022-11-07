@@ -1,16 +1,16 @@
 import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, shallowEqual } from 'react-redux';
+import { shallowEqual } from 'react-redux';
+import { useAppSelector } from '../../../app/redux/hooks';
 import UserNavBar from '../../../common/components/UserNavBar';
 import createNewRoom from '../api/createNewRoom';
-import { RootState } from '../../../app/redux';
 import { socket } from '../../../service/socket';
 import NewServerWrapper from '../styles/NewServer';
 
 function CreateNewServer() {
   const navigate = useNavigate();
-  const { username } = useSelector(
-    (state: RootState) => state.user,
+  const { username } = useAppSelector(
+    (state) => state.user,
     shallowEqual,
   );
   const [gameName, setGameName] = useState('');
@@ -26,8 +26,7 @@ function CreateNewServer() {
     try {
       const { data } = await createNewRoom(gameData);
       await socket.emit('updateRooms');
-      await window.open(`http://localhost:3000/game/${data._id}`);
-      navigate('/dashboard');
+      navigate(`/game/${data._id}`);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

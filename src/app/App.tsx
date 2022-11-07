@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { shallowEqual, useSelector, useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import Main from '../common/components/Main';
 import HomePage from '../features/public-ui/pages/HomePage';
 import LoginPage from '../features/authenticate/pages/LoginPage';
@@ -16,13 +16,17 @@ import SinglePlayer from '../features/game/pages/SinglePlayer';
 import NotFound from '../common/components/NotFound';
 import ProtectedRoutes from '../common/components/ProtectedRoutes';
 import { socket } from '../service/socket';
-import { RootState } from './redux';
 import { setConnected } from './redux/UserSlice';
+import { useAppSelector } from './redux/hooks';
 
 function App() {
   const dispatch = useDispatch();
-  const { loggedIn } = useSelector(
-    (state: RootState) => state.user,
+  const { loggedIn } = useAppSelector(
+    (state) => state.user,
+    shallowEqual,
+  );
+  const { leftGame } = useAppSelector(
+    (state) => state.game,
     shallowEqual,
   );
   useEffect(() => {
@@ -34,6 +38,11 @@ function App() {
       socket.off('connect');
     };
   }, []);
+  useEffect(() => {
+    if (leftGame) {
+      window.location.reload();
+    }
+  }, [leftGame]);
   return (
     <Routes>
       <Route path="/" element={<Main />}>
