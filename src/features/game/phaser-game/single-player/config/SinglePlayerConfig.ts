@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import SingleMode from '../scenes/SingleMode';
+import Home from '../scenes/Home';
 
 const config = {
   type: Phaser.AUTO,
@@ -11,10 +11,12 @@ const config = {
   backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',
-    debug: false,
+    arcade: {
+      debug: true,
+    },
   },
   parent: 'single-mode',
-  scene: [SingleMode],
+  scene: [Home],
 };
 
 export default config;

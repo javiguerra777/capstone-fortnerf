@@ -16,6 +16,8 @@ class EndGame extends Phaser.Scene {
 
   textGroup!: Phaser.Physics.Arcade.Group;
 
+  error!: string;
+
   constructor() {
     super('EndGame');
   }
@@ -47,7 +49,7 @@ class EndGame extends Phaser.Scene {
         socket.emit('GameOver', this.gameRoom);
         socket.emit('return_to_lobby', { room: this.gameRoom });
       } catch (err) {
-        // want catch block to do nothing
+        this.error = err.message;
       }
     };
     this.returnToLobbyText = new TextBox(
@@ -79,7 +81,7 @@ class EndGame extends Phaser.Scene {
             count += 1;
           });
       } catch (err) {
-        // do nothing
+        this.error = err.message;
       }
     });
   }

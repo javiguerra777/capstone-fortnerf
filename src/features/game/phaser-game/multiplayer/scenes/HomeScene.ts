@@ -5,6 +5,8 @@ import { MAP_SCALE } from '../../utils/constants';
 import Player from '../../objects/Player';
 import TextBox from '../../objects/TextBox';
 import OtherPlayer from '../../objects/OtherPlayer';
+import loadCharacters from '../../utils/loadAssets';
+import { createMap } from '../../utils/createMap';
 
 class HomeScene extends Phaser.Scene {
   player!: Player;
@@ -37,48 +39,12 @@ class HomeScene extends Phaser.Scene {
       'homeMap',
       '/assets/tile-map/homemap.json',
     );
-    this.load.atlas(
-      'player',
-      '/assets/characters/male_player.png',
-      '/assets/characters/male_player.json',
-    );
-    this.load.atlas(
-      'npc',
-      '/assets/characters/npc.png',
-      '/assets/characters/npc.json',
-    );
-    this.load.atlas(
-      'soldier',
-      '/assets/characters/soldier.png',
-      '/assets/characters/soldier.json',
-    );
-    this.load.atlas(
-      'pumpkin',
-      '/assets/characters/pumpkin.png',
-      '/assets/characters/pumpkin.json',
-    );
-    this.load.atlas(
-      'robeman',
-      '/assets/characters/robeman.png',
-      '/assets/characters/robeman.json',
-    );
+    loadCharacters(this);
   }
 
   create() {
     // map
-    const map: any = this.make.tilemap({ key: 'homeMap' });
-    this.physics.world.setBounds(
-      0,
-      0,
-      map.widthInPixels * MAP_SCALE,
-      map.heightInPixels * MAP_SCALE,
-    );
-    this.cameras.main.setBounds(
-      0,
-      0,
-      map.widthInPixels * MAP_SCALE,
-      map.heightInPixels * MAP_SCALE,
-    );
+    const map = createMap(this, 'homeMap');
     const tileSet = map.addTilesetImage('tilesOne', 'tileSet');
     const floor = map.createLayer('Floor', tileSet, 0, 0);
     const second = map.createLayer('Second', tileSet, 0, 0);

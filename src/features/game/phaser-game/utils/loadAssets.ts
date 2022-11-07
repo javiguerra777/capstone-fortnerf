@@ -26,6 +26,31 @@ const loadCharacters = (scene: Phaser.Scene) => {
     '/assets/characters/robeman.png',
     '/assets/characters/robeman.json',
   );
+  scene.load.atlas(
+    'cat',
+    '/assets/characters/cat.png',
+    '/assets/characters/cat.json',
+  );
+  scene.load.atlas(
+    'dog',
+    '/assets/characters/dog.png',
+    '/assets/characters/dog.json',
+  );
+  scene.load.atlas(
+    'frosty',
+    '/assets/characters/frosty.png',
+    '/assets/characters/frosty.json',
+  );
+  scene.load.atlas(
+    'rudolf',
+    '/assets/characters/rudolf.png',
+    '/assets/characters/rudolf.json',
+  );
+  scene.load.atlas(
+    'santa',
+    '/assets/characters/santa.png',
+    '/assets/characters/santa.json',
+  );
 };
 
 export default loadCharacters;

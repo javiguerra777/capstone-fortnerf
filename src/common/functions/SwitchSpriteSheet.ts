@@ -2,6 +2,11 @@ import MalePlayer from '../../assets/img/player-img/male_player.png';
 import NPC from '../../assets/img/player-img/npc.png';
 import Pumpkin from '../../assets/img/player-img/pumpkin.png';
 import Robeman from '../../assets/img/player-img/robeman.png';
+import Cat from '../../assets/img/player-img/cat.png';
+import Dog from '../../assets/img/player-img/dog.png';
+import Frosty from '../../assets/img/player-img/frosty.png';
+import Rudolf from '../../assets/img/player-img/rudolf.png';
+import Santa from '../../assets/img/player-img/santa.png';
 import Soldier from '../../assets/img/player-img/soldier.png';
 
 const switchSpriteSheet = (sprite: string) => {
@@ -16,6 +21,16 @@ const switchSpriteSheet = (sprite: string) => {
       return Robeman;
     case 'npc':
       return NPC;
+    case 'cat':
+      return Cat;
+    case 'dog':
+      return Dog;
+    case 'frosty':
+      return Frosty;
+    case 'rudolf':
+      return Rudolf;
+    case 'santa':
+      return Santa;
     default:
       return MalePlayer;
   }

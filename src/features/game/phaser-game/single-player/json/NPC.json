@@ -1,27 +1,50 @@
 [
   {
-    "x": 700,
-    "y": 200,
-    "height": 48
+    "x": 650,
+    "y": 325,
+    "name": "robeman",
+    "dialogue": "hello welcome to single player mode, there is a practice arena"
   },
   {
     "x": 800,
-    "y": 200,
-    "height": 48
+    "y": 325,
+    "name": "santa",
+    "dialogue": "check back later for updates on the game"
   },
   {
     "x": 900,
-    "y": 200,
-    "height": 48
+    "y": 325,
+    "name": "npc",
+    "dialogue": "hold shift to sprint and increase your speed"
   },
   {
     "x": 1000,
-    "y": 200,
-    "height": 48
+    "y": 325,
+    "name": "cat",
+    "dialogue": "please let me know if you want a specific sprite in the game"
   },
   {
-    "x": 1100,
-    "y": 200,
-    "height": 48
+    "x": 1500,
+    "y": 100,
+    "name": "soldier",
+    "dialogue": "let me know if you like the game, use the contact me page"
+  },
+  {
+    "x": 300,
+    "y": 325,
+    "name": "dog",
+    "dialogue": "let me know if you like the game, use the contact me page"
+  },
+  {
+    "x": 50,
+    "y": 400,
+    "name": "frosty",
+    "dialogue": "let me know if you like the game, use the contact me page"
+  },
+  {
+    "x": 50,
+    "y": 500,
+    "name": "rudolf",
+    "dialogue": "let me know if you like the game, use the contact me page"
   }
 ]

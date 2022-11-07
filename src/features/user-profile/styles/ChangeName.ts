@@ -15,7 +15,6 @@ const ChangeNameWrapper = styled.main`
     border: solid 1px white;
     width: 60%;
     position: relative;
-    top: 10em;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -45,8 +44,16 @@ const ChangeNameWrapper = styled.main`
       display: flex;
       flex-direction: column;
       align-items: center;
-      .radio {
+      width: 100%;
+      .character-option {
         width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-bottom: 1em;
+      }
+      .radio {
+        width: 25%;
         height: auto;
         display: flex;
         flex-direction: row;

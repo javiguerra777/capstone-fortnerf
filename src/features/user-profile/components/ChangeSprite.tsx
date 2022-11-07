@@ -1,6 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { doc, updateDoc } from 'firebase/firestore';
+import { nanoid } from 'nanoid';
 import { db } from '../../firebase/FirebaseTS';
 import { changePlayerSprite } from '../../../app/redux/UserSlice';
 import ChangeNameWrapper from '../styles/ChangeName';
@@ -14,6 +15,18 @@ type SpriteProps = {
   // eslint-disable-next-line no-unused-vars
   toggleActiveComponent: (option: string) => void;
 };
+const sprites: string[] = [
+  'player',
+  'npc',
+  'pumpkin',
+  'soldier',
+  'robeman',
+  'cat',
+  'dog',
+  'frosty',
+  'rudolf',
+  'santa',
+];
 function ChangeSprite({
   sprite,
   docId,
@@ -61,31 +74,16 @@ function ChangeSprite({
         {error && <h1>{error}</h1>}
         <form onSubmit={updatePlayerSprite}>
           <h2>Player Options</h2>
-          <SpriteRadio
-            newSprite={newSprite}
-            spriteName="player"
-            setNewSprite={setNewSprite}
-          />
-          <SpriteRadio
-            newSprite={newSprite}
-            spriteName="npc"
-            setNewSprite={setNewSprite}
-          />
-          <SpriteRadio
-            newSprite={newSprite}
-            spriteName="pumpkin"
-            setNewSprite={setNewSprite}
-          />
-          <SpriteRadio
-            newSprite={newSprite}
-            spriteName="soldier"
-            setNewSprite={setNewSprite}
-          />
-          <SpriteRadio
-            newSprite={newSprite}
-            spriteName="robeman"
-            setNewSprite={setNewSprite}
-          />
+          <div className="character-option">
+            {sprites.map((theSprite: string) => (
+              <SpriteRadio
+                key={nanoid()}
+                newSprite={newSprite}
+                spriteName={theSprite}
+                setNewSprite={setNewSprite}
+              />
+            ))}
+          </div>
           <button
             type="submit"
             className="submit-btn"

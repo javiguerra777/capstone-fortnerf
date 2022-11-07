@@ -52,7 +52,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.keys.shift.isDown) {
       speed = 1.5;
     }
-    Object.entries(this.keys).forEach((key: any) => {
+    Object.entries(this.keys).forEach((key: [string, any]) => {
       if (key[1].isDown) {
         if (
           !this.pressedKeys.includes(key[1].keyCode) &&
@@ -112,6 +112,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
     return playerMoved;
+  }
+
+  // methods for single player mode
+  disableKeys() {
+    Object.entries(this.keys).forEach((key: [string, any]) => {
+      if (key[0] !== 'space') {
+        key[1].enabled = false;
+      }
+    });
+  }
+
+  enableKeys() {
+    Object.entries(this.keys).forEach((key: [string, any]) => {
+      key[1].enabled = true;
+    });
   }
 }
 
