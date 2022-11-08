@@ -26,6 +26,7 @@ const sprites: string[] = [
   'frosty',
   'rudolf',
   'santa',
+  'pikachu',
 ];
 function ChangeSprite({
   sprite,

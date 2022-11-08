@@ -6,6 +6,8 @@ class NPC extends Phaser.Physics.Arcade.Sprite {
 
   moving = false;
 
+  dialogue!: string;
+
   constructor(
     scene: Phaser.Scene,
     x: number,

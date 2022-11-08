@@ -4,9 +4,16 @@ import { socket } from '../../../../../service/socket';
 import { MAP_SCALE } from '../../utils/constants';
 import Player from '../../objects/Player';
 import TextBox from '../../objects/TextBox';
-import OtherPlayer from '../../objects/OtherPlayer';
 import loadCharacters from '../../utils/loadAssets';
 import { createMap } from '../../utils/createMap';
+import stopHomeListeners, {
+  newPlayer,
+  playerLeft,
+  existingPlayers,
+  playerMove,
+  endMove,
+  playGame,
+} from '../service/socketListeners';
 
 class HomeScene extends Phaser.Scene {
   player!: Player;
@@ -72,6 +79,7 @@ class HomeScene extends Phaser.Scene {
     // button to switch to main game scene
     const { height, width } = this.sys.game.canvas;
     const startFortNerf = async () => {
+      await stopHomeListeners();
       await socket.emit('start_game', this.gameRoom);
       await this.scene.start('FortNerf');
     };
@@ -93,101 +101,13 @@ class HomeScene extends Phaser.Scene {
       username: this.playerName,
       sprite: this.sprite,
     });
-    socket.on(
-      'new_player',
-      async ({ username, socketId, sprite }) => {
-        try {
-          const otherPlayer: OtherPlayer = new OtherPlayer(
-            this,
-            500,
-            500,
-            username,
-            sprite,
-          ).setScale(1.5);
-          otherPlayer.socketId = socketId;
-          await this.otherPlayers?.add(otherPlayer);
-        } catch (err) {
-          console.log('new_player', err.message);
-        }
-      },
-    );
-    socket.on('existingPlayers', async (data) => {
-      try {
-        data.forEach(
-          (player: {
-            x: number;
-            y: number;
-            id: string;
-            username: string;
-            sprite: string;
-          }) => {
-            const otherPlayer: OtherPlayer = new OtherPlayer(
-              this,
-              player.x,
-              player.y,
-              player.username,
-              player.sprite,
-            ).setScale(1.5);
-            otherPlayer.socketId = player.id;
-            this.otherPlayers?.add(otherPlayer);
-          },
-        );
-      } catch (err) {
-        console.log('existing player', err.message);
-      }
-    });
-    socket.on(
-      'playerMoveHome',
-      async ({ x, y, direction, socketId }) => {
-        try {
-          this.otherPlayers.children.entries?.forEach(
-            (player: any) => {
-              if (player.socketId === socketId) {
-                player.x = x;
-                player.y = y;
-                player.direction = direction;
-                player.text.setX(player.getTopLeft().x - 5);
-                player.text.setY(player.getTopRight().y - 20);
-                player.moving = true;
-              }
-            },
-          );
-        } catch (err) {
-          console.log('move home', err.message);
-        }
-      },
-    );
-    socket.on('moveHomeEnd', async ({ direction, socketId }) => {
-      try {
-        this.otherPlayers.children.entries?.forEach((player: any) => {
-          if (player.socketId === socketId) {
-            player.direction = direction;
-            player.moving = false;
-          }
-        });
-      } catch (err) {
-        console.log('move end', err.message);
-      }
-    });
-    socket.on('playerLeft', async (socketId) => {
-      try {
-        this.otherPlayers.children.entries.forEach((player: any) => {
-          if (player.socketId === socketId) {
-            player.destroy();
-            player.text.destroy();
-          }
-        });
-      } catch (err) {
-        console.log('player left', err.message);
-      }
-    });
-    socket.on('play_game', async () => {
-      try {
-        this.scene.start('FortNerf');
-      } catch (err) {
-        console.log(err.message);
-      }
-    });
+    // socket.on methods
+    newPlayer(this, this.otherPlayers);
+    existingPlayers(this, this.otherPlayers, 'existingPlayers');
+    playerMove(this.otherPlayers, 'playerMoveHome');
+    endMove(this.otherPlayers, 'moveHomeEnd');
+    playerLeft(this.otherPlayers);
+    playGame(this);
     socket.on('can_start', async () => {
       try {
         if (!this.playButton) {

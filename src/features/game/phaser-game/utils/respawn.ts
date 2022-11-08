@@ -2,7 +2,7 @@ const randomRespawn = () => {
   const respawnOptions = [
     {
       x: 200,
-      y: 300,
+      y: 200,
     },
     {
       x: 1500,

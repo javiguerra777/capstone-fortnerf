@@ -46,5 +46,11 @@
     "y": 500,
     "name": "rudolf",
     "dialogue": "let me know if you like the game, use the contact me page"
+  },
+  {
+    "x": 50,
+    "y": 600,
+    "name": "pikachu",
+    "dialogue": "let me know if you like the game, use the contact me page"
   }
 ]

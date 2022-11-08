@@ -8,6 +8,7 @@ import Frosty from '../../assets/img/player-img/frosty.png';
 import Rudolf from '../../assets/img/player-img/rudolf.png';
 import Santa from '../../assets/img/player-img/santa.png';
 import Soldier from '../../assets/img/player-img/soldier.png';
+import Pikachu from '../../assets/img/player-img/pikachu.png';
 
 const switchSpriteSheet = (sprite: string) => {
   switch (sprite) {
@@ -31,6 +32,8 @@ const switchSpriteSheet = (sprite: string) => {
       return Rudolf;
     case 'santa':
       return Santa;
+    case 'pikachu':
+      return Pikachu;
     default:
       return MalePlayer;
   }

@@ -33,6 +33,7 @@ class EndGame extends Phaser.Scene {
   }
 
   create() {
+    this.scene.remove('FortNerf');
     const { width } = this.sys.game.canvas;
     this.add.image(1000, 1000, 'background');
     this.textGroup = this.physics.add.group();

@@ -22,7 +22,7 @@ class Home extends Phaser.Scene {
 
   icon!: Phaser.GameObjects.Image;
 
-  activeNpc!: any;
+  activeNpc!: NPC;
 
   eventCount = 0;
 
@@ -70,9 +70,9 @@ class Home extends Phaser.Scene {
     // player methods
     this.player = new Player(
       this,
-      400,
-      400,
-      '',
+      200,
+      200,
+      this.playerSprite,
       this.playerSprite,
     ).setScale(1.5);
     // npc
@@ -82,7 +82,7 @@ class Home extends Phaser.Scene {
     });
 
     npcData.forEach((anNpc) => {
-      const npcSprite: any = new NPC(
+      const npcSprite: NPC = new NPC(
         this,
         anNpc.x,
         anNpc.y,
@@ -114,7 +114,6 @@ class Home extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
     // move player function
     const isMoving = this.player.movePlayer();
-    // distanceChecker(this.player, this.npcs?.children.entries[0]);
     this.npcs?.children.entries.forEach((npc: any) => {
       npc.handleAnimation();
       if (distanceChecker(this.player, npc)) {
