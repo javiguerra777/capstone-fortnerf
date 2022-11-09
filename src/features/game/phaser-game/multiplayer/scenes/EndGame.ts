@@ -1,18 +1,18 @@
 import Phaser from 'phaser';
 import getStore from '../../utils/store';
 import { socket } from '../../../../../common/service/socket';
-import TextBox from '../../objects/TextBox';
+import Box from '../../objects/DialogueBox';
 
 class EndGame extends Phaser.Scene {
   gameRoom!: string;
 
-  gameOverText!: Phaser.GameObjects.Text;
+  gameOverText!: Box;
 
-  returnToLobbyText!: Phaser.GameObjects.Text;
+  returnToLobbyText!: Box;
 
   error!: string;
 
-  winnerText!: TextBox;
+  winnerText!: Box;
 
   constructor() {
     super('EndGame');
@@ -30,48 +30,51 @@ class EndGame extends Phaser.Scene {
   }
 
   create(gameData: any) {
-    console.log(gameData);
     this.scene.remove('FortNerf');
     const { width } = this.sys.game.canvas;
     this.add.image(1000, 1000, 'background');
-    this.gameOverText = new TextBox(
+    this.gameOverText = new Box(
       this,
-      width / 2 - 200,
-      100,
+      width / 2,
+      40,
+      'div',
+      `color: white; font-size: 40px; width: 100%; text-align: center; padding-bottom: 10px; border-bottom: solid 2px white;`,
       'Game Over',
     );
-    this.gameOverText.setFontSize(30);
     // method that starts new scene
     const endGame = async () => {
       try {
         await socket.emit('GameOver', this.gameRoom);
         await socket.emit('return_to_lobby', { room: this.gameRoom });
       } catch (err) {
+        console.log(err.message);
         this.error = err.message;
       }
     };
-    this.returnToLobbyText = new TextBox(
+    this.winnerText = new Box(
       this,
-      width / 2 + 200,
-      100,
+      width / 2,
+      150,
+      'div',
+      'color: gold; font-size: 50px; background: whitesmoke; padding: 10px; border: groove 5px gold; border-radius: 10px; text-shadow: 0 0 3px #FF0000, 0 0 5px #0000FF',
+      `Winner: ${gameData.winner || 'winner'} !!`,
+    );
+    this.returnToLobbyText = new Box(
+      this,
+      width / 2,
+      400,
+      'button',
+      'color: white; background: none; border: solid 2px white; font-size: 50px; border-radius: 10px;',
       'Return To Lobby',
     )
       .setInteractive()
       .on('pointerdown', endGame);
-    this.returnToLobbyText.setFontSize(30);
-
-    this.winnerText = new TextBox(
-      this,
-      width / 2,
-      300,
-      `Winner: ${gameData.winner}`,
-    ).setFontSize(15);
   }
 
   update() {
     const { width } = this.sys.game.canvas;
-    this.gameOverText.setX(width / 2 - 200);
-    this.returnToLobbyText.setX(width / 2 + 200);
+    this.gameOverText.setX(width / 2);
+    this.returnToLobbyText.setX(width / 2);
     this.winnerText.setX(width / 2);
   }
 }

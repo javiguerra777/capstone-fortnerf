@@ -141,6 +141,7 @@ export const bulletIsShot = (
         otherBullet.setVelocityY(-BULLET_MOVEMENT);
       }
     } catch (err) {
+      console.log(err.message);
       error = err.message;
     }
   });

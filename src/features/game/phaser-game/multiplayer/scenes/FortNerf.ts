@@ -211,6 +211,7 @@ class FortNerf extends Phaser.Scene {
         try {
           theBullet.destroy();
         } catch (err) {
+          console.log(err.message);
           this.error = err.message;
         }
       },
@@ -224,8 +225,6 @@ class FortNerf extends Phaser.Scene {
       async (thePlayer, theBullet: any) => {
         try {
           theBullet?.destroy();
-          console.log(theBullet);
-          console.log('bullet died');
           this.player.health -= HEALTH_DECREMENT;
           this.healthBar.width -= 15;
           if (this.player.health <= 0) {
@@ -245,6 +244,7 @@ class FortNerf extends Phaser.Scene {
             });
           }
         } catch (err) {
+          console.log(err.message);
           this.error = err.message;
         }
       },

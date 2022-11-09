@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
+import HomeScene from '../scenes/HomeScene';
 import FortNerf from '../scenes/FortNerf';
 import EndGame from '../scenes/EndGame';
-import HomeScene from '../scenes/HomeScene';
 
 const config = {
   type: Phaser.AUTO,
