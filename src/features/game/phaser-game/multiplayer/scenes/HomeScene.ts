@@ -3,7 +3,7 @@ import store from '../../../../../app/redux';
 import { socket } from '../../../../../service/socket';
 import { MAP_SCALE } from '../../utils/constants';
 import Player from '../../objects/Player';
-import TextBox from '../../objects/TextBox';
+import Box from '../../objects/DialogueBox';
 import loadCharacters from '../../utils/loadAssets';
 import { createMap } from '../../utils/createMap';
 import stopHomeListeners, {
@@ -15,18 +15,21 @@ import stopHomeListeners, {
   playGame,
 } from '../service/socketListeners';
 
+type PlayerInfo = {
+  username: string;
+  playerSprite: string;
+};
+
 class HomeScene extends Phaser.Scene {
   player!: Player;
 
-  sprite!: string;
-
   otherPlayers!: Phaser.Physics.Arcade.Group;
 
-  playerName!: string;
+  playerInfo!: PlayerInfo;
 
   gameRoom!: string;
 
-  playButton!: Phaser.GameObjects.Text;
+  playButton!: Box;
 
   keyBoardDisabled!: boolean;
 
@@ -40,9 +43,11 @@ class HomeScene extends Phaser.Scene {
     const state = store.getState();
     const { id } = state.game;
     const { username, playerSprite } = state.user;
-    this.playerName = username;
+    this.playerInfo = {
+      username,
+      playerSprite,
+    };
     this.gameRoom = id;
-    this.sprite = playerSprite;
     this.load.image('tileSet', '/assets/tiles-img/sTiles.png');
     this.load.tilemapTiledJSON(
       'homeMap',
@@ -72,8 +77,8 @@ class HomeScene extends Phaser.Scene {
       this,
       500,
       500,
-      this.playerName,
-      this.sprite,
+      this.playerInfo.username,
+      this.playerInfo.playerSprite,
     ).setScale(1.5);
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
@@ -98,8 +103,8 @@ class HomeScene extends Phaser.Scene {
     // socket methods
     socket.emit('join_home', {
       room: this.gameRoom,
-      username: this.playerName,
-      sprite: this.sprite,
+      username: this.playerInfo.username,
+      sprite: this.playerInfo.playerSprite,
     });
     // socket.on methods
     newPlayer(this, this.otherPlayers);
@@ -111,19 +116,16 @@ class HomeScene extends Phaser.Scene {
     socket.on('can_start', async () => {
       try {
         if (!this.playButton) {
-          this.playButton = new TextBox(
+          this.playButton = new Box(
             this,
             width / 2,
             height / 2,
+            'button',
+            'background-color: #343434; color: white; width: auto; border: solid 5px black; border-radius: 5px; padding: 3px; font: Arial; font-size: 40px;',
             'Start Game',
-          );
-          this.playButton
-            .setOrigin(0.5)
+          )
             .setInteractive()
             .on('pointerdown', startFortNerf);
-          this.playButton.scrollFactorX = 0;
-          this.playButton.scrollFactorY = 0;
-          this.playButton.setFontSize(60);
         }
       } catch (err) {
         // want catch block to do nothing

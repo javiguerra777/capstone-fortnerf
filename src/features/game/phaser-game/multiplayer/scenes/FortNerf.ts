@@ -5,12 +5,12 @@ import {
   BULLET_MOVEMENT,
   HEALTH_DECREMENT,
   MAP_SCALE,
-  style,
+  RECT,
 } from '../../utils/constants';
 import { socket } from '../../../../../service/socket';
 import randomRespawn from '../../utils/respawn';
 import Player from '../../objects/Player';
-import TextBox from '../../objects/TextBox';
+import Box from '../../objects/DialogueBox';
 import postScore from '../../../api/PostScore';
 import loadCharacters from '../../utils/loadAssets';
 import { createMap } from '../../utils/createMap';
@@ -22,18 +22,20 @@ import {
   stopGameListeners,
 } from '../service/socketListeners';
 
+type PlayerInfo = {
+  username: string;
+  playerSprite: string;
+  x: number;
+  y: number;
+};
 class FortNerf extends Phaser.Scene {
   player!: Player;
 
   error!: string;
 
-  startingX!: number;
-
-  startingY!: number;
-
   gameRoom!: string;
 
-  playerOneUsername!: string;
+  playerInfo!: PlayerInfo;
 
   otherPlayers!: Phaser.Physics.Arcade.Group;
 
@@ -48,23 +50,17 @@ class FortNerf extends Phaser.Scene {
 
   otherBullets!: Phaser.Physics.Arcade.Group;
 
-  cursor!: Phaser.Types.Input.Keyboard.CursorKeys;
-
   spaceBar!: Phaser.Input.Keyboard.Key;
 
-  healthText!: Phaser.GameObjects.Text;
+  healthBar!: Phaser.GameObjects.Rectangle;
 
-  scoreText!: Phaser.GameObjects.Text;
-
-  health!: number;
+  scoreText!: Box;
 
   score!: number;
 
   clock!: number;
 
-  clockText!: Phaser.GameObjects.Text;
-
-  sprite!: string;
+  clockText!: Box;
 
   constructor() {
     super('FortNerf');
@@ -73,10 +69,12 @@ class FortNerf extends Phaser.Scene {
   preload() {
     const state = store.getState();
     const { username, x, y, playerSprite } = state.user;
-    this.playerOneUsername = username;
-    this.sprite = playerSprite;
-    this.startingX = x;
-    this.startingY = y;
+    this.playerInfo = {
+      username,
+      x,
+      y,
+      playerSprite,
+    };
     const { id } = state.game;
     this.gameRoom = id;
     loadCharacters(this);
@@ -94,7 +92,6 @@ class FortNerf extends Phaser.Scene {
 
   create() {
     this.scene.remove('HomeScene');
-    this.health = 100;
     this.score = 0;
     this.clock = 180 * 60;
     // physic groups
@@ -121,45 +118,37 @@ class FortNerf extends Phaser.Scene {
     // player
     this.player = new Player(
       this,
-      this.startingX,
-      this.startingY,
-      this.playerOneUsername,
-      this.sprite,
+      this.playerInfo.x,
+      this.playerInfo.y,
+      this.playerInfo.username,
+      this.playerInfo.playerSprite,
     ).setScale(1.5);
     this.player.setPushable(false);
     // text within game
     const { width } = this.sys.game.canvas;
-    this.clockText = new TextBox(
+    this.clockText = new Box(
       this,
       width / 2,
-      10,
+      20,
+      'div',
+      'background-color: #343434; color: green; width: auto; border: solid 5px black; border-radius: 5px; padding: 3px; font: Arial; font-size: 20px;',
       `Time: ${this.clock.toString()}`,
     );
-    this.clockText.scrollFactorX = 0;
-    this.clockText.scrollFactorY = 0;
-    this.clockText.setFontSize(36);
-    this.clockText.setColor('black');
-    this.healthText = this.add.text(
-      10,
-      10,
-      `hp: ${this.health.toString()}`,
-      style,
-    );
-    this.healthText.scrollFactorX = 0;
-    this.healthText.scrollFactorY = 0;
-    this.healthText.setFontSize(30);
-    this.healthText.setColor('black');
-    this.scoreText = this.add.text(
-      10,
-      40,
+    this.scoreText = new Box(
+      this,
+      100,
+      15,
+      'div',
+      'font-size: 20px; background-color: white; color: black; width: auto; border: solid black 2px; font: Arial;',
       `Score: ${this.score.toString()}`,
-      style,
     );
-    this.scoreText.scrollFactorX = 0;
-    this.scoreText.scrollFactorY = 0;
-    this.scoreText.setFontSize(30);
-    this.scoreText.setColor('black');
-
+    // health bar
+    this.add
+      .rectangle(RECT.x, RECT.y, RECT.width, 20, 0xff0000)
+      .setScrollFactor(0);
+    this.healthBar = this.add
+      .rectangle(RECT.x, RECT.y, RECT.width, 20, 0x00ff00)
+      .setScrollFactor(0);
     // bullet methods
     this.shootBullet = (x: number, y: number, direction: string) => {
       let bulletShot = false;
@@ -254,12 +243,12 @@ class FortNerf extends Phaser.Scene {
       async (thePlayer, theBullet) => {
         try {
           theBullet?.destroy();
-          this.health -= HEALTH_DECREMENT;
-          this.healthText?.setText(`hp: ${this.health.toString()}`);
-          if (this.health <= 0) {
-            this.health = 100;
-            this.healthText?.setText(`hp: ${this.health.toString()}`);
+          this.player.health -= HEALTH_DECREMENT;
+          this.healthBar.width -= 15;
+          if (this.player.health <= 0) {
             const respawnCoords = randomRespawn();
+            this.player.health = 100;
+            this.healthBar.width = RECT.width;
             this.player.setX(respawnCoords.x);
             this.player.setY(respawnCoords.y);
             this.player.direction = 'down';
@@ -280,7 +269,6 @@ class FortNerf extends Phaser.Scene {
     );
     this.player.setCollideWorldBounds(true);
     // keyboard methods
-    this.cursor = this.input.keyboard.createCursorKeys();
     this.spaceBar = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE,
     );
@@ -310,7 +298,7 @@ class FortNerf extends Phaser.Scene {
       const data = {
         id: this.gameRoom,
         user: {
-          username: this.playerOneUsername,
+          username: this.playerInfo.username,
           score: this.score,
         },
       };

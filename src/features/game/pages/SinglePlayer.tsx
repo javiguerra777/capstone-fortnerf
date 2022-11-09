@@ -1,22 +1,14 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import SinglePlayerGame from '../components/SinglePlayerGame';
 import SinglePlayerWrapper from '../styles/SinglePlayerWrapper';
 import UseLeaveGame from '../hooks/UseLeaveGame';
 
 function SinglePlayer() {
-  const navigate = useNavigate();
   UseLeaveGame();
-  const returnHome = () => {
-    navigate('/dashboard');
-  };
   return (
     <SinglePlayerWrapper>
       <SinglePlayerGame />
       <footer className="single-footer">
-        <button type="button" onClick={returnHome}>
-          Return to Dashboard
-        </button>
         <section className="game-description">
           <h1>How to play Fort Nerf</h1>
           <p>

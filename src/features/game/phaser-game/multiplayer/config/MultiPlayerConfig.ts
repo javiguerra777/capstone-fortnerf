@@ -10,6 +10,9 @@ const config = {
     width: '100%',
     height: '100%',
   },
+  dom: {
+    createContainer: true,
+  },
   backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',

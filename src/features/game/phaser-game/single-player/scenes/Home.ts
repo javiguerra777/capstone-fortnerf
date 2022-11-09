@@ -2,15 +2,15 @@ import Phaser from 'phaser';
 import { MAP_SCALE } from '../../utils/constants';
 import npcData from '../json/NPC.json';
 import Player from '../../objects/Player';
-import TextBox from '../../objects/TextBox';
 import NPC from '../../objects/Npc';
+import Box from '../../objects/DialogueBox';
 import store from '../../../../../app/redux';
 import loadCharacters from '../../utils/loadAssets';
 import { createMap } from '../../utils/createMap';
 import distanceChecker from '../../utils/distanceChecker';
 
 class Home extends Phaser.Scene {
-  dialogue!: TextBox;
+  dialogue!: Phaser.GameObjects.DOMElement;
 
   player!: Player;
 
@@ -72,7 +72,7 @@ class Home extends Phaser.Scene {
       this,
       200,
       200,
-      this.playerSprite,
+      '',
       this.playerSprite,
     ).setScale(1.5);
     // npc
@@ -80,7 +80,6 @@ class Home extends Phaser.Scene {
       allowGravity: false,
       immovable: true,
     });
-
     npcData.forEach((anNpc) => {
       const npcSprite: NPC = new NPC(
         this,
@@ -103,7 +102,21 @@ class Home extends Phaser.Scene {
       this,
     );
     this.player.setCollideWorldBounds(true);
-    // keyboard methods
+    // nav button
+    const leaveGame = () => {
+      window.history.back();
+    };
+    new Box(
+      this,
+      45,
+      10,
+      'button',
+      'background: black; color: white; border: solid 2px white;',
+      'Leave Game',
+    )
+      .setInteractive()
+      .on('pointerdown', leaveGame);
+    // spacebar
     this.spaceBar = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE,
     );
@@ -136,16 +149,14 @@ class Home extends Phaser.Scene {
     }
     if (Phaser.Input.Keyboard.JustDown(this.spaceBar)) {
       if (!isMoving && this.canSpeak && this.dialogueCount === 0) {
-        this.dialogue = new TextBox(
+        this.dialogue = new Box(
           this,
           width / 2,
-          0,
+          25,
+          'div',
+          'background-color: #343434; color: white; width: auto; max-width: 300px; border: solid 5px black; border-radius: 5px; padding: 3px; font: Arial;',
           this.activeNpc.dialogue,
-        )
-          .setColor('black')
-          .setFontSize(20);
-        this.dialogue.scrollFactorX = 0;
-        this.dialogue.scrollFactorY = 0;
+        );
         this.dialogueCount += 1;
         this.player.disableKeys();
       } else if (this.dialogueCount > 0) {

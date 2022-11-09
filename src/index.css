@@ -23,8 +23,12 @@
 .navLink-btn {
   text-decoration: none;
   color: white;
+  background: none;
   margin-right: 0.5em;
   margin-left: 0.5em;
   padding: 5px 10px;
   border: white solid 1px;
+}
+.navLink-btn:hover {
+  cursor: pointer;
 }

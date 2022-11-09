@@ -5,6 +5,8 @@ import createAnimation from '../utils/animations';
 class Player extends Phaser.Physics.Arcade.Sprite {
   direction = 'down';
 
+  health = 100;
+
   keys!: any;
 
   playerText;
