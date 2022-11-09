@@ -5,14 +5,14 @@ import GameChat from '../components/GameChat';
 import UsersAside from '../components/UsersAside';
 import GameFooter from '../components/GameFooter';
 import GameWrapper from '../styles/GameWrapper';
-import { Message, RoomData } from '../../../common/models';
-import { setId } from '../../../app/redux/GameSlice';
-import { socket } from '../../../service/socket';
+import { Message } from '../../../common/models';
+import { setId, updateData } from '../../../app/redux/GameSlice';
+import { socket } from '../../../common/service/socket';
 import { setCoords } from '../../../app/redux/UserSlice';
 import getRoomData from '../api/GetRoomData';
 import { useAppDispatch } from '../../../app/redux/hooks';
 import UseLeaveGame from '../hooks/UseLeaveGame';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 function Game() {
   const maxWidth = '100%';
@@ -20,6 +20,7 @@ function Game() {
   const dispatch = useAppDispatch();
   const {
     user: { username, playerSprite },
+    game: { data: roomData },
   } = GetReduxStore();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -30,7 +31,6 @@ function Game() {
   const [displayAllUsers, setDisplayAllUsers] = useState(false);
   const [message, setMessage] = useState('');
   const [myStream, setMyStream] = useState<MediaStream>();
-  const [roomData, setRoomData] = useState<RoomData>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const closeTab = () => {
     navigate('/dashboard');
@@ -77,7 +77,7 @@ function Game() {
     const resolveRoom = async () => {
       try {
         const { data } = await getRoomData(id || '');
-        setRoomData(data);
+        dispatch(updateData(data));
       } catch (err) {
         if (err instanceof Error) {
           setMessage(err.message);
@@ -114,7 +114,7 @@ function Game() {
       dispatch(setCoords(data));
     });
     socket.on('updatedRoom', (data) => {
-      setRoomData(data);
+      dispatch(updateData(data));
     });
     socket.on('lobby', () => {
       closeTab();

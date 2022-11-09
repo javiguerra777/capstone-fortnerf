@@ -4,7 +4,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/FirebaseTS';
 import { updateUsername } from '../../../app/redux/UserSlice';
 import ChangeNameWrapper from '../styles/ChangeName';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 type NameComponentProps = {
   // eslint-disable-next-line no-unused-vars

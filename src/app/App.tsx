@@ -15,9 +15,9 @@ import Game from '../features/game/pages/Game';
 import SinglePlayer from '../features/game/pages/SinglePlayer';
 import NotFound from '../common/components/NotFound';
 import ProtectedRoutes from '../common/components/ProtectedRoutes';
-import { socket } from '../service/socket';
-import { setConnected } from './redux/UserSlice';
-import GetReduxStore from '../common/functions/GetStore';
+import { socket } from '../common/service/socket';
+import { setConnected, setSocketId } from './redux/UserSlice';
+import GetReduxStore from '../common/hooks/GetStore';
 
 function App() {
   const dispatch = useDispatch();
@@ -29,6 +29,9 @@ function App() {
     // only connect once in entire app when the app loads
     socket.on('connect', () => {
       dispatch(setConnected());
+    });
+    socket.on('myId', (data) => {
+      dispatch(setSocketId(data));
     });
     return () => {
       socket.off('connect');

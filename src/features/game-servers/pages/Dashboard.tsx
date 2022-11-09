@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import nerfTarget from '../../../assets/img/nerf_target.png';
 import UserNavBar from '../../../common/components/UserNavBar';
 import getAllRooms from '../api/getAllRooms';
-import { socket } from '../../../service/socket';
+import { socket } from '../../../common/service/socket';
 import DashboardWrapper, { GameDetails } from '../styles';
 
 type Game = {

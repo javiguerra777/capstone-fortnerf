@@ -8,7 +8,7 @@ import ChangeNameWrapper from '../styles/ChangeName';
 import SpriteRadio from './SpriteRadio';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
 import SpriteContainer from '../../../common/styles/SpriteContainer';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 type SpriteProps = {
   // eslint-disable-next-line no-unused-vars

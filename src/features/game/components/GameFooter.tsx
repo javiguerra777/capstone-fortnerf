@@ -7,7 +7,7 @@ import {
 } from 'react-icons/bs';
 import { FaMicrophoneAlt } from 'react-icons/fa';
 import { GiExitDoor } from 'react-icons/gi';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 type Footer = {
   audio: boolean;

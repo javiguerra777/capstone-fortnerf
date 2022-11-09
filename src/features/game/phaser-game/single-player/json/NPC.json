@@ -1,21 +1,21 @@
 [
   {
-    "x": 650,
+    "x": 450,
     "y": 325,
     "name": "robeman",
-    "dialogue": "hello welcome to single player mode, there is a practice arena"
+    "dialogue": "hello! welcome to single player mode, enter this house enter to practice"
   },
   {
-    "x": 800,
+    "x": 750,
     "y": 325,
     "name": "santa",
-    "dialogue": "check back later for updates on the game"
+    "dialogue": "enter here to send email to the creator of the game"
   },
   {
-    "x": 900,
-    "y": 325,
+    "x": 1000,
+    "y": 750,
     "name": "npc",
-    "dialogue": "hold shift to sprint and increase your speed"
+    "dialogue": "w, a, s, d, or up, down, left, right keys to move, hold shift to sprint"
   },
   {
     "x": 1000,
@@ -30,27 +30,27 @@
     "dialogue": "let me know if you like the game, use the contact me page"
   },
   {
-    "x": 300,
-    "y": 325,
+    "x": 400,
+    "y": 750,
     "name": "dog",
-    "dialogue": "let me know if you like the game, use the contact me page"
+    "dialogue": "roof (there are updates coming)"
   },
   {
     "x": 50,
-    "y": 400,
+    "y": 100,
     "name": "frosty",
-    "dialogue": "let me know if you like the game, use the contact me page"
+    "dialogue": "Happy birthday!!!"
   },
   {
-    "x": 50,
-    "y": 500,
+    "x": 100,
+    "y": 520,
     "name": "rudolf",
-    "dialogue": "let me know if you like the game, use the contact me page"
+    "dialogue": "First to 10 kills wins the game"
   },
   {
     "x": 50,
-    "y": 600,
+    "y": 1100,
     "name": "pikachu",
-    "dialogue": "let me know if you like the game, use the contact me page"
+    "dialogue": "PIKA PIKA!!"
   }
 ]

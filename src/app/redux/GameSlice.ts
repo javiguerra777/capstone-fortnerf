@@ -4,11 +4,13 @@ type GameState = {
   id: string;
   disableKeyBoard: boolean;
   leftGame: boolean;
+  data: any;
 };
 const initialState = {
   id: '',
   disableKeyBoard: false,
   leftGame: false,
+  data: {},
 } as GameState;
 
 export const gameSlice = createSlice({
@@ -28,9 +30,17 @@ export const gameSlice = createSlice({
     leaveGame(state) {
       state.leftGame = true;
     },
+    updateData(state, { payload }) {
+      state.data = payload;
+    },
   },
 });
 
-export const { setId, disableKeyBoard, enableKeyBoard, leaveGame } =
-  gameSlice.actions;
+export const {
+  setId,
+  disableKeyBoard,
+  enableKeyBoard,
+  leaveGame,
+  updateData,
+} = gameSlice.actions;
 export default gameSlice.reducer;

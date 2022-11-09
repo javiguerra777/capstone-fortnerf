@@ -5,6 +5,7 @@ import updateLocalStorage, {
 
 type User = {
   docId: string;
+  socketId: string;
   username: string;
   name: string;
   email: string;
@@ -62,6 +63,9 @@ export const userSlice = createSlice({
       state.playerSprite = payload;
       localStorage.setItem('sprite', payload);
     },
+    setSocketId(state, { payload }) {
+      state.socketId = payload;
+    },
   },
 });
 
@@ -71,5 +75,6 @@ export const {
   setCoords,
   updateUsername,
   changePlayerSprite,
+  setSocketId,
 } = userSlice.actions;
 export default userSlice.reducer;

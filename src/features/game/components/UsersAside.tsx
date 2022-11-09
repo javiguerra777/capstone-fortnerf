@@ -1,7 +1,7 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
 import UsersWrapper from '../styles/UsersWrapper';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 type Users = {
   users: [];

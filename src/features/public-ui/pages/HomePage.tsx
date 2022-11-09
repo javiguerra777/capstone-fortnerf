@@ -6,7 +6,7 @@ import dashboardimage from '../../../assets/img/dashboard.png';
 import PreviewGame from '../../../assets/img/prev_game.png';
 import { setEmail } from '../../../app/redux/Registrations';
 import StyledHome from '../styles/Home';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 function HomePage() {
   const navigate = useNavigate();

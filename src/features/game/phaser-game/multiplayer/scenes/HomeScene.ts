@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { socket } from '../../../../../service/socket';
+import { socket } from '../../../../../common/service/socket';
 import { MAP_SCALE } from '../../utils/constants';
 import Player from '../../objects/Player';
 import Box from '../../objects/DialogueBox';
@@ -31,9 +31,11 @@ class HomeScene extends Phaser.Scene {
 
   playButton!: Box;
 
-  keyBoardDisabled!: boolean;
-
   error!: string;
+
+  eventCount = 0;
+
+  startGame!: () => void;
 
   constructor() {
     super('HomeScene');
@@ -83,8 +85,7 @@ class HomeScene extends Phaser.Scene {
     ).setScale(1.5);
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
-    const { height, width } = this.sys.game.canvas;
-    const startFortNerf = async () => {
+    this.startGame = async () => {
       await stopHomeListeners();
       await socket.emit('start_game', this.gameRoom);
       await this.scene.start('FortNerf');
@@ -101,7 +102,7 @@ class HomeScene extends Phaser.Scene {
       undefined,
       this,
     );
-    // socket methods
+    // socket emit methods
     socket.emit('join_home', {
       room: this.gameRoom,
       username: this.playerInfo.username,
@@ -110,42 +111,36 @@ class HomeScene extends Phaser.Scene {
     // socket.on methods
     newPlayer(this, this.otherPlayers);
     existingPlayers(this, this.otherPlayers, 'existingPlayers');
-    playerMove(this.otherPlayers, 'playerMoveHome');
+    playerMove(this.otherPlayers, this.player, 'playerMoveHome');
     endMove(this.otherPlayers, 'moveHomeEnd');
     playerLeft(this.otherPlayers);
     playGame(this);
-    socket.on('can_start', async () => {
-      try {
-        if (!this.playButton) {
-          this.playButton = new Box(
-            this,
-            width / 2,
-            height / 2,
-            'button',
-            'background-color: #343434; color: white; width: auto; border: solid 5px black; border-radius: 5px; padding: 3px; font: Arial; font-size: 40px;',
-            'Start Game',
-          )
-            .setInteractive()
-            .on('pointerdown', startFortNerf);
-        }
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
-    socket.on('cant_start', async () => {
-      try {
-        this.playButton?.destroy();
-      } catch (err) {
-        // want catch block to do nothing
-      }
-    });
   }
 
   update() {
+    const { height, width } = this.sys.game.canvas;
+    const {
+      game: { data },
+    } = getStore();
+    if (data.users.length >= 2 && this.eventCount === 0) {
+      this.playButton = new Box(
+        this,
+        width / 2,
+        height / 2,
+        'button',
+        'background-color: #343434; color: white; width: auto; border: solid 5px black; border-radius: 5px; padding: 3px; font: Arial; font-size: 40px;',
+        'Start Game',
+      )
+        .setInteractive()
+        .on('pointerdown', this.startGame);
+      this.eventCount += 1;
+    } else if (data.users.length <= 1 && this.eventCount > 0) {
+      this.playButton?.destroy();
+      this.eventCount = 0;
+    }
     keyboardChecker(this.input);
     this.cameras.main.startFollow(this.player);
     if (this.playButton) {
-      const { height, width } = this.sys.game.canvas;
       this.playButton.setX(width / 2);
       this.playButton.setY(height / 2 + 100);
     }

@@ -6,11 +6,10 @@ import {
   MAP_SCALE,
   RECT,
 } from '../../utils/constants';
-import { socket } from '../../../../../service/socket';
+import { socket } from '../../../../../common/service/socket';
 import randomRespawn from '../../utils/respawn';
 import Player from '../../objects/Player';
 import Box from '../../objects/DialogueBox';
-import postScore from '../../../api/PostScore';
 import loadCharacters from '../../utils/loadAssets';
 import { createMap } from '../../utils/createMap';
 import {
@@ -56,12 +55,6 @@ class FortNerf extends Phaser.Scene {
 
   scoreText!: Box;
 
-  score!: number;
-
-  clock!: number;
-
-  clockText!: Box;
-
   constructor() {
     super('FortNerf');
   }
@@ -93,8 +86,6 @@ class FortNerf extends Phaser.Scene {
 
   create() {
     this.scene.remove('HomeScene');
-    this.score = 0;
-    this.clock = 180 * 60;
     // physic groups
     this.bullets = this.physics.add.group();
     this.otherBullets = this.physics.add.group();
@@ -126,22 +117,13 @@ class FortNerf extends Phaser.Scene {
     ).setScale(1.5);
     this.player.setPushable(false);
     // text within game
-    const { width } = this.sys.game.canvas;
-    this.clockText = new Box(
-      this,
-      width / 2,
-      20,
-      'div',
-      'background-color: #343434; color: green; width: auto; border: solid 5px black; border-radius: 5px; padding: 3px; font: Arial; font-size: 20px;',
-      `Time: ${this.clock.toString()}`,
-    );
     this.scoreText = new Box(
       this,
       100,
       15,
       'div',
       'font-size: 20px; background-color: white; color: black; width: auto; border: solid black 2px; font: Arial;',
-      `Score: ${this.score.toString()}`,
+      `Kills: ${this.player.kills.toString()}`,
     );
     // health bar
     this.add
@@ -217,8 +199,6 @@ class FortNerf extends Phaser.Scene {
       this.bullets,
       this.otherPlayers,
       (theBullet) => {
-        this.score += 10;
-        this.scoreText?.setText(`Score: ${this.score.toString()}`);
         theBullet.destroy();
       },
       undefined,
@@ -241,9 +221,11 @@ class FortNerf extends Phaser.Scene {
       this.otherBullets,
       this.player,
       // the bullet is the second argument so that the collision destroys the correct object
-      async (thePlayer, theBullet) => {
+      async (thePlayer, theBullet: any) => {
         try {
           theBullet?.destroy();
+          console.log(theBullet);
+          console.log('bullet died');
           this.player.health -= HEALTH_DECREMENT;
           this.healthBar.width -= 15;
           if (this.player.health <= 0) {
@@ -259,6 +241,7 @@ class FortNerf extends Phaser.Scene {
               direction: 'down',
               room: this.gameRoom,
               respawn: true,
+              otherSocketId: theBullet.socketId,
             });
           }
         } catch (err) {
@@ -279,7 +262,12 @@ class FortNerf extends Phaser.Scene {
     });
     // socket.on methods
     existingPlayers(this, this.otherPlayers, 'existing_game_players');
-    playerMove(this.otherPlayers, 'playerMove');
+    playerMove(
+      this.otherPlayers,
+      this.player,
+      'playerMove',
+      this.scoreText,
+    );
     endMove(this.otherPlayers, 'playerMoveEnd');
     bulletIsShot(
       this,
@@ -287,26 +275,24 @@ class FortNerf extends Phaser.Scene {
       this.otherBullets,
       this.error,
     );
+    socket.on('game_over', (data) => {
+      stopGameListeners();
+      this.scene.start('EndGame', { winner: data });
+    });
   }
 
   update() {
     keyboardChecker(this.input);
-    const { width } = this.sys.game.canvas;
     this.cameras.main.startFollow(this.player);
-    this.clock -= 1;
-    this.clockText.setText(`Time: ${this.clock.toString()}`);
-    this.clockText.setX(width / 2);
-    if (this.clock <= 0) {
-      const data = {
-        id: this.gameRoom,
-        user: {
-          username: this.playerInfo.username,
-          score: this.score,
-        },
-      };
+    if (this.player.kills >= 10) {
+      socket.emit('winner', {
+        username: this.playerInfo.username,
+        room: this.gameRoom,
+      });
       stopGameListeners();
-      postScore(data);
-      this.scene.stop('FortNerf').launch('EndGame');
+      this.scene.start('EndGame', {
+        winner: this.playerInfo.username,
+      });
     }
     const playerMoved = this.player.movePlayer();
     if (playerMoved) {

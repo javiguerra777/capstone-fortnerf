@@ -2,9 +2,9 @@ import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserNavBar from '../../../common/components/UserNavBar';
 import createNewRoom from '../api/createNewRoom';
-import { socket } from '../../../service/socket';
+import { socket } from '../../../common/service/socket';
 import NewServerWrapper from '../styles/NewServer';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 function CreateNewServer() {
   const navigate = useNavigate();

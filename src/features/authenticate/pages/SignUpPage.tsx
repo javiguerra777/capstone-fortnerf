@@ -14,7 +14,7 @@ import LoginWrapper from '../styles/AuthWrapper';
 import { setUser } from '../../../app/redux/UserSlice';
 import { setEmail } from '../../../app/redux/Registrations';
 import useLoggedIn from '../hooks/useLoggedin';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 function SignUpPage() {
   const dispatch = useDispatch();

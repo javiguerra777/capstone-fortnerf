@@ -3,11 +3,11 @@ import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import convertToDate from '../functions/ConvertToDate';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
-import { socket } from '../../../service/socket';
+import { socket } from '../../../common/service/socket';
 import { Message } from '../../../common/models';
 import { disableKeyBoard } from '../../../app/redux/GameSlice';
 import useChatScroll from '../hooks/UseChatScroll';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 type ChatProps = {
   toggleAside: () => void;

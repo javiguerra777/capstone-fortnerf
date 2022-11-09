@@ -6,6 +6,8 @@ import TextBox from './TextBox';
 class Player extends Phaser.Physics.Arcade.Sprite {
   direction = 'down';
 
+  kills = 0;
+
   health = 100;
 
   keys;

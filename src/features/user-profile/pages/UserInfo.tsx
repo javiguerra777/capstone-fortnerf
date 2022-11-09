@@ -7,7 +7,7 @@ import ChangeName from '../components/ChangeName';
 import ChangeSprite from '../components/ChangeSprite';
 import SpriteContainer from '../../../common/styles/SpriteContainer';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
-import GetReduxStore from '../../../common/functions/GetStore';
+import GetReduxStore from '../../../common/hooks/GetStore';
 
 function UserInfo() {
   const dispatch = useDispatch();

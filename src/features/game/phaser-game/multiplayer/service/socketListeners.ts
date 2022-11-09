@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
-import { socket } from '../../../../../service/socket';
+import { socket } from '../../../../../common/service/socket';
 import { BULLET_MOVEMENT } from '../../utils/constants';
 import OtherPlayer from '../../objects/OtherPlayer';
+import Player from '../../objects/Player';
+import getStore from '../../utils/store';
 
 export const newPlayer = (
   scene: Phaser.Scene,
@@ -64,24 +66,36 @@ export const existingPlayers = (
 };
 export const playerMove = (
   otherPlayers: Phaser.Physics.Arcade.Group,
+  gamePlayer: Player,
   event: string,
+  text: any = '',
 ) => {
-  socket.on(event, async ({ x, y, direction, socketId, respawn }) => {
-    try {
-      otherPlayers?.children.entries?.forEach((player: any) => {
-        if (player.socketId === socketId) {
-          player.x = x;
-          player.y = y;
-          player.direction = direction;
-          player.text.setX(player.getTopLeft().x - 5);
-          player.text.setY(player.getTopRight().y - 20);
-          player.moving = !respawn;
+  socket.on(
+    event,
+    async ({ x, y, direction, socketId, respawn, otherSocketId }) => {
+      try {
+        const {
+          user: { socketId: id },
+        } = getStore();
+        otherPlayers?.children.entries?.forEach((player: any) => {
+          if (player.socketId === socketId) {
+            player.x = x;
+            player.y = y;
+            player.direction = direction;
+            player.text.setX(player.getTopLeft().x - 5);
+            player.text.setY(player.getTopRight().y - 20);
+            player.moving = !respawn;
+          }
+        });
+        if (otherSocketId === id) {
+          gamePlayer.kills += 1;
+          text.setText(`Kills: ${gamePlayer.kills}`);
         }
-      });
-    } catch (err) {
-      console.log('move home', err.message);
-    }
-  });
+      } catch (err) {
+        console.log('move home', err.message);
+      }
+    },
+  );
 };
 export const endMove = (
   otherPlayers: Phaser.Physics.Arcade.Group,
@@ -102,16 +116,17 @@ export const endMove = (
 };
 export const bulletIsShot = (
   scene: Phaser.Scene,
-  otherBullet: Phaser.Physics.Arcade.Sprite,
+  otherBullet: any,
   otherBullets: Phaser.Physics.Arcade.Group,
   // eslint-disable-next-line no-unused-vars
   error: string,
 ) => {
-  socket.on('bulletShot', async ({ x, y, direction }) => {
+  socket.on('bulletShot', async ({ x, y, direction, otherId }) => {
     try {
       otherBullet = scene.physics.add
         .sprite(x, y, 'bullet')
         .setScale(0.2);
+      otherBullet.socketId = otherId;
       otherBullets.add(otherBullet);
       if (direction === 'left') {
         otherBullet.flipX = true;
