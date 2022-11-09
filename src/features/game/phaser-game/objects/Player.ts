@@ -1,13 +1,14 @@
 import Phaser from 'phaser';
-import { PLAYER_MOVEMENT, style } from '../utils/constants';
+import { PLAYER_MOVEMENT } from '../utils/constants';
 import createAnimation from '../utils/animations';
+import TextBox from './TextBox';
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   direction = 'down';
 
   health = 100;
 
-  keys!: any;
+  keys;
 
   playerText;
 
@@ -29,11 +30,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     };
     scene.physics.world.enable(this);
     scene.add.existing(this);
-    this.playerText = scene.add.text(
+    this.playerText = new TextBox(
+      scene,
       this.getTopLeft().x - 5,
       this.getTopCenter().y - 20,
       text,
-      style,
     );
     // movement animations
     createAnimation(this.anims, 'left', texture, 'left', 1, 3);

@@ -1,20 +1,19 @@
 import React, { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import HomeNavBar from '../../../common/components/HomeNavBar';
 import dashboardimage from '../../../assets/img/dashboard.png';
 import PreviewGame from '../../../assets/img/prev_game.png';
 import { setEmail } from '../../../app/redux/Registrations';
-import { RootState } from '../../../app/redux';
 import StyledHome from '../styles/Home';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 function HomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { email } = useSelector(
-    (state: RootState) => state.registration,
-    shallowEqual,
-  );
+  const {
+    registration: { email },
+  } = GetReduxStore();
   const toLoginPage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmail('');

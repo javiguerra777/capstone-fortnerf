@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { shallowEqual, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Main from '../common/components/Main';
 import HomePage from '../features/public-ui/pages/HomePage';
 import LoginPage from '../features/authenticate/pages/LoginPage';
@@ -17,18 +17,14 @@ import NotFound from '../common/components/NotFound';
 import ProtectedRoutes from '../common/components/ProtectedRoutes';
 import { socket } from '../service/socket';
 import { setConnected } from './redux/UserSlice';
-import { useAppSelector } from './redux/hooks';
+import GetReduxStore from '../common/functions/GetStore';
 
 function App() {
   const dispatch = useDispatch();
-  const { loggedIn } = useAppSelector(
-    (state) => state.user,
-    shallowEqual,
-  );
-  const { leftGame } = useAppSelector(
-    (state) => state.game,
-    shallowEqual,
-  );
+  const {
+    user: { loggedIn },
+    game: { leftGame },
+  } = GetReduxStore();
   useEffect(() => {
     // only connect once in entire app when the app loads
     socket.on('connect', () => {

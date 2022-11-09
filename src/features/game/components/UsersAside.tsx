@@ -1,10 +1,10 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
 import UsersWrapper from '../styles/UsersWrapper';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 type Users = {
   users: [];
-  username: string;
   privateRoom: boolean;
   roomPassword: string;
 };
@@ -12,12 +12,10 @@ type User = {
   username: string;
 };
 
-function UsersAside({
-  users,
-  username,
-  privateRoom,
-  roomPassword,
-}: Users) {
+function UsersAside({ users, privateRoom, roomPassword }: Users) {
+  const {
+    user: { username },
+  } = GetReduxStore();
   return (
     <UsersWrapper>
       <header className="users-header">

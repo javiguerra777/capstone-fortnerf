@@ -8,21 +8,20 @@ import {
   query,
   getDocs,
 } from 'firebase/firestore';
-import { useDispatch, shallowEqual } from 'react-redux';
-import { useAppSelector } from '../../../app/redux/hooks';
+import { useDispatch } from 'react-redux';
 import { auth, db } from '../../firebase/FirebaseTS';
 import LoginWrapper from '../styles/AuthWrapper';
 import { setUser } from '../../../app/redux/UserSlice';
 import { setEmail } from '../../../app/redux/Registrations';
 import useLoggedIn from '../hooks/useLoggedin';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 function SignUpPage() {
   const dispatch = useDispatch();
   const userCollection = collection(db, 'users');
-  const { email } = useAppSelector(
-    (state) => state.registration,
-    shallowEqual,
-  );
+  const {
+    registration: { email },
+  } = GetReduxStore();
   const [name, setName] = useState('');
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');

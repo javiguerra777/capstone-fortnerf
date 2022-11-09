@@ -4,10 +4,10 @@ import npcData from '../json/NPC.json';
 import Player from '../../objects/Player';
 import NPC from '../../objects/Npc';
 import Box from '../../objects/DialogueBox';
-import store from '../../../../../app/redux';
 import loadCharacters from '../../utils/loadAssets';
 import { createMap } from '../../utils/createMap';
 import distanceChecker from '../../utils/distanceChecker';
+import getStore from '../../utils/store';
 
 class Home extends Phaser.Scene {
   dialogue!: Phaser.GameObjects.DOMElement;
@@ -35,8 +35,9 @@ class Home extends Phaser.Scene {
   }
 
   preload() {
-    const state = store.getState();
-    const { playerSprite } = state.user;
+    const {
+      user: { playerSprite },
+    } = getStore();
     this.playerSprite = playerSprite;
     // character sprites
     loadCharacters(this);

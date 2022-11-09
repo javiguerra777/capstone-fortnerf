@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import store from '../../../../../app/redux';
 import {
   BULLET_OFFSET,
   BULLET_MOVEMENT,
@@ -21,6 +20,7 @@ import {
   playerMove,
   stopGameListeners,
 } from '../service/socketListeners';
+import getStore, { keyboardChecker } from '../../utils/store';
 
 type PlayerInfo = {
   username: string;
@@ -67,15 +67,16 @@ class FortNerf extends Phaser.Scene {
   }
 
   preload() {
-    const state = store.getState();
-    const { username, x, y, playerSprite } = state.user;
+    const {
+      user: { username, x, y, playerSprite },
+      game: { id },
+    } = getStore();
     this.playerInfo = {
       username,
       x,
       y,
       playerSprite,
     };
-    const { id } = state.game;
     this.gameRoom = id;
     loadCharacters(this);
     this.load.atlas(
@@ -289,6 +290,7 @@ class FortNerf extends Phaser.Scene {
   }
 
   update() {
+    keyboardChecker(this.input);
     const { width } = this.sys.game.canvas;
     this.cameras.main.startFollow(this.player);
     this.clock -= 1;

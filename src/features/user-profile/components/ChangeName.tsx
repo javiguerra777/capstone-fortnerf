@@ -4,18 +4,16 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/FirebaseTS';
 import { updateUsername } from '../../../app/redux/UserSlice';
 import ChangeNameWrapper from '../styles/ChangeName';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 type NameComponentProps = {
-  username: string;
-  docId: string;
   // eslint-disable-next-line no-unused-vars
   toggleActiveComponent: (option: string) => void;
 };
-function ChangeName({
-  username,
-  docId,
-  toggleActiveComponent,
-}: NameComponentProps) {
+function ChangeName({ toggleActiveComponent }: NameComponentProps) {
+  const {
+    user: { username, docId },
+  } = GetReduxStore();
   const dispatch = useDispatch();
   const userDoc = doc(db, 'users', docId);
   const [error, setError] = useState('');

@@ -7,9 +7,9 @@ import {
 } from 'react-icons/bs';
 import { FaMicrophoneAlt } from 'react-icons/fa';
 import { GiExitDoor } from 'react-icons/gi';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 type Footer = {
-  username: string;
   audio: boolean;
   users: [];
   displayVid: boolean;
@@ -22,7 +22,6 @@ type Footer = {
 };
 function GameFooter({
   videoRef,
-  username,
   toggleAudio,
   audio,
   toggleVideo,
@@ -32,6 +31,9 @@ function GameFooter({
   users,
   closeTab,
 }: Footer) {
+  const {
+    user: { username },
+  } = GetReduxStore();
   return (
     <>
       <section className="flex-row video-voice">

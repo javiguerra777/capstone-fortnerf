@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import createAnimation from '../utils/animations';
-import { style } from '../utils/constants';
+import TextBox from './TextBox';
 
 class OtherPlayer extends Phaser.Physics.Arcade.Sprite {
   direction = 'down';
@@ -21,11 +21,11 @@ class OtherPlayer extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture);
     scene.physics.world.enable(this);
     scene.add.existing(this);
-    this.text = scene.add.text(
+    this.text = new TextBox(
+      scene,
       this.getTopLeft().x - 5,
       this.getTopCenter().y - 20,
       text,
-      style,
     );
     // movement animations
     createAnimation(this.anims, 'left', texture, 'left', 1, 3);

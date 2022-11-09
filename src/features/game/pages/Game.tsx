@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { shallowEqual } from 'react-redux';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import UsersAside from '../components/UsersAside';
@@ -11,20 +10,17 @@ import { setId } from '../../../app/redux/GameSlice';
 import { socket } from '../../../service/socket';
 import { setCoords } from '../../../app/redux/UserSlice';
 import getRoomData from '../api/GetRoomData';
-import {
-  useAppSelector,
-  useAppDispatch,
-} from '../../../app/redux/hooks';
+import { useAppDispatch } from '../../../app/redux/hooks';
 import UseLeaveGame from '../hooks/UseLeaveGame';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 function Game() {
   const maxWidth = '100%';
   const width = '85%';
   const dispatch = useAppDispatch();
-  const { username, playerSprite } = useAppSelector(
-    (state) => state.user,
-    shallowEqual,
-  );
+  const {
+    user: { username, playerSprite },
+  } = GetReduxStore();
   const navigate = useNavigate();
   const { id } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -37,7 +33,6 @@ function Game() {
   const [roomData, setRoomData] = useState<RoomData>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const closeTab = () => {
-    // eslint-disable-next-line no-restricted-globals
     navigate('/dashboard');
   };
   const toggleAside = () => {
@@ -178,7 +173,6 @@ function Game() {
         {displayAllUsers && (
           <UsersAside
             users={roomData?.users || []}
-            username={username}
             privateRoom={roomData?.private || false}
             roomPassword={roomData?.password || ''}
           />
@@ -187,7 +181,6 @@ function Game() {
       <footer className="user-settings background-color">
         <GameFooter
           videoRef={videoRef}
-          username={username}
           toggleAudio={toggleAudio}
           audio={audio}
           toggleVideo={toggleVideo}

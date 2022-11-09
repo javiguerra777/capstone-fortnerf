@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import store from '../../../../../app/redux';
 import { socket } from '../../../../../service/socket';
 import { MAP_SCALE } from '../../utils/constants';
 import Player from '../../objects/Player';
@@ -14,6 +13,7 @@ import stopHomeListeners, {
   endMove,
   playGame,
 } from '../service/socketListeners';
+import getStore, { keyboardChecker } from '../../utils/store';
 
 type PlayerInfo = {
   username: string;
@@ -40,9 +40,10 @@ class HomeScene extends Phaser.Scene {
   }
 
   preload() {
-    const state = store.getState();
-    const { id } = state.game;
-    const { username, playerSprite } = state.user;
+    const {
+      game: { id },
+      user: { username, playerSprite },
+    } = getStore();
     this.playerInfo = {
       username,
       playerSprite,
@@ -141,17 +142,7 @@ class HomeScene extends Phaser.Scene {
   }
 
   update() {
-    const state = store.getState();
-    const { disableKeyBoard } = state.game;
-    this.keyBoardDisabled = disableKeyBoard;
-    // allows for users to be able to use the keyboard if they click on another DOM element
-    if (this.keyBoardDisabled) {
-      this.input.keyboard.enabled = false;
-      this.input.keyboard.disableGlobalCapture();
-    } else {
-      this.input.keyboard.enabled = true;
-      this.input.keyboard.enableGlobalCapture();
-    }
+    keyboardChecker(this.input);
     this.cameras.main.startFollow(this.player);
     if (this.playButton) {
       const { height, width } = this.sys.game.canvas;

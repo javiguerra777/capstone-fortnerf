@@ -1,18 +1,16 @@
 import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { shallowEqual } from 'react-redux';
-import { useAppSelector } from '../../../app/redux/hooks';
 import UserNavBar from '../../../common/components/UserNavBar';
 import createNewRoom from '../api/createNewRoom';
 import { socket } from '../../../service/socket';
 import NewServerWrapper from '../styles/NewServer';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 function CreateNewServer() {
   const navigate = useNavigate();
-  const { username } = useAppSelector(
-    (state) => state.user,
-    shallowEqual,
-  );
+  const {
+    user: { username },
+  } = GetReduxStore();
   const [gameName, setGameName] = useState('');
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [error, setError] = useState('');

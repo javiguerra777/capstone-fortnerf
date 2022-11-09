@@ -8,10 +8,9 @@ import ChangeNameWrapper from '../styles/ChangeName';
 import SpriteRadio from './SpriteRadio';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
 import SpriteContainer from '../../../common/styles/SpriteContainer';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 type SpriteProps = {
-  sprite: string;
-  docId: string;
   // eslint-disable-next-line no-unused-vars
   toggleActiveComponent: (option: string) => void;
 };
@@ -28,11 +27,10 @@ const sprites: string[] = [
   'santa',
   'pikachu',
 ];
-function ChangeSprite({
-  sprite,
-  docId,
-  toggleActiveComponent,
-}: SpriteProps) {
+function ChangeSprite({ toggleActiveComponent }: SpriteProps) {
+  const {
+    user: { docId, playerSprite },
+  } = GetReduxStore();
   const dispatch = useDispatch();
   const userDoc = doc(db, 'users', docId);
   const [newSprite, setNewSprite] = useState('');
@@ -61,8 +59,8 @@ function ChangeSprite({
           <div className="player-sprite">
             <h1>Current Sprite:</h1>
             <SpriteContainer
-              src={switchSpriteSheet(sprite)}
-              alt={sprite}
+              src={switchSpriteSheet(playerSprite)}
+              alt={playerSprite}
             />
           </div>
           <button

@@ -1,13 +1,13 @@
 import React, { useRef, FormEvent, useState } from 'react';
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import convertToDate from '../functions/ConvertToDate';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
 import { socket } from '../../../service/socket';
 import { Message } from '../../../common/models';
-import { RootState } from '../../../app/redux';
 import { disableKeyBoard } from '../../../app/redux/GameSlice';
 import useChatScroll from '../hooks/UseChatScroll';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 type ChatProps = {
   toggleAside: () => void;
@@ -15,14 +15,10 @@ type ChatProps = {
 };
 function GameChat({ toggleAside, messages }: ChatProps) {
   const dispatch = useDispatch();
-  const { username, playerSprite } = useSelector(
-    (state: RootState) => state.user,
-    shallowEqual,
-  );
-  const { id } = useSelector(
-    (state: RootState) => state.game,
-    shallowEqual,
-  );
+  const {
+    user: { username, playerSprite },
+    game: { id },
+  } = GetReduxStore();
   const [msg, setMessage] = useState('');
   const ref = useChatScroll(messages);
   const inputRef = useRef<HTMLInputElement>(null);

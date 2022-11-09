@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import UserNavBar from '../../../common/components/UserNavBar';
-import { RootState } from '../../../app/redux';
 import { setUser } from '../../../app/redux/UserSlice';
 import UserInfoWrapper from '../styles/UserInfoWrapper';
 import ChangeName from '../components/ChangeName';
 import ChangeSprite from '../components/ChangeSprite';
 import SpriteContainer from '../../../common/styles/SpriteContainer';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
+import GetReduxStore from '../../../common/functions/GetStore';
 
 function UserInfo() {
   const dispatch = useDispatch();
-  const { name, username, email, docId, playerSprite } = useSelector(
-    (state: RootState) => state.user,
-    shallowEqual,
-  );
+  const {
+    user: { name, username, email, playerSprite },
+  } = GetReduxStore();
   const [state, setState] = useState({
     nameComponent: false,
     spriteComponent: false,
@@ -82,18 +81,10 @@ function UserInfo() {
         </footer>
       </section>
       {state.nameComponent && (
-        <ChangeName
-          username={username}
-          docId={docId}
-          toggleActiveComponent={toggleActiveComponent}
-        />
+        <ChangeName toggleActiveComponent={toggleActiveComponent} />
       )}
       {state.spriteComponent && (
-        <ChangeSprite
-          sprite={playerSprite}
-          docId={docId}
-          toggleActiveComponent={toggleActiveComponent}
-        />
+        <ChangeSprite toggleActiveComponent={toggleActiveComponent} />
       )}
     </UserInfoWrapper>
   );
