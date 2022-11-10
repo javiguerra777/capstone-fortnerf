@@ -1,6 +1,6 @@
 import React from 'react';
-import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
-import SpriteContainer from '../../../common/styles/SpriteContainer';
+import switchSpriteSheet from '../functions/SwitchSpriteSheet';
+import SpriteContainer from '../styles/SpriteContainer';
 
 type SpriteProps = {
   newSprite: string;

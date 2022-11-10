@@ -5,28 +5,16 @@ import { nanoid } from 'nanoid';
 import { db } from '../../firebase/FirebaseTS';
 import { changePlayerSprite } from '../../../app/redux/UserSlice';
 import ChangeNameWrapper from '../styles/ChangeName';
-import SpriteRadio from './SpriteRadio';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
+import SpriteRadio from '../../../common/components/SpriteRadio';
 import SpriteContainer from '../../../common/styles/SpriteContainer';
 import GetReduxStore from '../../../common/hooks/GetStore';
+import sprites from '../../../common/constants';
 
 type SpriteProps = {
   // eslint-disable-next-line no-unused-vars
   toggleActiveComponent: (option: string) => void;
 };
-const sprites: string[] = [
-  'player',
-  'npc',
-  'pumpkin',
-  'soldier',
-  'robeman',
-  'cat',
-  'dog',
-  'frosty',
-  'rudolf',
-  'santa',
-  'pikachu',
-];
 function ChangeSprite({ toggleActiveComponent }: SpriteProps) {
   const {
     user: { docId, playerSprite },
