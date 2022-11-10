@@ -62,7 +62,6 @@ function SignUpPage() {
         break;
     }
   };
-  console.log(state);
   const navigate = useNavigate();
   useEffect(
     () => () => {

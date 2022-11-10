@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { nanoid } from 'nanoid';
 import styled from 'styled-components';
@@ -13,8 +14,8 @@ import FormFooter from '../styles/Footer';
 
 type Props = {
   sprite: string;
-  setSprite: any;
-  updateState: any;
+  setSprite: (value: string) => void;
+  updateState: (value: string | number, option: string) => void;
 };
 
 const Wrapper = styled.div`

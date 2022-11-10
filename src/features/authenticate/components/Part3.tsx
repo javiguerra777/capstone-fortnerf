@@ -5,7 +5,7 @@ type Props = {
   password: string;
   repeatPassword: string;
   // eslint-disable-next-line no-unused-vars
-  updateState: (value: any, option: string) => void;
+  updateState: (value: string | number, option: string) => void;
 };
 
 function Part3({ password, repeatPassword, updateState }: Props) {

@@ -8,7 +8,7 @@ type Props = {
   name: string;
   username: string;
   // eslint-disable-next-line no-unused-vars
-  updateState: (value: any, option: string) => void;
+  updateState: (value: string | number, option: string) => void;
 };
 
 function Part1({ name, username, updateState }: Props) {

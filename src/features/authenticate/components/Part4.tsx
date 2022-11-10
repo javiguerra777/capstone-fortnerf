@@ -5,7 +5,8 @@ type Props = {
   username: string;
   email: string;
   sprite: string;
-  updateState: any;
+  // eslint-disable-next-line no-unused-vars
+  updateState: (value: string | number, option: string) => void;
 };
 
 function Part4({
