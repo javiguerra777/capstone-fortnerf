@@ -59,7 +59,7 @@ function SignUpPage() {
           querySnapshot.forEach((doc) => {
             userData = { ...doc.data(), id: doc.id };
           });
-          dispatch(setUser({ ...userData }));
+          dispatch(setUser({ ...userData, loggedIn: true }));
         };
         await getUserFromDB();
         await dispatch(setEmail(''));

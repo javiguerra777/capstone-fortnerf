@@ -27,7 +27,10 @@ const initialState = {
   connected: false,
   x: 0,
   y: 0,
-  playerSprite: localStorage.getItem('sprite') || 'player',
+  playerSprite:
+    localStorage.getItem('sprite') === 'undefined'
+      ? 'player'
+      : localStorage.getItem('sprite'),
 } as User;
 
 export const userSlice = createSlice({

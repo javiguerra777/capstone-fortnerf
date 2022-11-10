@@ -11,7 +11,10 @@ export const updateLocalStorage = async (payload: UserPayload) => {
   await localStorage.setItem('username', payload.username);
   await localStorage.setItem('email', payload.email);
   await localStorage.setItem('name', payload.name);
-  await localStorage.setItem('sprite', payload.sprite);
+  await localStorage.setItem(
+    'sprite',
+    payload.sprite === undefined ? 'player' : payload.sprite,
+  );
   await localStorage.setItem('id', payload.id);
   await localStorage.setItem('loggedIn', 'true');
 };
