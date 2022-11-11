@@ -2,15 +2,13 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
 import styled from 'styled-components';
-import {
-  BsArrowLeftSquareFill,
-  BsArrowRightSquareFill,
-} from 'react-icons/bs';
+import LeftArrow, { RightArrow } from '../../../common/icons';
 import sprites from '../../../common/constants';
 import SpriteRadio from '../../../common/components/SpriteRadio';
 import SwitchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
 import SpriteContainer from '../../../common/styles/SpriteContainer';
 import FormFooter from '../styles/Footer';
+import StyledButton from '../../../common/styles/ArrowButton';
 
 type Props = {
   sprite: string;
@@ -18,14 +16,16 @@ type Props = {
   updateState: (value: string | number, option: string) => void;
 };
 
-const Wrapper = styled.div`
+const Wrapper = styled.section`
   width: 100%;
   display: flex;
   flex-direction: column;
-  .sprite-choice {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  header {
+    .sprite-choice {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
   }
   .sprite-container {
     display: flex;
@@ -36,6 +36,10 @@ const Wrapper = styled.div`
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
+      input[type='radio'] {
+        height: 1em;
+      }
     }
   }
 `;
@@ -43,16 +47,16 @@ function Part2({ sprite, setSprite, updateState }: Props) {
   return (
     <Wrapper>
       <header>
-        <h1>Select your character</h1>
-        <div className="sprite-choice">
+        <h1>Step 2: Select your character</h1>
+        <section className="sprite-choice">
           <p>Your choice is:</p>
           <SpriteContainer
             src={SwitchSpriteSheet(sprite)}
             alt={sprite}
           />
-        </div>
+        </section>
       </header>
-      <div className="sprite-container">
+      <section className="sprite-container">
         {sprites.map((theSprite: string) => (
           <SpriteRadio
             key={nanoid()}
@@ -61,18 +65,21 @@ function Part2({ sprite, setSprite, updateState }: Props) {
             setNewSprite={setSprite}
           />
         ))}
-      </div>
+      </section>
       <FormFooter>
-        <button type="button" onClick={() => updateState(0, 'part')}>
-          <BsArrowLeftSquareFill />
-        </button>
-        <button
+        <StyledButton
+          type="button"
+          onClick={() => updateState(0, 'part')}
+        >
+          <LeftArrow className="button" />
+        </StyledButton>
+        <StyledButton
           type="button"
           onClick={() => updateState(2, 'part')}
           disabled={!sprite}
         >
-          <BsArrowRightSquareFill />
-        </button>
+          <RightArrow className="button" />
+        </StyledButton>
       </FormFooter>
     </Wrapper>
   );

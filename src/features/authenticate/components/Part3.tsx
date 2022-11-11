@@ -1,5 +1,7 @@
 import React from 'react';
 import FormFooter from '../styles/Footer';
+import LeftArrow, { RightArrow } from '../../../common/icons';
+import StyledButton from '../../../common/styles/ArrowButton';
 
 type Props = {
   password: string;
@@ -21,6 +23,9 @@ function Part3({ password, repeatPassword, updateState }: Props) {
   };
   return (
     <>
+      <header>
+        <h1>Step 3: Create a Password</h1>
+      </header>
       <label htmlFor="password">
         <p>Password:</p>
         <input
@@ -42,16 +47,19 @@ function Part3({ password, repeatPassword, updateState }: Props) {
         />
       </label>
       <FormFooter>
-        <button type="button" onClick={() => updateState(1, 'part')}>
-          Prev
-        </button>
-        <button
+        <StyledButton
+          type="button"
+          onClick={() => updateState(1, 'part')}
+        >
+          <LeftArrow className="button" />
+        </StyledButton>
+        <StyledButton
           type="button"
           onClick={() => updateState(3, 'part')}
           disabled={disableButton()}
         >
-          Next Part
-        </button>
+          <RightArrow className="button" />
+        </StyledButton>
       </FormFooter>
     </>
   );

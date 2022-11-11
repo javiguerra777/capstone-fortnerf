@@ -36,7 +36,7 @@ function LoginPage() {
         const q = query(userCollection, where('email', '==', email));
 
         const getUserFromDB = async () => {
-          let userData: any = {};
+          let userData = {};
           const querySnapshot = await getDocs(q);
           querySnapshot.forEach((doc) => {
             userData = { ...doc.data(), id: doc.id };

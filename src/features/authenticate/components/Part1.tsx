@@ -3,6 +3,9 @@ import { useDispatch } from 'react-redux';
 import { setEmail } from '../../../app/redux/Registrations';
 import GetReduxStore from '../../../common/hooks/GetStore';
 import validateEmail from '../../../common/functions/validateEmail';
+import LeftArrow, { RightArrow } from '../../../common/icons';
+import StyledButton from '../../../common/styles/ArrowButton';
+import FormFooter from '../styles/Footer';
 
 type Props = {
   name: string;
@@ -25,7 +28,7 @@ function Part1({ name, username, updateState }: Props) {
   return (
     <>
       <header>
-        <h1>Step 1</h1>
+        <h1>Step 1: Enter Information</h1>
       </header>
       <label htmlFor="name">
         <p>Name:</p>
@@ -54,13 +57,18 @@ function Part1({ name, username, updateState }: Props) {
           onChange={(e) => dispatch(setEmail(e.target.value))}
         />
       </label>
-      <button
-        type="button"
-        onClick={() => updateState(1, 'part')}
-        disabled={disableButton()}
-      >
-        Next Part
-      </button>
+      <FormFooter>
+        <StyledButton disabled>
+          <LeftArrow className="button" />
+        </StyledButton>
+        <StyledButton
+          type="button"
+          onClick={() => updateState(1, 'part')}
+          disabled={disableButton()}
+        >
+          <RightArrow className="button" />
+        </StyledButton>
+      </FormFooter>
     </>
   );
 }

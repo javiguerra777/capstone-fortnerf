@@ -8,7 +8,7 @@ const LoginWrapper = styled.main`
   left: 0;
   top: 0;
   form {
-    width: 30rem;
+    width: 30em;
     display: flex;
     flex-direction: column;
     margin-top: 1em;
@@ -33,13 +33,15 @@ const LoginWrapper = styled.main`
       margin-bottom: 1em;
       align-self: center;
       width: 35em;
-      hr {
-        width: 100%;
-        background-color: #00c399;
-      }
+    }
+    hr {
+      width: 100%;
+      background-color: #00c399;
     }
   }
   .main-login {
+    overflow-y: scroll;
+    overflow-x: hidden;
     width: 98vw;
     height: 98vh;
     background: #333333;
@@ -63,6 +65,9 @@ const LoginWrapper = styled.main`
     h2 {
       color: #fff5ee;
       font-size: 1rem;
+    }
+    p {
+      color: #fff5ee;
     }
   }
   .img-holder {
@@ -109,6 +114,19 @@ const LoginWrapper = styled.main`
     border-radius: 1em;
     cursor: pointer;
     font-size: 1.2rem;
+  }
+  @media (max-width: 700px) {
+    form {
+      width: 75%;
+      label {
+        color: #fff5ee;
+        font-size: 1.2rem;
+        p {
+          position: relative;
+          right: 1em;
+        }
+      }
+    }
   }
 `;
 

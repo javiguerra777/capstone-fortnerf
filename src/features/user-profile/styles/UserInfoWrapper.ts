@@ -12,6 +12,7 @@ const UserInfoWrapper = styled.main`
     width: 40em;
     border: solid white 3px;
     .details {
+      overflow-x: scroll;
       background: #8079d1;
       width: 90%;
       display: flex;
@@ -31,17 +32,23 @@ const UserInfoWrapper = styled.main`
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-evenly;
     margin-bottom: 1em;
     button {
-      margin-left: 5em;
-      margin-right: 5em;
       padding: 0.5em 1em 0.5em 1em;
       background: none;
       color: white;
       border: solid 1px white;
       border-radius: 0.5em;
       cursor: pointer;
+    }
+  }
+  @media (max-width: 700px) {
+    .user-information {
+      width: 75%;
+    }
+    button {
+      font-size: 0.7rem;
     }
   }
 `;

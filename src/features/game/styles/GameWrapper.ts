@@ -186,6 +186,16 @@ const GameWrapper = styled.main`
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
     -moz-transform:rotateY(180deg); /* Firefox */
   }
+  @media (max-width: 700px){
+    .text-users, .video-voice {
+      button {
+        font-size: 1.2rem;
+      }
+    }
+    #videoElement {
+      margin-left: 0.5em;
+    }
+  }
 `;
 
 export default GameWrapper;

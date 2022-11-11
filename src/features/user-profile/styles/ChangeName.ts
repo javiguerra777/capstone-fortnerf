@@ -13,7 +13,7 @@ const ChangeNameWrapper = styled.main`
     background: black;
     color: white;
     border: solid 1px white;
-    width: 60%;
+    width: 80%;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -45,6 +45,13 @@ const ChangeNameWrapper = styled.main`
       flex-direction: column;
       align-items: center;
       width: 100%;
+      label {
+        margin-bottom: 1em;
+      }
+      input {
+        margin-left: 10px;
+        width: 15em;
+      }
       .character-option {
         width: 100%;
         display: flex;
@@ -58,22 +65,15 @@ const ChangeNameWrapper = styled.main`
         display: flex;
         flex-direction: row;
         align-items: center;
-        margin-bottom: 0.5em;
+        margin-bottom: 1em;
         label {
           width: auto;
         }
         input {
           justify-self: flex-start;
           margin: 0 auto;
-          margin-right: 1.5em;
-          width: 10px;
+          width: 15px;
         }
-      }
-      label {
-        margin-bottom: 1em;
-      }
-      input {
-        width: 15em;
       }
     }
     .submit-btn {
