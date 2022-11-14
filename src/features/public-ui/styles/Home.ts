@@ -22,6 +22,7 @@ const StyledHome = styled.main`
     opacity: 1;
   }
   .home-container {
+    overflow-y: scroll;
     background-color: #333333;
     position: fixed;
     top: 2.5%;

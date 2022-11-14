@@ -110,7 +110,7 @@ const GameWrapper = styled.main`
       height: 7%;
       input {
         width: 93%;
-        height: 2em;
+        height: 90%;
         border-radius: 1em;
         background: none;
         border: solid 1px gray;
@@ -198,6 +198,43 @@ const GameWrapper = styled.main`
     #videoElement {
       margin-left: 0.5em;
       width: 40px;
+    }
+  }
+  @media (max-height:600px) {
+    .video-voice, .text-users {
+      button {
+        font-size: 0.9rem;
+      }
+    }
+    p {
+      font-size: 0.8rem;
+    }
+    #videoElement {
+      height: 20px;
+    }
+  }
+  // for galaxy fold or any phone this small
+  @media (max-width: 300px) {
+     .video-voice, .text-users {
+      button {
+        font-size: 0.7rem;
+      }
+    }
+    p {
+      font-size: 0.8rem;
+    }
+  }
+  @media (max-height: 300px) {
+     .video-voice, .text-users {
+      button {
+        font-size: 0.7rem;
+      }
+    }
+    p {
+      font-size: 0.5rem;
+    }
+    #videoElement {
+      height: 15px;
     }
   }
 `;
