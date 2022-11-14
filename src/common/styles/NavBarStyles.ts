@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+// Navbar style for when user is logged in
 const NavBarWrapper = styled.nav`
   width: 100vw;
   margin-top: 1em;
@@ -20,6 +21,7 @@ const NavBarWrapper = styled.nav`
     }
   }
 `;
+// Navbar style when user isn't logged in
 export const NavBar = styled.nav`
   display: flex;
   flex-direction: row;
@@ -82,6 +84,30 @@ export const NavBar = styled.nav`
         padding: 5px;
         margin-right: 0.5em;
         font-size: 0.6em;
+      }
+    }
+  }
+  @media (max-width: 500px) {
+    a {
+      font-size: 0.7rem;
+    }
+    .navigation {
+      button {
+        padding: 5px;
+        margin-right: 0.5em;
+        font-size: 0.5em;
+      }
+    }
+  }
+  @media (max-width: 400px) {
+    a {
+      font-size: 0.6rem;
+    }
+    .navigation {
+      button {
+        padding: 5px;
+        margin-right: 0.5em;
+        font-size: 0.4em;
       }
     }
   }

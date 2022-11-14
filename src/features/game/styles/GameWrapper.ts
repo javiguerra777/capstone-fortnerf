@@ -187,13 +187,17 @@ const GameWrapper = styled.main`
     -moz-transform:rotateY(180deg); /* Firefox */
   }
   @media (max-width: 700px){
-    .text-users, .video-voice {
+    .video-voice, .text-users {
       button {
-        font-size: 1.2rem;
+        font-size: 0.9rem;
       }
+    }
+    p {
+      font-size: 0.8rem;
     }
     #videoElement {
       margin-left: 0.5em;
+      width: 40px;
     }
   }
 `;

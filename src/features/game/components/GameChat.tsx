@@ -1,11 +1,14 @@
-import React, { useRef, FormEvent, useState } from 'react';
+import React, { FormEvent, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import convertToDate from '../functions/ConvertToDate';
 import switchSpriteSheet from '../../../common/functions/SwitchSpriteSheet';
 import { socket } from '../../../common/service/socket';
 import { Message } from '../../../common/models';
-import { disableKeyBoard } from '../../../app/redux/GameSlice';
+import {
+  disableKeyBoard,
+  enableKeyBoard,
+} from '../../../app/redux/GameSlice';
 import useChatScroll from '../hooks/UseChatScroll';
 import GetReduxStore from '../../../common/hooks/GetStore';
 
@@ -20,8 +23,17 @@ function GameChat({ toggleAside, messages }: ChatProps) {
     game: { id },
   } = GetReduxStore();
   const [msg, setMessage] = useState('');
+  const [hasFocus, setFocus] = useState(false);
   const ref = useChatScroll(messages);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    console.log(hasFocus);
+    if (hasFocus) {
+      dispatch(disableKeyBoard());
+    } else {
+      dispatch(enableKeyBoard());
+    }
+  }, [hasFocus]);
   const sendChat = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     socket.emit('chat', {
@@ -32,9 +44,6 @@ function GameChat({ toggleAside, messages }: ChatProps) {
       sprite: playerSprite,
     });
     setMessage('');
-  };
-  const disablePhaserKeyboard = () => {
-    dispatch(disableKeyBoard());
   };
   return (
     <aside className="chat-bar background-color">
@@ -72,11 +81,11 @@ function GameChat({ toggleAside, messages }: ChatProps) {
       <form className="message-form" onSubmit={sendChat}>
         <input
           type="text"
-          onClick={disablePhaserKeyboard}
           value={msg}
           placeholder="Message..."
           onChange={(e) => setMessage(e.target.value)}
-          ref={inputRef}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
         />
       </form>
     </aside>

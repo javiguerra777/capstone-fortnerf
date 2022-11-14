@@ -38,7 +38,8 @@ const Wrapper = styled.section`
       align-items: center;
       justify-content: center;
       input[type='radio'] {
-        height: 1em;
+        height: 18px;
+        margin-right: 7px;
       }
     }
   }
