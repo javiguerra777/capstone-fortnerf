@@ -27,7 +27,6 @@ function GameChat({ toggleAside, messages }: ChatProps) {
   const ref = useChatScroll(messages);
 
   useEffect(() => {
-    console.log(hasFocus);
     if (hasFocus) {
       dispatch(disableKeyBoard());
     } else {

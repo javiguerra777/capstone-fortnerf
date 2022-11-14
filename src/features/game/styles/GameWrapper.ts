@@ -110,7 +110,7 @@ const GameWrapper = styled.main`
       height: 7%;
       input {
         width: 93%;
-        height: 90%;
+        height: 80%;
         border-radius: 1em;
         background: none;
         border: solid 1px gray;
