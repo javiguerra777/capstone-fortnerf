@@ -1,7 +1,8 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
 import UsersWrapper from '../styles/UsersWrapper';
-import GetReduxStore from '../../../common/hooks/GetStore';
+import switchSpritesheet from '../../../common/functions/SwitchSpriteSheet';
+import SpriteContainer from '../../../common/styles/SpriteContainer';
 
 type Users = {
   users: [];
@@ -10,25 +11,22 @@ type Users = {
 };
 type User = {
   username: string;
+  sprite: string;
 };
 
 function UsersAside({ users, privateRoom, roomPassword }: Users) {
-  const {
-    user: { username },
-  } = GetReduxStore();
   return (
     <UsersWrapper>
       <header className="users-header">
-        <h1>Users</h1>
+        <h1>Players</h1>
       </header>
       <section className="users-section">
         {users?.map((user: User) => (
           <div className="each-user" key={nanoid()}>
-            {username === user.username ? (
-              <h4>Host</h4>
-            ) : (
-              <h1>Participant</h1>
-            )}
+            <SpriteContainer
+              src={switchSpritesheet(user.sprite)}
+              alt={user.sprite}
+            />
             <p>{user.username}</p>
           </div>
         ))}

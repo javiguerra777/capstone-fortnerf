@@ -64,9 +64,11 @@ class HomeScene extends Phaser.Scene {
     const map = createMap(this, 'homeMap');
     const tileSet = map.addTilesetImage('tilesOne', 'tileSet');
     const floor = map.createLayer('Floor', tileSet, 0, 0);
+    const floor2 = map.createLayer('Floor2', tileSet, 0, 0);
     const second = map.createLayer('Second', tileSet, 0, 0);
     floor.setScale(MAP_SCALE);
-    second.setScale(MAP_SCALE);
+    floor2.setScale(MAP_SCALE);
+    second.setScale(MAP_SCALE).setDepth(2);
     const collidableObjects = map.createLayer(
       'Collide',
       tileSet,

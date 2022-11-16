@@ -80,7 +80,7 @@ class FortNerf extends Phaser.Scene {
     this.load.image('tiles', '/assets/tiles-img/sTiles.png');
     this.load.tilemapTiledJSON(
       'gameMap',
-      '/assets/tile-map/homemap.json',
+      '/assets/tile-map/fort-nerf.json',
     );
   }
 
@@ -96,9 +96,11 @@ class FortNerf extends Phaser.Scene {
     const map = createMap(this, 'gameMap');
     const tileSet = map.addTilesetImage('tilesOne', 'tileSet');
     const floor = map.createLayer('Floor', tileSet, 0, 0);
+    const floor2 = map.createLayer('Floor2', tileSet, 0, 0);
     const second = map.createLayer('Second', tileSet, 0, 0);
     floor.setScale(MAP_SCALE);
-    second.setScale(MAP_SCALE);
+    floor2.setScale(MAP_SCALE);
+    second.setScale(MAP_SCALE).setDepth(2);
     const collidableObjects = map.createLayer(
       'Collide',
       tileSet,
@@ -188,7 +190,7 @@ class FortNerf extends Phaser.Scene {
     );
     this.physics.add.collider(
       this.bullets,
-      collidableObjects,
+      [collidableObjects, second],
       (theBullet) => {
         theBullet.destroy();
       },
@@ -206,7 +208,7 @@ class FortNerf extends Phaser.Scene {
     );
     this.physics.add.collider(
       this.otherBullets,
-      collidableObjects,
+      [collidableObjects, second],
       async (theBullet) => {
         try {
           theBullet.destroy();
