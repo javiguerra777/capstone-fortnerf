@@ -17,8 +17,8 @@ function CreateNewServer() {
   const createGame = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const gameData = {
-      name: gameName,
-      username,
+      name: gameName.trim(),
+      username: username.trim(),
       maxPlayers,
     };
     try {

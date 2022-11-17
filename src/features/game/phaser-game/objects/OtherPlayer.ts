@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import createAnimation from '../utils/animations';
+import createAnimation, { scaleAnims } from '../utils/animations';
 import TextBox from './TextBox';
 
 class OtherPlayer extends Phaser.Physics.Arcade.Sprite {
@@ -19,6 +19,7 @@ class OtherPlayer extends Phaser.Physics.Arcade.Sprite {
     texture: string,
   ) {
     super(scene, x, y, texture);
+    this.setScale(scaleAnims(texture));
     scene.physics.world.enable(this);
     scene.add.existing(this);
     this.text = new TextBox(

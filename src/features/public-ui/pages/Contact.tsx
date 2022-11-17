@@ -1,10 +1,48 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useState } from 'react';
 import HomeNavBar from '../../../common/components/HomeNavBar';
 import ContactWrapper from '../styles/Contact';
+import validateEmail from '../../../common/functions/validateEmail';
+import sendContact from '../utils';
 
 function Contact() {
+  const [state, setState] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
   const sendEmail = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try {
+      sendContact({
+        name: state.name,
+        email: state.email,
+        message: state.message,
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+    setState({ name: '', email: '', message: '' });
+  };
+  const buttonDisabled = () => {
+    if (!validateEmail(state.email) || state.message.length <= 30) {
+      return true;
+    }
+    return false;
+  };
+  const updateState = (option: string, value: string) => {
+    switch (option) {
+      case 'name':
+        setState({ ...state, name: value });
+        break;
+      case 'email':
+        setState({ ...state, email: value });
+        break;
+      case 'message':
+        setState({ ...state, message: value });
+        break;
+      default:
+        break;
+    }
   };
   return (
     <ContactWrapper>
@@ -13,7 +51,12 @@ function Contact() {
         <form onSubmit={sendEmail}>
           <label htmlFor="name">
             <p>Name: (optional)</p>
-            <input type="text" placeholder="Enter your name" />
+            <input
+              type="text"
+              placeholder="Enter your name"
+              value={state.name}
+              onChange={(e) => updateState('name', e.target.value)}
+            />
           </label>
           <label htmlFor="email">
             <p>Email:</p>
@@ -22,6 +65,8 @@ function Contact() {
               name="email"
               id="email"
               placeholder="Enter a valid email"
+              value={state.email}
+              onChange={(e) => updateState('email', e.target.value)}
             />
           </label>
           <label htmlFor="message">
@@ -31,10 +76,16 @@ function Contact() {
               id="message"
               cols={30}
               rows={10}
-              placeholder="Enter your message"
+              placeholder="Enter your message: min 30 characters"
+              value={state.message}
+              onChange={(e) => updateState('message', e.target.value)}
             />
           </label>
-          <button type="submit" className="email-btn">
+          <button
+            type="submit"
+            className="email-btn"
+            disabled={buttonDisabled()}
+          >
             Send Message
           </button>
         </form>

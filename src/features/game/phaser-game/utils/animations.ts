@@ -21,4 +21,15 @@ const createAnimation = (
   });
 };
 
+export const scaleAnims = (sprite: string) => {
+  switch (sprite) {
+    case 'link':
+      return 0.6;
+    case 'papermario':
+      return 1;
+    default:
+      return 1.5;
+  }
+};
+
 export default createAnimation;

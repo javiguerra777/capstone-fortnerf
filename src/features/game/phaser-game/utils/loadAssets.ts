@@ -56,6 +56,21 @@ const loadCharacters = (scene: Phaser.Scene) => {
     '/assets/characters/pikachu.png',
     '/assets/characters/pikachu.json',
   );
+  scene.load.atlas(
+    'link',
+    '/assets/characters/link.png',
+    '/assets/characters/link.json',
+  );
+  scene.load.atlas(
+    'mario',
+    '/assets/characters/mario.png',
+    '/assets/characters/mario.json',
+  );
+  scene.load.atlas(
+    'luigi',
+    '/assets/characters/luigi.png',
+    '/assets/characters/luigi.json',
+  );
 };
 
 export default loadCharacters;

@@ -84,7 +84,7 @@ class HomeScene extends Phaser.Scene {
       500,
       this.playerInfo.username,
       this.playerInfo.playerSprite,
-    ).setScale(1.5);
+    );
     this.otherPlayers = this.physics.add.group();
     // button to switch to main game scene
     this.startGame = async () => {

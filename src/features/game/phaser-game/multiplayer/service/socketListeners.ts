@@ -17,7 +17,7 @@ export const newPlayer = (
         500,
         username,
         sprite,
-      ).setScale(1.5);
+      );
       otherPlayer.socketId = socketId;
       await otherPlayers?.add(otherPlayer);
     } catch (err) {
@@ -55,7 +55,7 @@ export const existingPlayers = (
           player.y || player.startingCoords.y,
           player.username,
           player.sprite,
-        ).setScale(1.5);
+        );
         otherPlayer.socketId = player.id;
         otherPlayers?.add(otherPlayer);
       });

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { PLAYER_MOVEMENT } from '../utils/constants';
-import createAnimation from '../utils/animations';
+import createAnimation, { scaleAnims } from '../utils/animations';
 import TextBox from './TextBox';
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -30,6 +30,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       ...scene.input.keyboard.createCursorKeys(),
       ...scene.input.keyboard.addKeys('W,S,A,D'),
     };
+    this.setScale(scaleAnims(texture));
     scene.physics.world.enable(this);
     scene.add.existing(this);
     this.playerText = new TextBox(

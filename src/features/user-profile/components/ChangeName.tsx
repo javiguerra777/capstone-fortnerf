@@ -22,10 +22,10 @@ function ChangeName({ toggleActiveComponent }: NameComponentProps) {
     e.preventDefault();
     try {
       const data = {
-        username: newUsername,
+        username: newUsername.trim(),
       };
       await updateDoc(userDoc, data);
-      await dispatch(updateUsername(newUsername));
+      await dispatch(updateUsername(newUsername.trim()));
       setNewUsername('');
     } catch (err) {
       if (err instanceof Error) {

@@ -71,13 +71,7 @@ class Home extends Phaser.Scene {
     const doors = map.createLayer('Doors', tileSet, 0, 0);
     doors.setScale(MAP_SCALE);
     // player methods
-    this.player = new Player(
-      this,
-      200,
-      200,
-      '',
-      this.playerSprite,
-    ).setScale(1.5);
+    this.player = new Player(this, 200, 200, '', this.playerSprite);
     // npc
     this.npcs = this.physics.add.group({
       allowGravity: false,

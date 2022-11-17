@@ -16,7 +16,6 @@ function HomePage() {
   } = GetReduxStore();
   const toLoginPage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setEmail('');
     navigate('/signup');
   };
   return (

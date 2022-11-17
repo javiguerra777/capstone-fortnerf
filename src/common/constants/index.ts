@@ -10,6 +10,9 @@ export const sprites: string[] = [
   'rudolf',
   'santa',
   'pikachu',
+  'link',
+  'mario',
+  'luigi',
 ];
 
 export default sprites;

@@ -77,14 +77,14 @@ function SignUpPage() {
     try {
       const createdUser = await createUserWithEmailAndPassword(
         auth,
-        email,
-        state.password,
+        email.trim(),
+        state.password.trim(),
       ).then((cred) =>
         addDoc(userCollection, {
           userId: cred.user.uid,
-          email,
-          name: state.name,
-          username: state.username.toLowerCase(),
+          email: email.trim(),
+          name: state.name.trim(),
+          username: state.username.toLowerCase().trim(),
           sprite: state.sprite,
         }),
       );

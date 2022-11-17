@@ -45,6 +45,9 @@ const ContactWrapper = styled.main`
     height: 3em;
     width: 10em;
   }
+  .email-btn:disabled {
+    color: gray;
+  }
   @media (max-width: 860px) {
     input {
       width: 30vw;

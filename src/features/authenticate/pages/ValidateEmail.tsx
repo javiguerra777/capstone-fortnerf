@@ -10,7 +10,7 @@ function ValidateEmail() {
   const sendEmail = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email.trim());
       setEmail('');
       setIsSent(true);
     } catch (err) {
