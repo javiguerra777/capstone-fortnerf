@@ -5,7 +5,7 @@ import dashboardimage from '../../../img/dashboard.png';
 import PreviewGame from '../../../img/prev_game.png';
 import { setEmail } from '../../../store/Registrations';
 import { RootState } from '../../../store';
-import { StyledHome } from '../styles/HomePage.style';
+import { HomePageContainer } from '../styles/HomePage.style';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -20,44 +20,52 @@ function HomePage() {
     navigate('/signup');
   };
   return (
-    <StyledHome>
-      <section className="home-container">
-        <section className="home-title center">
-          <h3 id="online-web-game">Online Web Game Application</h3>
-          <h2>Fort Nerf</h2>
-          <h3>
+    <HomePageContainer>
+      <div className="bg-zinc-800 inner-container my-4 flex flex-col">
+        <div className="p-1">
+          <p className="text-center text-2xl font-semibold mt-2">
+            Online Web Game Application
+          </p>
+          <p className="text-center text-xl font-medium my-2">
+            Fort Nerf
+          </p>
+          <p className="text-xl text-center">
             A place where you and others can compete, have fun, and
             communicate
-          </h3>
-        </section>
-        <section className="enter-email center">
+          </p>
+        </div>
+
+        <section className="self-center my-4">
           <form onSubmit={toLoginPage}>
             <input
-              className="items"
+              className="p-2 rounded text-black"
               type="email"
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => dispatch(setEmail(e.target.value))}
             />
-            <button type="submit" className="home-get-started items">
+            <button
+              type="submit"
+              className="bg-green-400 p-2 ml-1 rounded hover:bg-green-600"
+            >
               Get Started
             </button>
           </form>
         </section>
-        <section className="preview center">
+        <section className="lg:flex lg:flex-row w-full">
           <img
-            className="dash-img"
+            className="w-full"
             src={dashboardimage}
             alt="dashboard"
           />
           <img
-            className="prev-img"
+            className="w-full"
             src={PreviewGame}
             alt="preview game"
           />
         </section>
-      </section>
-    </StyledHome>
+      </div>
+    </HomePageContainer>
   );
 }
 

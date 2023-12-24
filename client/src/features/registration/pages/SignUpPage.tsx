@@ -72,7 +72,7 @@ function SignUpPage() {
   };
   return (
     <LoginWrapper>
-      <section className="main-login">
+      <section className="inner-container">
         {message && <h1 id="error">{message}</h1>}
         <h1>Sign up for an Account</h1>
         <form onSubmit={completeRegistration}>
