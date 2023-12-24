@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
 const AnimateCharacter = styled.section`
+  align-self: center;
   max-height: 8em;
-  width: 75vw;
+  width: 80%;
   background: #96ffc1;
   position: relative;
   --pixel-size: 2;

@@ -11,7 +11,7 @@ import NotFound from '../../common/components/NotFound';
 
 export default function RegistrationRoutes() {
   return (
-    <div>
+    <div className="w-screen h-screen overflow-auto bg-black text-white flex flex-col">
       <HomeNavBar />
       <Routes>
         <Route index element={<HomePage />} />

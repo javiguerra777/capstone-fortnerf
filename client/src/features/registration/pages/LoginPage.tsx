@@ -25,25 +25,19 @@ function LoginPage() {
   const loginToAccount = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const login = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      if (login) {
-        const q = query(userCollection, where('email', '==', email));
+      await signInWithEmailAndPassword(auth, email, password);
+      const q = query(userCollection, where('email', '==', email));
 
-        const getUserFromDB = async () => {
-          let userData = {};
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            userData = { ...doc.data(), id: doc.id };
-          });
-          dispatch(setUser({ ...userData }));
-        };
-        await getUserFromDB();
-        navigate('/dashboard');
-      }
+      const getUserFromDB = async () => {
+        let userData = {};
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          userData = { ...doc.data(), id: doc.id };
+        });
+        dispatch(setUser({ ...userData }));
+      };
+      await getUserFromDB();
+      navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
         setMessage(err.message);
@@ -52,13 +46,17 @@ function LoginPage() {
   };
   return (
     <LoginWrapper>
-      <section className="main-login">
-        <h1>Login to your account</h1>
+      <section className="inner-container">
+        <p className="font-semibold text-2xl text-center my-2">
+          Login to your account
+        </p>
         {message && <h1 id="error">{message}</h1>}
-        <h2>
-          Join the world of FortNerf! Play with others, there are
-          several servers to choose from.
-        </h2>
+        <div className="my-2 self-center">
+          <p className="text-lg">
+            Join the world of FortNerf! Play with others, there are
+            several servers to choose from.
+          </p>
+        </div>
         <AnimateCharacter>
           <div className="Character">
             {/* Taken from aws existing spritesheet */}
@@ -77,39 +75,56 @@ function LoginPage() {
         </AnimateCharacter>
         <form onSubmit={loginToAccount}>
           <label htmlFor="username">
-            <p>Email:</p>
+            <p className="mt-2 mb-1 text-lg">Email</p>
             <input
               type="email"
               name="username"
               id="username"
+              className="w-full text-black p-2 rounded"
               placeholder="ex: johnappleseed@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
           <label htmlFor="password">
-            <p>Password:</p>
+            <p className="mt-2 mb-1 text-lg">Password</p>
             <input
               type="password"
               placeholder="Password"
+              className="w-full text-black p-2 rounded"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
-          <button className="login-btn" type="submit">
+          <br />
+          <button
+            className="bg-green-400 my-4 w-full flex flex-row justify-between items-center h-10 px-2 rounded-lg text-black hover:bg-green-500"
+            type="submit"
+          >
             Log In
             <BsArrowRight />
           </button>
         </form>
         <footer className="login-footer">
-          <div>
-            Don&#8217;t have an account? Sign up{' '}
-            <NavLink to="/signup">Here</NavLink>
-          </div>
-          <div>
-            Forgot password? Click{' '}
-            <NavLink to="/emailvalidation">Here</NavLink>
-          </div>
+          <p className="text-lg">
+            Don&#8217;t have an account?{' '}
+            <NavLink
+              to="signup"
+              className="underline hover:text-blue-600"
+            >
+              Sign up Here
+            </NavLink>
+          </p>
+          <p className="text-lg">
+            Forgot password?{' '}
+            <NavLink
+              to="emailvalidation"
+              className="underline hover:text-blue-600"
+            >
+              Cliek Here
+            </NavLink>
+          </p>
         </footer>
       </section>
     </LoginWrapper>
