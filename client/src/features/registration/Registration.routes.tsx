@@ -7,6 +7,7 @@ import Contact from './pages/Contact';
 import About from './pages/About';
 import ValidateEmail from './pages/ValidateEmail';
 import HomeNavBar from '../../common/components/HomeNavBar';
+import NotFound from '../../common/components/NotFound';
 
 export default function RegistrationRoutes() {
   return (
@@ -19,6 +20,7 @@ export default function RegistrationRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/emailvalidation" element={<ValidateEmail />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

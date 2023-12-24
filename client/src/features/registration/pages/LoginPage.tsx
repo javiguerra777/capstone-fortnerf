@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { LoginWrapper } from '../styles/LoginPage.style';
 import { db, auth } from '../../../firebase/FirebaseTS';
 import { setUser } from '../../../store/UserSlice';
-import AnimateCharacter from '../../../styles/AnimSprite';
+import AnimateCharacter from '../styles/AnimSprite';
 
 function LoginPage() {
   const dispatch = useDispatch();
