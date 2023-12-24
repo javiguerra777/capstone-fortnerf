@@ -9,11 +9,10 @@ import {
   query,
 } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
-import LoginWrapper from '../styles/ReusableStyles';
-import HomeNavBar from '../components/HomeNavBar';
-import { db, auth } from '../firebase/FirebaseTS';
-import { setUser } from '../store/UserSlice';
-import AnimateCharacter from '../styles/AnimSprite';
+import { LoginWrapper } from '../styles/LoginPage.style';
+import { db, auth } from '../../../firebase/FirebaseTS';
+import { setUser } from '../../../store/UserSlice';
+import AnimateCharacter from '../../../styles/AnimSprite';
 
 function LoginPage() {
   const dispatch = useDispatch();
@@ -54,7 +53,6 @@ function LoginPage() {
   return (
     <LoginWrapper>
       <section className="main-login">
-        <HomeNavBar />
         <h1>Login to your account</h1>
         {message && <h1 id="error">{message}</h1>}
         <h2>

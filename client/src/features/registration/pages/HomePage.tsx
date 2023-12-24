@@ -1,12 +1,11 @@
 import React, { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import HomeNavBar from '../components/HomeNavBar';
-import dashboardimage from '../img/dashboard.png';
-import PreviewGame from '../img/prev_game.png';
-import { setEmail } from '../store/Registrations';
-import { RootState } from '../store';
-import { StyledHome } from '../styles/ReusableStyles';
+import dashboardimage from '../../../img/dashboard.png';
+import PreviewGame from '../../../img/prev_game.png';
+import { setEmail } from '../../../store/Registrations';
+import { RootState } from '../../../store';
+import { StyledHome } from '../styles/HomePage.style';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -23,7 +22,6 @@ function HomePage() {
   return (
     <StyledHome>
       <section className="home-container">
-        <HomeNavBar />
         <section className="home-title center">
           <h3 id="online-web-game">Online Web Game Application</h3>
           <h2>Fort Nerf</h2>

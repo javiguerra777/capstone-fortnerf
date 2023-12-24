@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../firebase/FirebaseTS';
-import { EmailWrapper } from '../styles/ReusableStyles';
+import { auth } from '../../../firebase/FirebaseTS';
+import { EmailWrapper } from '../styles/ValidateEmail.style';
 
 function ValidateEmail() {
   const [email, setEmail] = useState('');

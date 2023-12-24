@@ -1,6 +1,5 @@
 import React, { FormEvent } from 'react';
-import HomeNavBar from '../components/HomeNavBar';
-import { ContactWrapper } from '../styles/ReusableStyles';
+import { ContactWrapper } from '../styles/Contact.style';
 
 function Contact() {
   const sendEmail = (e: FormEvent<HTMLFormElement>) => {
@@ -8,7 +7,6 @@ function Contact() {
   };
   return (
     <ContactWrapper>
-      <HomeNavBar />
       <section className="main-contact">
         <form onSubmit={sendEmail}>
           <label htmlFor="name">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { NavBar } from '../styles/ReusableStyles';
-import nerfLogo from '../img/nerf_logo.png';
+import { NavBar } from '../styles/NavBar.style';
+import nerfLogo from '../../img/nerf_logo.png';
 
 function HomeNavBar() {
   const navigate = useNavigate();

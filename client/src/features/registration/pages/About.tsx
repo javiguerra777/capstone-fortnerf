@@ -1,11 +1,9 @@
 import React from 'react';
-import HomeNavBar from '../components/HomeNavBar';
-import { AboutWrapper } from '../styles/ReusableStyles';
+import { AboutWrapper } from '../styles/About.style';
 
 function About() {
   return (
     <AboutWrapper>
-      <HomeNavBar />
       <section className="about-main">
         <header>
           <h1>About Fort Nerf</h1>

@@ -9,11 +9,11 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { auth, db } from '../firebase/FirebaseTS';
-import LoginWrapper from '../styles/ReusableStyles';
-import { setUser } from '../store/UserSlice';
-import { setEmail } from '../store/Registrations';
-import { RootState } from '../store';
+import { auth, db } from '../../../firebase/FirebaseTS';
+import { LoginWrapper } from '../styles/LoginPage.style';
+import { setUser } from '../../../store/UserSlice';
+import { setEmail } from '../../../store/Registrations';
+import { RootState } from '../../../store';
 
 function SignUpPage() {
   const dispatch = useDispatch();
