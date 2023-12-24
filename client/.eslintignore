@@ -1,0 +1,7 @@
+public/**
+node_modules/**
+coverage/**
+src/registerServiceWorker.js
+*.css
+*.svg
+src/img
