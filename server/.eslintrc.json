@@ -1,0 +1,76 @@
+{
+    "env": {
+        "browser": false,
+        "es2021": true,
+        "node": true
+    },
+    "extends":[
+      "standard-with-typescript",
+      "airbnb",
+      "plugin:@typescript-eslint/recommended" ,
+      "eslint:recommended",
+      "prettier"
+    ],
+    "overrides": [
+    ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion":"latest",
+    "project": "./tsconfig.json",
+    "tsconfigRootDir": "./",
+    "sourceType": "module"
+  }, 
+    "plugins": [
+      "@typescript-eslint",
+      "prettier",
+      "eslint-plugin-prettier"
+    ],
+     "rules": {
+    "linebreak-style": 0,
+    "no-lonely-if":"off",
+    "no-underscore-dangle": "off",
+    "no-param-reassign": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "no-return-await": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "class-methods-use-this": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never"
+      }
+    ],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": [
+      "error"
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+"import/no-import-module-exports": ["error", {
+    "exceptions": ["./webpack/base.ts"]
+}],
+"import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": ["src", "node_modules"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}

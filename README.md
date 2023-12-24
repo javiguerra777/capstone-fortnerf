@@ -34,5 +34,4 @@ Javier Guerra - javier.guerra1001@gmail.com
 
 Project link: https://github.com/javiguerra777/capstone-fortnerf
 
-Project Demo: https://multiplayerfortnerf.netlify.app/
 <p align="left">(<a href="#top">back to top</a>)</p>
