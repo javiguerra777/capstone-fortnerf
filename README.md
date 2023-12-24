@@ -11,6 +11,29 @@ These instructions will get you a copy of the project up and running on your loc
   ```shell
   git clone https://github.com/javiguerra777/capstone-frontend
   ```
+2. Make sure you have npm on your machine
+  ```shell
+  npm --version
+  ```
+
+
+## Scripts
+1. Install npm packages
+  ```shell
+  npm install 
+  ```
+To run both client and server:
+  ```shell
+  npm run dev
+  ```
+To run client:
+  ```shell
+  npm run start:client
+  ```
+To run server
+  ```shell
+  npm run start:server
+  ```
 
 ## Client
 1. cd client and follow directions to install and start project
