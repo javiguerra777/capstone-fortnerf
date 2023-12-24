@@ -37,7 +37,7 @@ function LoginPage() {
         dispatch(setUser({ ...userData }));
       };
       await getUserFromDB();
-      navigate('/dashboard/dashboard');
+      navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
         setMessage(err.message);

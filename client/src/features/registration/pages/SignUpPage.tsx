@@ -74,40 +74,50 @@ function SignUpPage() {
     <LoginWrapper>
       <section className="inner-container">
         {message && <h1 id="error">{message}</h1>}
-        <h1>Sign up for an Account</h1>
+        <p className="text-center font-semibold text-2xl">
+          Sign up for an Account
+        </p>
         <form onSubmit={completeRegistration}>
           <label htmlFor="name">
-            <p>Name:</p>
+            <p className="text-lg mb-1">Name</p>
             <input
               type="text"
               placeholder="ex: John Appleseed"
+              id="name"
+              className="h-10 w-full rounded p-2 text-black"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </label>
           <label htmlFor="username">
-            <p>Username:</p>
+            <p className="text-lg mb-1 mt-2">Username</p>
             <input
               type="text"
               placeholder="ex: Username777"
+              id="username"
+              className="h-10 w-full rounded p-2 text-black"
               value={username}
               onChange={(e) => setUserName(e.target.value)}
             />
           </label>
           <label htmlFor="email">
-            <p>Email:</p>
+            <p className="text-lg mb-1 mt-2">Email</p>
             <input
               type="email"
               placeholder="ex: Johnappleseed@gmail.com"
+              id="email"
+              className="h-10 w-full rounded p-2 text-black"
               value={email}
               onChange={(e) => dispatch(setEmail(e.target.value))}
             />
           </label>
           <label htmlFor="password">
-            <p>Password:</p>
+            <p className="text-lg mb-1 mt-2">Password</p>
             <input
               type="password"
               placeholder="min 6 characters"
+              id="password"
+              className="h-10 w-full rounded mb-3 p-2 text-black"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -115,7 +125,10 @@ function SignUpPage() {
           <div>
             <hr />
           </div>
-          <button className="register-acc" type="submit">
+          <button
+            className="bg-green-300 w-full h-10 text-black rounded-lg mt-3"
+            type="submit"
+          >
             Complete Registration
           </button>
         </form>
