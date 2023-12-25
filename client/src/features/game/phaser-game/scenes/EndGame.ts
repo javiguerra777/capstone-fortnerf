@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import store from '../../../../store';
 import { socket } from '../../../../common/service/socket';
 import TextBox from '../objects/TextBox';
 
@@ -21,9 +20,9 @@ class EndGame extends Phaser.Scene {
   }
 
   preload() {
-    const state = store.getState();
-    const { id } = state.game;
-    this.gameRoom = id;
+    const url = new URL(window.location.href);
+    const gameId = url.pathname.split('/').pop() || '';
+    this.gameRoom = gameId;
     this.load.image(
       'background',
       '/assets/backgrounds/endgame-bkg.jpg',

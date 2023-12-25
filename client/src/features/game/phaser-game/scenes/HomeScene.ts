@@ -25,11 +25,12 @@ class HomeScene extends Phaser.Scene {
   }
 
   preload() {
+    const url = new URL(window.location.href);
+    const gameId = url.pathname.split('/').pop() || '';
     const state = store.getState();
-    const { id } = state.game;
     const { username } = state.user;
     this.homePlayerName = username;
-    this.homeGameRoom = id;
+    this.homeGameRoom = gameId;
     this.load.image('tileSet', '/assets/tiles-img/tilesheet.png');
     this.load.tilemapTiledJSON(
       'homeMap',

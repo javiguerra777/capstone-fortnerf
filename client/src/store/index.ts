@@ -2,7 +2,6 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import UserSlice from './UserSlice';
-import GameSlice from './GameSlice';
 
 const persistConfig = {
   key: 'capstone-fortnerf',
@@ -11,7 +10,6 @@ const persistConfig = {
 };
 const rootReducer = combineReducers({
   user: UserSlice,
-  game: GameSlice,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
