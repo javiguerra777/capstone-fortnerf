@@ -21,7 +21,6 @@ function LoginPage() {
   const userCollection = collection(db, 'users');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
 
   const loginToAccount = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
