@@ -1,5 +1,5 @@
-import React, { FormEvent, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { FormEvent, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import {
   collection,
@@ -8,31 +8,23 @@ import {
   query,
   getDocs,
 } from 'firebase/firestore';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { auth, db } from '../../../firebase/FirebaseTS';
 import { LoginWrapper } from '../styles/LoginPage.style';
 import { setUser } from '../../../store/UserSlice';
-import { setEmail } from '../../../store/Registrations';
-import { RootState } from '../../../store';
 
 function SignUpPage() {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialEmail = searchParams.get('email') || '';
   const userCollection = collection(db, 'users');
-  const { email } = useSelector(
-    (state: RootState) => state.registration,
-    shallowEqual,
-  );
   const [name, setName] = useState('');
+  const [email, setEmail] = useState(initialEmail);
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  useEffect(
-    () => () => {
-      dispatch(setEmail(''));
-    },
-    [],
-  );
   const completeRegistration = async (
     e: FormEvent<HTMLFormElement>,
   ) => {
@@ -61,7 +53,6 @@ function SignUpPage() {
           dispatch(setUser({ ...userData }));
         };
         await getUserFromDB();
-        await dispatch(setEmail(''));
         navigate('/dashboard');
       }
     } catch (err) {
@@ -107,7 +98,7 @@ function SignUpPage() {
               id="email"
               className="h-10 w-full rounded p-2 text-black"
               value={email}
-              onChange={(e) => dispatch(setEmail(e.target.value))}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </label>
           <label htmlFor="password">

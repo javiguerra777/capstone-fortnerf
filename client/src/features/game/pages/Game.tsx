@@ -9,7 +9,6 @@ import GameFooter from '../components/GameFooter';
 import { GameWrapper } from '../styles/Game.style';
 import { Message, RoomData } from '../../../common/models/AppTypes';
 import { RootState } from '../../../store';
-import { setId } from '../../../store/GameSlice';
 import { socket } from '../../../common/service/socket';
 import { setCoords } from '../../../store/UserSlice';
 import { getRoomData } from '../../../common/service/Game.service';
@@ -72,7 +71,8 @@ function Game() {
   useEffect(() => {
     const resolveRoom = async () => {
       try {
-        getRoomData(id || '').then((res) => setRoomData(res.data));
+        const { data } = await getRoomData(id || '');
+        setRoomData(data);
       } catch (err) {
         if (err instanceof Error) {
           toast.error(err.message);
@@ -94,12 +94,6 @@ function Game() {
       });
     };
   }, [id, username]);
-  useEffect(() => {
-    dispatch(setId(id));
-    return () => {
-      dispatch(setId(''));
-    };
-  }, [id, dispatch]);
   useEffect(() => {
     socket.on('chat_msg', (data) => {
       setMessages((prev) => [...prev, data]);

@@ -1,23 +1,18 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import dashboardimage from '../../../img/dashboard.png';
 import PreviewGame from '../../../img/prev_game.png';
-import { setEmail } from '../../../store/Registrations';
-import { RootState } from '../../../store';
 import { HomePageContainer } from '../styles/HomePage.style';
 
 function HomePage() {
+  const emailRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { email } = useSelector(
-    (state: RootState) => state.registration,
-    shallowEqual,
-  );
   const toLoginPage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setEmail('');
-    navigate('/signup');
+    const email = emailRef.current?.value;
+    const params = new URLSearchParams();
+    params.append('email', email || '');
+    navigate(`signup?${params.toString()}`);
   };
   return (
     <HomePageContainer>
@@ -41,8 +36,7 @@ function HomePage() {
               className="p-2 rounded text-black"
               type="email"
               placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => dispatch(setEmail(e.target.value))}
+              ref={emailRef}
             />
             <button
               type="submit"

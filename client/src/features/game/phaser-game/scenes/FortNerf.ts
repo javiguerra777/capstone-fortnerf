@@ -58,13 +58,14 @@ class FortNerf extends Phaser.Scene {
   }
 
   preload() {
+    const url = new URL(window.location.href);
+    const gameId = url.pathname.split('/').pop() || '';
     const state = store.getState();
     const { username, x, y } = state.user;
     this.playerOneUsername = username;
     this.startingX = x;
     this.startingY = y;
-    const { id } = state.game;
-    this.gameRoom = id;
+    this.gameRoom = gameId;
     this.load.atlas(
       'player',
       '/assets/characters/male_player.png',

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect, useCallback } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -8,8 +8,19 @@ import About from './pages/About';
 import ValidateEmail from './pages/ValidateEmail';
 import HomeNavBar from '../../common/components/HomeNavBar';
 import NotFound from '../../common/components/NotFound';
+import UseGetUserFromStore from '../../common/hooks/UseGetUserFromStore.hook';
 
 export default function RegistrationRoutes() {
+  const navigate = useNavigate();
+  const { loggedIn } = UseGetUserFromStore();
+  const handleLoggedIn = useCallback(() => {
+    if (loggedIn) {
+      navigate('/dashboard');
+    }
+  }, [loggedIn, navigate]);
+  useEffect(() => {
+    handleLoggedIn();
+  }, [handleLoggedIn]);
   return (
     <div className="w-screen h-screen overflow-auto bg-black text-white flex flex-col">
       <HomeNavBar />

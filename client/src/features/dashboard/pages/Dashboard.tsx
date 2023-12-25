@@ -38,7 +38,7 @@ function Dashboard() {
     if (usersInGame === maxUsers) {
       return;
     }
-    navigate(`/game/${gameId}`);
+    navigate(`/game/game/${gameId}`);
   };
   return (
     <DashboardWrapper>

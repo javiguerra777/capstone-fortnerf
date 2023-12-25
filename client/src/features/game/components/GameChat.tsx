@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { AiOutlineUser } from 'react-icons/ai';
+import { useParams } from 'react-router-dom';
 import convertToDate from '../../../common/utils/functions';
 import { Message } from '../../../common/models/AppTypes';
 import { socket } from '../../../common/service/socket';
@@ -39,12 +40,9 @@ function useChatScroll<T>(dep: T) {
   return ref;
 }
 function GameChat({ toggleAside, messages }: ChatProps) {
+  const { id } = useParams<{ id: string }>();
   const { username } = useSelector(
     (state: RootState) => state.user,
-    shallowEqual,
-  );
-  const { id } = useSelector(
-    (state: RootState) => state.game,
     shallowEqual,
   );
   const sendChat = (message: string) => {
