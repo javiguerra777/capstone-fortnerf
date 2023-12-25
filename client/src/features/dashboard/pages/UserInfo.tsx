@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BiUser } from 'react-icons/bi';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
-import UserNavBar from '../../../common/components/UserNavBar';
 import { RootState } from '../../../store';
 import { setUser } from '../../../store/UserSlice';
 import { UserInfoWrapper } from '../styles/UserInfo.style';
@@ -22,7 +21,6 @@ function UserInfo() {
   };
   return (
     <UserInfoWrapper>
-      <UserNavBar />
       <section className="user-information">
         <h2>Account Info</h2>
         <section className="details">

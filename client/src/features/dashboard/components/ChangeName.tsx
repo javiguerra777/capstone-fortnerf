@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { doc, updateDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 import { db } from '../../../firebase/FirebaseTS';
 import { updateUsername } from '../../../store/UserSlice';
 import { ChangeNameWrapper } from '../styles/ChangeName.style';
@@ -17,7 +18,6 @@ function ChangeName({
 }: NameComponentProps) {
   const dispatch = useDispatch();
   const userDoc = doc(db, 'users', docId);
-  const [error, setError] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const submitNewUsername = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ function ChangeName({
       setNewUsername('');
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        toast.error(err.message);
       }
     }
   };
@@ -44,7 +44,6 @@ function ChangeName({
             X
           </button>
         </header>
-        {error && <h1>{error}</h1>}
         <form onSubmit={submitNewUsername}>
           <label htmlFor="newUsername">
             New Username:

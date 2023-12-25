@@ -9,6 +9,7 @@ import {
   query,
 } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import { LoginWrapper } from '../styles/LoginPage.style';
 import { db, auth } from '../../../firebase/FirebaseTS';
 import { setUser } from '../../../store/UserSlice';
@@ -40,7 +41,7 @@ function LoginPage() {
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
-        setMessage(err.message);
+        toast.error(err.message);
       }
     }
   };
@@ -50,7 +51,6 @@ function LoginPage() {
         <p className="font-semibold text-2xl text-center my-2">
           Login to your account
         </p>
-        {message && <h1 id="error">{message}</h1>}
         <div className="my-2 self-center">
           <p className="text-lg">
             Join the world of FortNerf! Play with others, there are
