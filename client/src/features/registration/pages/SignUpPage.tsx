@@ -9,6 +9,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { toast } from 'react-toastify';
 import { auth, db } from '../../../firebase/FirebaseTS';
 import { LoginWrapper } from '../styles/LoginPage.style';
 import { setUser } from '../../../store/UserSlice';
@@ -25,7 +26,6 @@ function SignUpPage() {
   const [name, setName] = useState('');
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
   useEffect(
     () => () => {
@@ -66,14 +66,13 @@ function SignUpPage() {
       }
     } catch (err) {
       if (err instanceof Error) {
-        setMessage(err.message);
+        toast.error(err.message);
       }
     }
   };
   return (
     <LoginWrapper>
       <section className="inner-container">
-        {message && <h1 id="error">{message}</h1>}
         <p className="text-center font-semibold text-2xl">
           Sign up for an Account
         </p>

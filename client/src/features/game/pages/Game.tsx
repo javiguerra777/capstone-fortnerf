@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { toast } from 'react-toastify';
 import GameComponent from '../components/GameComponent';
 import GameChat from '../components/GameChat';
 import UsersAside from '../components/UsersAside';
@@ -28,7 +29,6 @@ function Game() {
   const [displayVid, setDisplayVid] = useState(true);
   const [displayAside, setDisplayAside] = useState(true);
   const [displayAllUsers, setDisplayAllUsers] = useState(false);
-  const [message, setMessage] = useState('');
   const [myStream, setMyStream] = useState<MediaStream>();
   const [roomData, setRoomData] = useState<RoomData>();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -63,7 +63,7 @@ function Game() {
         }
       })
       .catch((err) => {
-        setMessage(err.message);
+        toast.error(err.message);
         setDisplayVid(false);
         setAudio(false);
       });
@@ -75,7 +75,7 @@ function Game() {
         getRoomData(id || '').then((res) => setRoomData(res.data));
       } catch (err) {
         if (err instanceof Error) {
-          setMessage(err.message);
+          toast.error(err.message);
           navigate('/dashboard');
         }
       }
@@ -152,14 +152,8 @@ function Game() {
   const navToDashboard = () => {
     navigate('/dashboard');
   };
-  if (message) {
-    setTimeout(() => {
-      setMessage('');
-    }, 1000);
-  }
   return (
     <GameWrapper>
-      {message && <h1 id="error">Camera {message}</h1>}
       <div className="game-chat-container">
         <GameComponent
           width={displayAside || displayAllUsers ? width : maxWidth}

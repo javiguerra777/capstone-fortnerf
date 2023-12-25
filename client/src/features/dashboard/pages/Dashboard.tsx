@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { HiOutlineUsers } from 'react-icons/hi';
 import { nanoid } from 'nanoid';
 import nerfTarget from '../../../img/nerf_target.png';
-import UserNavBar from '../../../common/components/UserNavBar';
 import { getAllRooms } from '../../../common/service/Game.service';
 import { socket } from '../../../common/service/socket';
 import {
@@ -41,14 +40,10 @@ function Dashboard() {
     }
     navigate(`/game/${gameId}`);
   };
-  const playSoloGame = () => {
-    navigate('/singleplayer');
-  };
   return (
     <DashboardWrapper>
-      <UserNavBar />
       <section className="active-games">
-        <h1>Click to Join a Game</h1>
+        <p className="my-2">Click to Join a Game</p>
         <nav className="game-options-nav">
           <button className="nav-btn btn-one" type="button">
             Public
@@ -56,13 +51,12 @@ function Dashboard() {
           <button className="nav-btn btn-two" type="button">
             Private
           </button>
-          <button
+          <NavLink
+            to="/game/singleplayer"
             className="nav-btn btn-three"
-            type="button"
-            onClick={playSoloGame}
           >
             Single Player
-          </button>
+          </NavLink>
         </nav>
         {gameServers
           ?.filter((game: Game) => !game.started)

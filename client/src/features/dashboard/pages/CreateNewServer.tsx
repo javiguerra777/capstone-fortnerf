@@ -2,7 +2,7 @@ import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
 import styled from 'styled-components';
-import UserNavBar from '../../../common/components/UserNavBar';
+import { toast } from 'react-toastify';
 import { createNewRoom } from '../../../common/service/Game.service';
 import { RootState } from '../../../store';
 import { socket } from '../../../common/service/socket';
@@ -48,7 +48,6 @@ function CreateNewServer() {
   );
   const [gameName, setGameName] = useState('');
   const [maxPlayers, setMaxPlayers] = useState(4);
-  const [error, setError] = useState('');
   const createGame = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const gameData = {
@@ -62,14 +61,12 @@ function CreateNewServer() {
       await navigate(`/game/${data._id}`);
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        toast.error(err.message);
       }
     }
   };
   return (
     <NewServerWrapper>
-      <UserNavBar />
-      {error && <h1 className="game-Error">{error}</h1>}
       <form onSubmit={createGame} className="game-form">
         <h1>Enter Details for Game Room</h1>
         <label htmlFor="gameName">

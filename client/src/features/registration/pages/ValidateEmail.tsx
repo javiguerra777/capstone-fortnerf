@@ -1,11 +1,11 @@
 import React, { FormEvent, useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { toast } from 'react-toastify';
 import { auth } from '../../../firebase/FirebaseTS';
 import { EmailWrapper } from '../styles/ValidateEmail.style';
 
 function ValidateEmail() {
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
   const [isSent, setIsSent] = useState(false);
   const sendEmail = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,7 +15,7 @@ function ValidateEmail() {
       setIsSent(true);
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        toast.error(err.message);
       }
     }
   };
@@ -28,7 +28,6 @@ function ValidateEmail() {
         </section>
       ) : (
         <section className="unsent-email">
-          {error && <h1 className="error">{error}</h1>}
           <h1>Trouble signing in?</h1>
           <h2>Enter your email below</h2>
           <form onSubmit={sendEmail}>
