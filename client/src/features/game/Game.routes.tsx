@@ -7,7 +7,7 @@ import NotFound from '../../common/components/NotFound';
 export default function GameRoutes() {
   return (
     <Routes>
-      <Route path="/game:id" element={<Game />} />
+      <Route path="/game/:id" element={<Game />} />
       <Route path="/singleplayer" element={<SinglePlayer />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
