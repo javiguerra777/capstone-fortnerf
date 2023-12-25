@@ -1,44 +1,10 @@
 import React, { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
-import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { createNewRoom } from '../../../common/service/Game.service';
 import { RootState } from '../../../store';
 import { socket } from '../../../common/service/socket';
-
-const NewServerWrapper = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  button:hover {
-    cursor: pointer;
-  }
-  .game-Error {
-    color: white;
-  }
-  .game-form {
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    label {
-      margin-bottom: 1em;
-      input {
-        margin-left: 0.5em;
-      }
-    }
-    button {
-      background: none;
-      color: white;
-      border: solid 1px white;
-      border-radius: 0.5em;
-      padding: 5px;
-    }
-  }
-`;
 
 function CreateNewServer() {
   const navigate = useNavigate();
@@ -57,8 +23,8 @@ function CreateNewServer() {
     };
     try {
       const { data } = await createNewRoom(gameData);
-      await socket.emit('updateRooms');
-      await navigate(`/game/${data._id}`);
+      socket.emit('updateRooms');
+      navigate(`/game/game/${data._id}`);
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message);
@@ -66,22 +32,34 @@ function CreateNewServer() {
     }
   };
   return (
-    <NewServerWrapper>
-      <form onSubmit={createGame} className="game-form">
-        <h1>Enter Details for Game Room</h1>
-        <label htmlFor="gameName">
-          Game Room Name:
+    <div className="w-full flex flex-col items-center justify-center">
+      <form
+        onSubmit={createGame}
+        className="border-4 border-white w-3/4 lg:w-1/2 p-2"
+      >
+        <p className="text-center text-semibold text-3xl">
+          Enter Details for Game Room
+        </p>
+        <br />
+        <label htmlFor="gamename">
+          <p className="text-lg mb-1">Room Name</p>
           <input
             type="text"
-            id="gameName"
+            id="gamename"
+            className="w-full h-10 p-2 rounded text-black"
             placeholder="Max: 15 characters"
             onChange={(e) => setGameName(e.target.value)}
             required
           />
         </label>
-        <label htmlFor="maxPlayers">
+        <label htmlFor="maxplayers">
+          <p className="mb-1 mt-3">
+            Max Players Allowed (must be between 4-6 players)
+          </p>
           <input
             type="number"
+            id="maxplayers"
+            className="w-full h-10 p-2 rounded text-black"
             min={4}
             max={6}
             value={maxPlayers}
@@ -89,12 +67,17 @@ function CreateNewServer() {
               setMaxPlayers(parseFloat(e.target.value))
             }
             required
-            placeholder="enter a number between 4 and 6"
           />
         </label>
-        <button type="submit">Create New Game</button>
+        <br />
+        <button
+          type="submit"
+          className="mt-4 mb-2 border border-white rounded w-full p-2 h-15 text-lg"
+        >
+          Create New Game
+        </button>
       </form>
-    </NewServerWrapper>
+    </div>
   );
 }
 
