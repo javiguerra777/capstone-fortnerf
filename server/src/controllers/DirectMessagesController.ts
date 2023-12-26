@@ -17,7 +17,15 @@ export default class DirectMessagesController {
         path: 'roomId',
         populate: {path: 'users', select: '-password'}
       });
-      res.send({data: messages});
+      const messagesByRoom = messages.reduce((acc, message) => {
+        const roomId: string | any = message.roomId.id;
+        if (!acc[roomId]) {
+          acc[roomId] = [];
+        }
+        acc[roomId].push(message);
+        return acc;
+      }, {});
+      res.send({data: messagesByRoom});
     } catch (error) {
       console.error(error);
     }
