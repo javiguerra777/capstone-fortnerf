@@ -17,7 +17,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(DirectMessagesApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(DirectMessagesApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

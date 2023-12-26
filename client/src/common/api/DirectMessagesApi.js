@@ -5,7 +5,7 @@ import {
 import { baseUrl } from '../../environment/BaseUrl';
 
 const baseQueryWithAuth = async ({ getState, ...request }) => {
-  const { token } = getState().user; // Replace with the actual path to your token in the Redux store
+  const { token } = getState().user;
   const result = await fetchBaseQuery({
     ...request,
     baseUrl,
