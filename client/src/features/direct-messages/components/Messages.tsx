@@ -14,9 +14,18 @@ export default function Messages() {
   const [activeRoomId, setActiveRoomId] = useState(
     searchParams.get('activeRoomId') || '',
   );
+  const handleActiveRoom = useCallback(() => {
+    if (!isLoading && !error && data !== undefined) {
+      const [firstRoomId] = Object.keys(data);
+      setActiveRoomId(firstRoomId);
+    }
+  }, [data, error, isLoading]);
   useEffect(() => {
     setSearchParams({ search, activeRoomId });
   }, [search, activeRoomId]);
+  useEffect(() => {
+    handleActiveRoom();
+  }, [handleActiveRoom]);
   const handleRoomClick = useCallback((id: string) => {
     setActiveRoomId(id);
   }, []);
