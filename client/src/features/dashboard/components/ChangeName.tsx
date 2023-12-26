@@ -8,16 +8,16 @@ import { ChangeNameWrapper } from '../styles/ChangeName.style';
 
 type NameComponentProps = {
   username: string;
-  docId: string;
+  id: string;
   toggleActiveComponent: () => void;
 };
 function ChangeName({
   username,
-  docId,
+  id,
   toggleActiveComponent,
 }: NameComponentProps) {
   const dispatch = useDispatch();
-  const userDoc = doc(db, 'users', docId);
+  const userDoc = doc(db, 'users', id);
   const [newUsername, setNewUsername] = useState('');
   const submitNewUsername = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

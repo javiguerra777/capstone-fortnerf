@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 type User = {
-  docId: string;
+  id: string;
   username: string;
   name: string;
   email: string;
+  profilePicture: string;
   host: boolean;
   loggedIn: boolean;
   x: number;
@@ -12,10 +13,12 @@ type User = {
 };
 
 const initialState = {
-  docId: '',
+  id: '',
   username: '',
   name: '',
   email: '',
+  profilePicture:
+    'https://firebasestorage.googleapis.com/v0/b/capstone-fortnerf.appspot.com/o/profile_pictures%2Ftest_image.png?alt=media&token=783965c2-093d-4971-b1d4-9a9eb057b99e',
   host: false,
   loggedIn: false,
   x: 0,
@@ -26,12 +29,13 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser(state, { payload }) {
-      state.docId = payload.id;
+    registrationUser(state, { payload }) {
+      state.id = payload.id;
       state.username = payload.username;
       state.name = payload.name;
       state.email = payload.email;
-      state.loggedIn = !state.loggedIn;
+      state.profilePicture = payload.profilePicture;
+      state.loggedIn = true;
     },
     setCoords(state, { payload }) {
       state.x = payload.x;
@@ -46,6 +50,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser, setCoords, updateUsername, logout } =
+export const { setCoords, updateUsername, logout, registrationUser } =
   userSlice.actions;
 export default userSlice.reducer;

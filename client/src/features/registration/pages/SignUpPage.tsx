@@ -1,25 +1,16 @@
 import React, { FormEvent, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import {
-  collection,
-  addDoc,
-  where,
-  query,
-  getDocs,
-} from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { auth, db } from '../../../firebase/FirebaseTS';
 import { LoginWrapper } from '../styles/LoginPage.style';
-import { setUser } from '../../../store/UserSlice';
+// import { registrationUser } from '../../../store/UserSlice';
+import { registerUser } from '../../../common/service/User.service';
 
 function SignUpPage() {
   const dispatch = useDispatch();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const initialEmail = searchParams.get('email') || '';
-  const userCollection = collection(db, 'users');
   const [name, setName] = useState('');
   const [email, setEmail] = useState(initialEmail);
   const [username, setUserName] = useState('');
@@ -30,31 +21,16 @@ function SignUpPage() {
   ) => {
     e.preventDefault();
     try {
-      const createdUser = await createUserWithEmailAndPassword(
-        auth,
+      const res = await registerUser({
+        name,
+        username,
         email,
         password,
-      ).then((cred) =>
-        addDoc(userCollection, {
-          userId: cred.user.uid,
-          email,
-          name,
-          username: username.toLowerCase(),
-        }),
-      );
-      if (createdUser) {
-        const q = query(userCollection, where('email', '==', email));
-        const getUserFromDB = async () => {
-          let userData = {};
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            userData = { ...doc.data(), id: doc.id };
-          });
-          dispatch(setUser({ ...userData }));
-        };
-        await getUserFromDB();
-        navigate('/dashboard');
-      }
+        profilePicture:
+          'https://firebasestorage.googleapis.com/v0/b/capstone-fortnerf.appspot.com/o/profile_pictures%2Ftest_image.png?alt=media&token=783965c2-093d-4971-b1d4-9a9eb057b99e',
+      });
+      console.log(res, dispatch);
+      navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message);
