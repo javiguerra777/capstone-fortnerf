@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import UserSlice from './UserSlice';
+import DirectMessagesApi from '../common/api/DirectMessagesApi.js';
 
 const persistConfig = {
   key: 'capstone-fortnerf',
@@ -10,10 +11,13 @@ const persistConfig = {
 };
 const rootReducer = combineReducers({
   user: UserSlice,
+  [DirectMessagesApi.reducerPath]: DirectMessagesApi.reducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(DirectMessagesApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
