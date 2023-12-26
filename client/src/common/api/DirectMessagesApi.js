@@ -4,27 +4,25 @@ import {
 } from '@reduxjs/toolkit/query/react';
 import { baseUrl } from '../../environment/BaseUrl';
 
-const baseQueryWithAuth = async ({ getState, ...request }) => {
-  const { token } = getState().user;
-  const result = await fetchBaseQuery({
-    ...request,
-    baseUrl,
-    headers: {
-      ...request.headers,
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return result;
-};
-
 const DirectMessagesApi = createApi({
   reducerPath: 'api/DirectMessagesApi',
-  baseQuery: baseQueryWithAuth,
-  endPoints: (builder) => ({
+  baseQuery: fetchBaseQuery({
+    baseUrl,
+    prepareHeaders: (headers, { getState }) => {
+      // Set the 'content-type' header
+      headers.set('content-type', 'application/json');
+      // Set the 'Authorization' header
+      headers.set('Authorization', `Bearer ${getState().user.token}`);
+      return headers;
+    },
+  }),
+  endpoints: (builder) => ({
     getDirectMessages: builder.query({
       query: () => '/api/direct-messages',
+      transformResponse: (response) => response.data,
     }),
   }),
 });
 
+export const { useGetDirectMessagesQuery } = DirectMessagesApi;
 export default DirectMessagesApi;
