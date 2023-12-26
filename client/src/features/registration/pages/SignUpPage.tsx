@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { LoginWrapper } from '../styles/LoginPage.style';
-// import { registrationUser } from '../../../store/UserSlice';
+import { registrationUser } from '../../../store/UserSlice';
 import { registerUser } from '../../../common/service/User.service';
 
 function SignUpPage() {
@@ -21,7 +21,7 @@ function SignUpPage() {
   ) => {
     e.preventDefault();
     try {
-      const res = await registerUser({
+      const { data } = await registerUser({
         name,
         username,
         email,
@@ -29,7 +29,7 @@ function SignUpPage() {
         profilePicture:
           'https://firebasestorage.googleapis.com/v0/b/capstone-fortnerf.appspot.com/o/profile_pictures%2Ftest_image.png?alt=media&token=783965c2-093d-4971-b1d4-9a9eb057b99e',
       });
-      console.log(res, dispatch);
+      dispatch(registrationUser(data));
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
