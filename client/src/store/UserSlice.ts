@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 type User = {
   id: string;
+  token: string;
   username: string;
   name: string;
   email: string;
@@ -14,6 +15,7 @@ type User = {
 
 const initialState = {
   id: '',
+  token: '',
   username: '',
   name: '',
   email: '',
@@ -31,6 +33,7 @@ export const userSlice = createSlice({
   reducers: {
     registrationUser(state, { payload }) {
       state.id = payload.id;
+      state.token = payload.token;
       state.username = payload.username;
       state.name = payload.name;
       state.email = payload.email;

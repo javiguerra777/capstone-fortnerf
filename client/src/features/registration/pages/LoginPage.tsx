@@ -4,7 +4,7 @@ import { BsArrowRight } from 'react-icons/bs';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { LoginWrapper } from '../styles/LoginPage.style';
-// import { registrationUser } from '../../../store/UserSlice';
+import { registrationUser } from '../../../store/UserSlice';
 import AnimateCharacter from '../styles/AnimSprite';
 import { loginUser } from '../../../common/service/User.service';
 
@@ -17,8 +17,8 @@ function LoginPage() {
   const loginToAccount = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await loginUser({ email, password });
-      console.log(response, dispatch);
+      const { data } = await loginUser({ email, password });
+      dispatch(registrationUser(data));
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
