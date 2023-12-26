@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { BiUser } from 'react-icons/bi';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { RootState } from '../../../store';
-import { setUser } from '../../../store/UserSlice';
+import { logout } from '../../../store/UserSlice';
 import { UserInfoWrapper } from '../styles/UserInfo.style';
 import ChangeName from '../components/ChangeName';
 
 function UserInfo() {
   const dispatch = useDispatch();
-  const { name, username, email, docId } = useSelector(
+  const { name, username, email, id } = useSelector(
     (state: RootState) => state.user,
     shallowEqual,
   );
   const [componentActive, setComponentActive] = useState(false);
   const signOut = () => {
-    dispatch(setUser({}));
+    dispatch(logout());
   };
   const toggleActiveComponent = () => {
     setComponentActive(!componentActive);
@@ -49,7 +49,7 @@ function UserInfo() {
       {componentActive && (
         <ChangeName
           username={username}
-          docId={docId}
+          id={id}
           toggleActiveComponent={toggleActiveComponent}
         />
       )}

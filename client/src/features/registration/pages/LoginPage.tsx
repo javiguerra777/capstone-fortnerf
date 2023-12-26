@@ -1,42 +1,24 @@
 import React, { FormEvent, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import {
-  getDocs,
-  collection,
-  where,
-  query,
-} from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { LoginWrapper } from '../styles/LoginPage.style';
-import { db, auth } from '../../../firebase/FirebaseTS';
-import { setUser } from '../../../store/UserSlice';
+import { registrationUser } from '../../../store/UserSlice';
 import AnimateCharacter from '../styles/AnimSprite';
+import { loginUser } from '../../../common/service/User.service';
 
 function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userCollection = collection(db, 'users');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const loginToAccount = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      const q = query(userCollection, where('email', '==', email));
-
-      const getUserFromDB = async () => {
-        let userData = {};
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          userData = { ...doc.data(), id: doc.id };
-        });
-        dispatch(setUser({ ...userData }));
-      };
-      await getUserFromDB();
+      const { data } = await loginUser({ email, password });
+      dispatch(registrationUser(data));
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
