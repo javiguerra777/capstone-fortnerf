@@ -1,6 +1,7 @@
 import express from 'express';
 import RoomController from '../controllers/RoomController';
 import EmailController from '../controllers/EmailController';
+import registrationRoutes from './registrationRoutes';
 
 const roomController = new RoomController();
 const emailContoller = new EmailController();
@@ -26,5 +27,6 @@ router.post(
   '/sendEmail',
   async (req, res) => await emailContoller.sendEmail(req, res),
 );
+router.use('/api', registrationRoutes);
 
 export default router;
