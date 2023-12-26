@@ -2,6 +2,9 @@ import express from 'express';
 import RoomController from '../controllers/RoomController';
 import EmailController from '../controllers/EmailController';
 import registrationRoutes from './registrationRoutes';
+import directMessagesRoutes from './directMessagesRoutes';
+import { authenticateJWT } from '../middleware/TokenAuthentication';
+import { dir } from 'console';
 
 const roomController = new RoomController();
 const emailContoller = new EmailController();
@@ -28,5 +31,6 @@ router.post(
   async (req, res) => await emailContoller.sendEmail(req, res),
 );
 router.use('/api', registrationRoutes);
+router.use('/api', authenticateJWT, directMessagesRoutes);
 
 export default router;
