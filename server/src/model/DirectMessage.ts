@@ -14,10 +14,18 @@ const directMessageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
-  }],  
+  }],
+  roomId: {
+    type: Schema.Types.ObjectId,
+    ref: "DirectMessageRoom",
+    required: true,
+  },
 }, {
   timestamps: true,
 });
 const DirectMessageModel = model("DirectMessage", directMessageSchema);
 
 export default DirectMessageModel;
+
+
+
