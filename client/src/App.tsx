@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import RegistrationRoutes from './features/registration/Registration.routes';
 import GameRoutes from './features/game/Game.routes';
 import DashboardRoutes from './features/dashboard/Dashboard.routes';
+import DirectMessagesRoutes from './features/direct-messages/DirectMessages.routes';
 import NotFound from './common/components/NotFound';
 import ProtectedRoutes from './common/components/ProtectedRoutes';
 import { RootState } from './store';
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoutes loggedIn={loggedIn}>
               <DashboardRoutes />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/direct-messages/*"
+          element={
+            <ProtectedRoutes loggedIn={loggedIn}>
+              <DirectMessagesRoutes />
             </ProtectedRoutes>
           }
         />
