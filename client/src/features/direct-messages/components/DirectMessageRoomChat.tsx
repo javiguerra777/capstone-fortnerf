@@ -68,7 +68,7 @@ export default function DirectMessageRoomChat({
         <form className="h-full flex flex-row items-center bg-white rounded-lg border border-gray-400 shadow-lg">
           <button
             type="button"
-            className="bg-stone-600 p-2 rounded-full ml-2"
+            className="bg-stone-600 p-2 rounded-full ml-2 hover:bg-stone-400"
           >
             <FaPlus color="white" size={20} />
           </button>
@@ -79,7 +79,7 @@ export default function DirectMessageRoomChat({
           />
           <button
             type="submit"
-            className="bg-green-400 h-full w-12 rounded-r-lg flex items-center justify-center"
+            className="bg-green-400 h-full w-12 rounded-r-lg flex items-center justify-center hover:bg-green-500"
           >
             <MdSend size={20} />
           </button>
