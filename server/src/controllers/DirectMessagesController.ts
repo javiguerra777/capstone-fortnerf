@@ -16,7 +16,8 @@ export default class DirectMessagesController {
       .populate({
         path: 'roomId',
         populate: {path: 'users', select: '-password'}
-      });
+      })
+      .sort('-createdAt');
       const messagesByRoom = messages.reduce((acc, message) => {
         const roomId: string | any = message.roomId.id;
         if (!acc[roomId]) {
@@ -44,7 +45,8 @@ export default class DirectMessagesController {
           { recipients: { $in: [userId] }}
         ]
        })
-      .populate('sender', '-password');
+      .populate('sender', '-password')
+      .sort('createdAt');
       const data = {
         roomDetails,
         messages,
@@ -59,16 +61,18 @@ export default class DirectMessagesController {
     try {
       const { message, roomId, recipients } = req.body;
       const { id } = req.user;
-      if(roomId) {
+      if (roomId) {
+        console.log('existing room message');
         const newMessage = new DirectMessageModel({
           message,
           sender: id,
           recipients,
           roomId,
         });
-        await newMessage.save();
-        res.send({data: newMessage});
-      }else {
+        const newMessageData = await newMessage.save();
+        const populatedMessage = await newMessageData.populate('sender', '-password');
+        res.send({ data: populatedMessage });
+      } else {
         const newRoom = new DirectMessageRoomModel({
           users: [id, ...recipients]
         });
@@ -78,9 +82,17 @@ export default class DirectMessagesController {
           recipients,
           roomId: newRoom.id,
         });
-        await newRoom.save();
-        await newMessage.save();
-        res.send({data: newMessage});
+        const newRoomData = await newRoom.save();
+        const newMessageData = await newMessage.save();
+        const populatedRoom = await newRoomData
+        .populate('users', '-password');
+        const populatedMessage = await newMessageData
+        .populate('sender', '-password');
+        const data = {
+          roomDetails: populatedRoom,
+          messages: [populatedMessage],
+        }
+        res.send({ data });
       }
     }catch (error) {
       console.error(error);
