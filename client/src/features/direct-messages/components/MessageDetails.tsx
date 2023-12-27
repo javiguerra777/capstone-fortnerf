@@ -8,14 +8,18 @@ type User = {
   profilePicture: string;
 };
 type Item = {
-  roomId: {
+  roomDetails: {
     users: User[];
   };
-  message: string;
+  messages: [
+    {
+      message: string;
+    },
+  ];
 };
 type Props = {
   roomId: string;
-  item: Item[];
+  item: Item;
   // eslint-disable-next-line no-unused-vars
   handleRoomClick: (id: string) => void;
 };
@@ -27,7 +31,7 @@ export default function MessageDetails({
   const [searchParams] = useSearchParams();
   const activeRoomId = searchParams.get('activeRoomId') || '';
   const { id } = UseGetUserFromStore();
-  const otherUsers = item[0].roomId.users.filter(
+  const otherUsers = item.roomDetails.users.filter(
     (user) => user._id !== id,
   );
   return (
@@ -58,7 +62,7 @@ export default function MessageDetails({
         <p className="text-lg">
           {otherUsers.map((user) => user.name)}
         </p>
-        <p className="text-md">{item[0].message}</p>
+        <p className="text-md">{item.messages[0].message}</p>
       </div>
     </div>
   );
