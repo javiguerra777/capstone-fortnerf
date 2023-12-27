@@ -33,7 +33,23 @@ export default class DirectMessagesController {
 
   public async getRoomMessages(req: RequestWithUser, res: Response): Promise<void> {
     try {
-      res.send("getDirectMessage");
+      const roomId = req.params.id;
+      const userId = req.user.id;
+      const roomDetails = await DirectMessageRoomModel.findById(roomId)
+      .populate('users', '-password');
+      const messages = await DirectMessageModel.find({ 
+        roomId,
+        $or: [
+          { sender: userId },
+          { recipients: { $in: [userId] }}
+        ]
+       })
+      .populate('sender', '-password');
+      const data = {
+        roomDetails,
+        messages,
+      }
+      res.send({ data });
     } catch (error) {
       console.error(error);
     }
