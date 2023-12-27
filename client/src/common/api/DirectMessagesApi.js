@@ -25,11 +25,20 @@ const DirectMessagesApi = createApi({
       query: (roomId) => `/api/direct-messages/${roomId}`,
       transformResponse: (response) => response.data,
     }),
+    sendDirectMessage: builder.mutation({
+      query: ({ message, roomId = null, recipients }) => ({
+        url: '/api/direct-messages',
+        method: 'POST',
+        body: { message, roomId, recipients },
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
 export const {
   useGetDirectMessagesQuery,
   useGetDirectMessagesByRoomIdQuery,
+  useSendDirectMessageMutation,
 } = DirectMessagesApi;
 export default DirectMessagesApi;
