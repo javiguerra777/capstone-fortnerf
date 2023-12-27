@@ -18,13 +18,31 @@ export default class DirectMessagesController {
         populate: {path: 'users', select: '-password'}
       })
       .sort('-createdAt');
-      const messagesByRoom = messages.reduce((acc, message) => {
-        const roomId: string | any = message.roomId.id;
-        if (!acc[roomId]) {
-          acc[roomId] = [];
+      // Group messages by roomId
+      const messagesByRoom = messages.reduce((groups, message: any) => {
+        if (message.roomId) {
+          const key: any = message.roomId._id;
+          if (!groups[key]) {
+            groups[key] = {
+              roomDetails: {
+                _id: message.roomId._id,
+                users: message.roomId.users,
+                createdAt: message.roomId.createdAt,
+                updatedAt: message.roomId.updatedAt,
+              },
+              messages: [],
+            };
+          }
+          groups[key].messages.push({
+            _id: message._id,
+            message: message.message,
+            sender: message.sender,
+            recipients: message.recipients,
+            createdAt: message.createdAt,
+            updatedAt: message.updatedAt,
+          });
         }
-        acc[roomId].push(message);
-        return acc;
+        return groups;
       }, {});
       res.send({data: messagesByRoom});
     } catch (error) {
@@ -62,7 +80,10 @@ export default class DirectMessagesController {
       const { message, roomId, recipients } = req.body;
       const { id } = req.user;
       if (roomId) {
-        console.log('existing room message');
+        const roomExists = await DirectMessageRoomModel.findById(roomId);
+        if (!roomExists) {
+          res.status(400).send({ error: 'Room does not exist.' });
+        }
         const newMessage = new DirectMessageModel({
           message,
           sender: id,
