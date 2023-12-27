@@ -9,9 +9,7 @@ const DirectMessagesApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     prepareHeaders: (headers, { getState }) => {
-      // Set the 'content-type' header
       headers.set('content-type', 'application/json');
-      // Set the 'Authorization' header
       headers.set('Authorization', `Bearer ${getState().user.token}`);
       return headers;
     },
@@ -68,6 +66,60 @@ const DirectMessagesApi = createApi({
         }
       },
     }),
+    updateDirectMessage: builder.mutation({
+      query: ({ id, message }) => ({
+        url: `/api/direct-messages/message/${id}`,
+        method: 'PUT',
+        body: { message },
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    deleteDirectMessage: builder.mutation({
+      query: ({ id }) => ({
+        url: `/api/direct-messages/message/${id}`,
+        method: 'DELETE',
+      }),
+      transformResponse: (response) => response.data,
+      onQueryStarted: async (
+        { id, roomId },
+        { dispatch, queryFulfilled },
+      ) => {
+        let patchResultRoomMessages;
+        let patchDirectMessages;
+        try {
+          await queryFulfilled;
+          patchResultRoomMessages = dispatch(
+            DirectMessagesApi.util.updateQueryData(
+              'getDirectMessagesByRoomId',
+              roomId,
+              (draft) => {
+                draft.messages = draft.messages.filter(
+                  (message) => message._id !== id,
+                );
+              },
+            ),
+          );
+          patchDirectMessages = dispatch(
+            DirectMessagesApi.util.updateQueryData(
+              'getDirectMessages',
+              '',
+              (draft) => {
+                draft[roomId].messages = draft[
+                  roomId
+                ].messages.filter((message) => message._id !== id);
+              },
+            ),
+          );
+        } catch {
+          if (patchResultRoomMessages) {
+            patchResultRoomMessages.undo();
+          }
+          if (patchDirectMessages) {
+            patchDirectMessages.undo();
+          }
+        }
+      },
+    }),
   }),
 });
 
@@ -75,5 +127,7 @@ export const {
   useGetDirectMessagesQuery,
   useGetDirectMessagesByRoomIdQuery,
   useSendDirectMessageMutation,
+  useUpdateDirectMessageMutation,
+  useDeleteDirectMessageMutation,
 } = DirectMessagesApi;
 export default DirectMessagesApi;
