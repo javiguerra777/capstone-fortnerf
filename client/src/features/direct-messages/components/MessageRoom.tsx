@@ -6,7 +6,11 @@ export default function MesageRoom() {
   const activeRoomId = searchParams.get('activeRoomId') || '';
   return (
     <div className="h-full flex-1">
-      <p>Message Room: {activeRoomId}</p>
+      {activeRoomId ? (
+        <p>Message Room: {activeRoomId}</p>
+      ) : (
+        <p>No room Selected</p>
+      )}
     </div>
   );
 }
