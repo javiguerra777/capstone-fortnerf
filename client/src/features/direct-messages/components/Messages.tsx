@@ -71,7 +71,7 @@ export default function Messages() {
       {renderDirectMessages()}
       <button
         type="button"
-        className="bg-indigo-400 absolute bottom-2 right-2 w-12 h-12 rounded-full flex items-center justify-center"
+        className="bg-indigo-400 absolute bottom-2 right-2 w-12 h-12 rounded-full flex items-center justify-center hover:bg-indigo-600"
       >
         <FaPlus size={20} color="white" />
       </button>

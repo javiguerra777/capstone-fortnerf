@@ -1,12 +1,12 @@
 import React from 'react';
 import Messages from '../components/Messages';
-import MessageRoom from '../components/MessageRoom';
+import DirectMessageRoom from '../components/DirectMessageRoom';
 
 export default function DirectMessages() {
   return (
     <>
       <Messages />
-      <MessageRoom />
+      <DirectMessageRoom />
     </>
   );
 }

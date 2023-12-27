@@ -21,8 +21,15 @@ const DirectMessagesApi = createApi({
       query: () => '/api/direct-messages',
       transformResponse: (response) => response.data,
     }),
+    getDirectMessagesByRoomId: builder.query({
+      query: (roomId) => `/api/direct-messages/${roomId}`,
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetDirectMessagesQuery } = DirectMessagesApi;
+export const {
+  useGetDirectMessagesQuery,
+  useGetDirectMessagesByRoomIdQuery,
+} = DirectMessagesApi;
 export default DirectMessagesApi;
