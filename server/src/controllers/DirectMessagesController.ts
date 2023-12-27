@@ -52,7 +52,7 @@ export default class DirectMessagesController {
 
   public async getRoomMessages(req: RequestWithUser, res: Response): Promise<void> {
     try {
-      const roomId = req.params.id;
+      const roomId = req.params.roomid;
       const userId = req.user.id;
       const roomDetails = await DirectMessageRoomModel.findById(roomId)
       .populate('users', '-password');
@@ -117,6 +117,47 @@ export default class DirectMessagesController {
       }
     }catch (error) {
       console.error(error);
+    }
+  }
+  public async updateDirectMessage(req: RequestWithUser, res: Response): Promise<void> {
+    try {
+      const messageId = req.params.id;
+      const userId = req.user.id;
+      const { message } = req.body;
+      const messageExists = await DirectMessageModel.findByIdAndUpdate({
+        _id: messageId,
+        sender: userId,
+      }, {
+        message,
+      }, {
+        new: true,
+      });
+      if (!messageExists) {
+        res.status(400).send({ error: 'Message does not exist.' });
+      }
+      res.send({ data: messageExists });
+    }
+    catch (error) {
+      console.error(error);
+      res.status(400).send({ error: 'Error updating message.' });
+    }
+  }
+  public async deleteDirectMessage(req: RequestWithUser, res: Response): Promise<void> {
+    try {
+      const messageId = req.params.id;
+      const userId = req.user.id;
+      const messageExists = await DirectMessageModel.findOneAndDelete({
+        _id: messageId,
+        sender: userId,
+      });
+      if (!messageExists) {
+        res.status(400).send({ error: 'Message does not exist.' });
+      }
+      res.send({ data: messageExists });
+    }
+    catch (error) {
+      console.error(error);
+      res.status(400).send({ error: 'Error deleting message.' });
     }
   }
 }
