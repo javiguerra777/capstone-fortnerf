@@ -32,6 +32,41 @@ const DirectMessagesApi = createApi({
         body: { message, roomId, recipients },
       }),
       transformResponse: (response) => response.data,
+      onQueryStarted: async (
+        { roomId },
+        { dispatch, queryFulfilled },
+      ) => {
+        let patchResultRoomMessages;
+        let patchResultDirectMessages;
+        try {
+          const result = await queryFulfilled;
+          patchResultRoomMessages = dispatch(
+            DirectMessagesApi.util.updateQueryData(
+              'getDirectMessagesByRoomId',
+              roomId,
+              (draft) => {
+                draft.messages.push(result.data);
+              },
+            ),
+          );
+          patchResultDirectMessages = dispatch(
+            DirectMessagesApi.util.updateQueryData(
+              'getDirectMessages',
+              '',
+              (draft) => {
+                draft[roomId].messages.unshift(result.data);
+              },
+            ),
+          );
+        } catch {
+          if (patchResultRoomMessages) {
+            patchResultRoomMessages.undo();
+          }
+          if (patchResultDirectMessages) {
+            patchResultDirectMessages.undo();
+          }
+        }
+      },
     }),
   }),
 });

@@ -8,14 +8,18 @@ type User = {
   profilePicture: string;
 };
 type Item = {
-  roomId: {
+  roomDetails: {
     users: User[];
   };
-  message: string;
+  messages: [
+    {
+      message: string;
+    },
+  ];
 };
 type Props = {
   roomId: string;
-  item: Item[];
+  item: Item;
   // eslint-disable-next-line no-unused-vars
   handleRoomClick: (id: string) => void;
 };
@@ -27,7 +31,7 @@ export default function MessageDetails({
   const [searchParams] = useSearchParams();
   const activeRoomId = searchParams.get('activeRoomId') || '';
   const { id } = UseGetUserFromStore();
-  const otherUsers = item[0].roomId.users.filter(
+  const otherUsers = item.roomDetails.users.filter(
     (user) => user._id !== id,
   );
   return (
@@ -38,7 +42,7 @@ export default function MessageDetails({
       onKeyDown={() => null}
       key={roomId}
       onClick={() => handleRoomClick(roomId)}
-      className={`bg-white rounded-md px-1 py-2 my-1 hover:bg-neutral-400 cursor-pointer w-full flex flex-row ${
+      className={`bg-white rounded-md px-1 py-2 my-1 hover:bg-neutral-400 cursor-pointer w-full flex flex-row h-20 overflow-hidden ${
         roomId === activeRoomId && 'bg-zinc-200'
       }`}
     >
@@ -54,11 +58,13 @@ export default function MessageDetails({
           className="w-14 h-14 rounded-full shadow-lg"
         />
       </div>
-      <div className="flex flex-col ml-2">
-        <p className="text-lg">
+      <div className="flex flex-col ml-2 flex-1">
+        <p className="text-lg font-medium">
           {otherUsers.map((user) => user.name)}
         </p>
-        <p className="text-md">{item[0].message}</p>
+        <p className="text-md break-all word-wrap">
+          {item.messages[0].message}
+        </p>
       </div>
     </div>
   );

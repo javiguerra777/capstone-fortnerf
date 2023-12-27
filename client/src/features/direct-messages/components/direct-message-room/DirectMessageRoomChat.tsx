@@ -34,11 +34,13 @@ export default function DirectMessageRoomChat({
                 className="w-14 h-14 rounded-full shadow-lg ml-1"
               />
             </div>
-            <div className="flex flex-col ml-2">
+            <div className="flex flex-col ml-2 flex-1 px-2">
               <p className="text-lg font-medium">
                 {message.sender.name}
               </p>
-              <p className="text-md">{message.message}</p>
+              <p className="text-md break-all word-wrap">
+                {message.message}
+              </p>
             </div>
           </div>
         ))}

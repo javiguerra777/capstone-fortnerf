@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useGetDirectMessagesQuery } from '../../../common/api/DirectMessagesApi.js';
 import MessageDetails from './MessageDetails';
 
-type DirectMessageData = [string, any[]];
+type DirectMessageData = [string, any];
 export default function Messages() {
   const { data, isLoading, error } = useGetDirectMessagesQuery('');
   const [searchParams, setSearchParams] = useSearchParams();
