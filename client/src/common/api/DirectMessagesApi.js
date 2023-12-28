@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   createApi,
   fetchBaseQuery,
@@ -73,6 +74,50 @@ const DirectMessagesApi = createApi({
         body: { message },
       }),
       transformResponse: (response) => response.data,
+      onQueryStarted: async (
+        { id, roomId },
+        { dispatch, queryFulfilled },
+      ) => {
+        let patchResultRoomMessages;
+        let patchDirectMessages;
+        try {
+          const { data } = await queryFulfilled;
+          patchResultRoomMessages = dispatch(
+            DirectMessagesApi.util.updateQueryData(
+              'getDirectMessagesByRoomId',
+              roomId,
+              (draft) => {
+                draft.messages = draft.messages.map((message) =>
+                  message._id === id
+                    ? { ...message, message: data.message }
+                    : message,
+                );
+              },
+            ),
+          );
+          patchDirectMessages = dispatch(
+            DirectMessagesApi.util.updateQueryData(
+              'getDirectMessages',
+              '',
+              (draft) => {
+                draft[roomId].messages = draft[roomId].messages.map(
+                  (message) =>
+                    message._id === id
+                      ? { ...message, message: data.message }
+                      : message,
+                );
+              },
+            ),
+          );
+        } catch {
+          if (patchResultRoomMessages) {
+            patchResultRoomMessages.undo();
+          }
+          if (patchDirectMessages) {
+            patchDirectMessages.undo();
+          }
+        }
+      },
     }),
     deleteDirectMessage: builder.mutation({
       query: ({ id }) => ({

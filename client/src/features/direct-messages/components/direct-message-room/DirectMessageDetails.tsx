@@ -4,8 +4,13 @@ import { useDeleteDirectMessageMutation } from '../../../../common/api/DirectMes
 
 type Props = {
   message: any;
+  // eslint-disable-next-line no-unused-vars
+  editMessage: (message: string, messageId: string) => void;
 };
-export default function DirectMessageDetails({ message }: Props) {
+export default function DirectMessageDetails({
+  message,
+  editMessage,
+}: Props) {
   const [isHovering, setIsHovering] = useState(false);
   const [deleteDirectMessage] = useDeleteDirectMessageMutation();
   const deleteMessage = async () => {
@@ -41,7 +46,18 @@ export default function DirectMessageDetails({ message }: Props) {
       </div>
       {isHovering && (
         <div className="absolute top-0 right-0">
-          <button type="button" onClick={deleteMessage}>
+          <button
+            type="button"
+            className="bg-green-500 text-white text md"
+            onClick={() => editMessage(message.message, message._id)}
+          >
+            Edit Message
+          </button>
+          <button
+            type="button"
+            className="bg-red-500 text-white text-md"
+            onClick={deleteMessage}
+          >
             Delete
           </button>
         </div>
