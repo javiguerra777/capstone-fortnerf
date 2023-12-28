@@ -54,6 +54,7 @@ app.use(routes);
 io.on('connection', (socket) => {
   socket.emit('myId', socket.id);
   socket.on('joinMyRoom', (userId) => {
+    console.log('joined room', userId);
     socket.join(userId);
   })
   // socket game controllers
