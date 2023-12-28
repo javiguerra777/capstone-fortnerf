@@ -1,9 +1,9 @@
-/* eslint-disable no-unused-vars */
 import {
   createApi,
   fetchBaseQuery,
 } from '@reduxjs/toolkit/query/react';
 import { baseUrl } from '../../environment/BaseUrl';
+import { socket } from '../service/socket';
 
 const DirectMessagesApi = createApi({
   reducerPath: 'api/DirectMessagesApi',
@@ -57,6 +57,7 @@ const DirectMessagesApi = createApi({
               },
             ),
           );
+          socket.emit('directMessage/newDirectMessage', result.data);
         } catch {
           if (patchResultRoomMessages) {
             patchResultRoomMessages.undo();

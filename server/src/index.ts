@@ -43,19 +43,37 @@ database.on('error', (error) => {
 database.once('connected', () => {
   console.log('Database Connected');
 });
-// socket.io middleware
-app.use(( req, res, next ) => {
-  req.io = io;
-  next();
-});
 // api routes
 app.use(routes);
 // socket.io functionality and handling rooms
 io.on('connection', (socket) => {
   socket.emit('myId', socket.id);
   socket.on('joinMyRoom', (userId) => {
+    console.log('joined room', userId);
     socket.join(userId);
   })
+  socket.on('directMessage/newDirectMessage', (data) => {
+    console.log(data.sender._id);
+    data.recipients.forEach((recipient: string) => {
+      console.log(recipient);
+      socket.to(recipient).emit('directMessage/newDirectMessage', { data });
+    });
+    console.log('sending data');
+    socket.to(data.sender._id).emit('directMessage/newDirectMessage', { data });
+  });
+  socket.on('directMessage/updateDirectMessage', (data) => {
+    data.recipients.forEach((recipient: string) => {
+      socket.to(recipient).emit('directMessage/updateDirectMessage', { data });
+    });
+    socket.to(data.sender).emit('directMessage/updateDirectMessage', { data });
+  });
+  socket.on('directMessage/newDirectMessage', (data) => {
+    data.recipients.forEach((recipient: string) => {
+      socket.to(recipient).emit('directMessage/deleteDirectMessage', { data });
+    });
+    socket.to(data.sender).emit('directMessage/deleteDirectMessage', { data });
+  });
+
   // socket game controllers
   const socketRoom = new SocketRoomHandler(socket);
   const socketGame = new SocketGameHandler(socket);
