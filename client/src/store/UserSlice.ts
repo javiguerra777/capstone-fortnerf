@@ -51,7 +51,6 @@ export const userSlice = createSlice({
     },
     logout(state) {
       Object.assign(state, initialState);
-      socket.removeAllListeners();
       socket.emit('logout');
     },
   },

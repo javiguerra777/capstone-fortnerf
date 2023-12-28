@@ -21,7 +21,7 @@ function App() {
   return (
     <>
       <ToastContainer />
-      {loggedIn && <DirectMessageNotifications />}
+      <DirectMessageNotifications />
       <Routes>
         <Route index element={<Navigate to="/home" />} />
         <Route path="/home/*" element={<RegistrationRoutes />} />
