@@ -92,10 +92,6 @@ export default class DirectMessagesController {
         });
         const newMessageData = await newMessage.save();
         const populatedMessage = await newMessageData.populate('sender', '-password');
-        populatedMessage.recipients.forEach((recipient: any) => {
-          req.io.to(recipient).emit('directMessage/newDirectMessage', { data: populatedMessage });
-        })
-        req.io.to(id).emit('directMessage/newDirectMessage', { data: populatedMessage });
         res.send({ data: populatedMessage });
       } else {
         const newRoom = new DirectMessageRoomModel({
@@ -139,10 +135,6 @@ export default class DirectMessagesController {
       if (!messageExists) {
         res.status(400).send({ error: 'Message does not exist.' });
       }
-      messageExists.recipients.forEach((recipient: any) => {
-        req.io.to(recipient).emit('directMessage/updateDirectMessage', { data: messageExists });
-      });
-      req.io.to(userId).emit('directMessage/updateDirectMessage', { data: messageExists });
       res.send({ data: messageExists });
     }
     catch (error) {
@@ -161,10 +153,6 @@ export default class DirectMessagesController {
       if (!messageExists) {
         res.status(400).send({ error: 'Message does not exist.' });
       }
-      messageExists.recipients.forEach((recipient: any) => {
-        req.io.to(recipient).emit('directMessage/deleteDirectMessage', { data: messageExists });
-      });
-      req.io.to(userId).emit('directMessage/deleteDirectMessage', { data: messageExists });
       res.send({ data: messageExists });
     }
     catch (error) {
