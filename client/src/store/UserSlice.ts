@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { socket } from '../common/service/socket';
 
 type User = {
   id: string;
@@ -49,6 +50,8 @@ export const userSlice = createSlice({
     },
     logout(state) {
       Object.assign(state, initialState);
+      socket.removeAllListeners();
+      socket.emit('logout');
     },
   },
 });
