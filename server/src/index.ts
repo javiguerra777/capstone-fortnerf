@@ -11,6 +11,11 @@ import SocketRoomHandler from './controllers/SocketRoom';
 import SocketGameHandler from './controllers/SocketGame';
 import SocketMoveHandler from './controllers/SocketMove';
 
+declare module 'express-serve-static-core' {
+  interface Request {
+    io: Server;
+  }
+}
 const result = dotenv.config({ path: path.resolve(__dirname, '../.env') });
 if (result.error) {
   throw result.error ;
@@ -38,11 +43,19 @@ database.on('error', (error) => {
 database.once('connected', () => {
   console.log('Database Connected');
 });
+// socket.io middleware
+app.use(( req, res, next ) => {
+  req.io = io;
+  next();
+});
 // api routes
 app.use(routes);
 // socket.io functionality and handling rooms
 io.on('connection', (socket) => {
   socket.emit('myId', socket.id);
+  socket.on('joinMyRoom', (userId) => {
+    socket.join(userId);
+  })
   // socket game controllers
   const socketRoom = new SocketRoomHandler(socket);
   const socketGame = new SocketGameHandler(socket);
