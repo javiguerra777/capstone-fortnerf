@@ -107,6 +107,7 @@ io.on('connection', (socket) => {
         socket.leave(room);
       }
     });
+    socket.removeAllListeners();
   })
 });
 

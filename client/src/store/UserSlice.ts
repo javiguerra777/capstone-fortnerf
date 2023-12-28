@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAction } from '@reduxjs/toolkit';
 import { socket } from '../common/service/socket';
 
 type User = {
@@ -28,6 +28,7 @@ const initialState = {
   y: 0,
 } as User;
 
+export const resetStore = createAction('RESET_STORE');
 export const userSlice = createSlice({
   name: 'user',
   initialState,

@@ -1,7 +1,11 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  combineReducers,
+  AnyAction,
+} from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import UserSlice from './UserSlice';
+import UserSlice, { resetStore } from './UserSlice';
 import DirectMessagesApi from '../common/api/DirectMessagesApi.js';
 
 const persistConfig = {
@@ -9,10 +13,19 @@ const persistConfig = {
   storage,
   whitelist: ['user'],
 };
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   user: UserSlice,
   [DirectMessagesApi.reducerPath]: DirectMessagesApi.reducer,
 });
+const rootReducer = (
+  state: RootState | undefined,
+  action: AnyAction,
+): RootState => {
+  if (action.type === resetStore.type) {
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
@@ -22,7 +35,7 @@ const store = configureStore({
     }).concat(DirectMessagesApi.middleware),
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof appReducer>;
 export type AppDispatch = typeof store.dispatch;
 
 export const persistor = persistStore(store);
