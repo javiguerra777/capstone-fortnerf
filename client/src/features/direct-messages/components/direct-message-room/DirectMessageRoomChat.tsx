@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGetDirectMessagesByRoomIdQuery } from '../../../../common/api/DirectMessagesApi.js';
 import DirectMessageRoomHeader from './DirectMessageRoomHeader';
 import SendDirectMessageToRoom from './SendDirectMessageToRoom';
+import DirectMessageDetails from './DirectMessageDetails';
 
 type Props = {
   activeRoomId: string;
@@ -12,6 +13,26 @@ export default function DirectMessageRoomChat({
 }: Props) {
   const { data, isLoading, error } =
     useGetDirectMessagesByRoomIdQuery(activeRoomId);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editMessageDetails, setEditMessageDetails] = useState({
+    message: '',
+    messageId: '',
+  });
+  const editMessage = (message: string, messageId: string) => {
+    setIsEditing(true);
+    setEditMessageDetails({
+      message,
+      messageId,
+    });
+  };
+  const clearEditMessage = () => {
+    setIsEditing(false);
+    setEditMessageDetails({ message: '', messageId: '' });
+  };
+  useEffect(() => {
+    setIsEditing(false);
+    setEditMessageDetails({ message: '', messageId: '' });
+  }, [activeRoomId]);
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -23,31 +44,19 @@ export default function DirectMessageRoomChat({
       <DirectMessageRoomHeader users={data.roomDetails.users} />
       <div className="overflow-auto flex-1">
         {data.messages.map((message: any) => (
-          <div
+          <DirectMessageDetails
             key={message._id}
-            className="flex flex-row py-2 hover:bg-neutral-300"
-          >
-            <div>
-              <img
-                src={message.sender.profilePicture}
-                alt="profile-pic"
-                className="w-14 h-14 rounded-full shadow-lg ml-1"
-              />
-            </div>
-            <div className="flex flex-col ml-2 flex-1 px-2">
-              <p className="text-lg font-medium">
-                {message.sender.name}
-              </p>
-              <p className="text-md break-all word-wrap">
-                {message.message}
-              </p>
-            </div>
-          </div>
+            message={message}
+            editMessage={editMessage}
+          />
         ))}
       </div>
       <SendDirectMessageToRoom
         activeRoomId={activeRoomId}
         users={data.roomDetails.users}
+        isEditing={isEditing}
+        editMessageDetails={editMessageDetails}
+        clearEditMessage={clearEditMessage}
       />
     </div>
   );

@@ -6,25 +6,39 @@ import { MdSend } from 'react-icons/md';
 import UseGetUserFromStore from '../../../../common/hooks/UseGetUserFromStore.hook';
 import { DirectMessageSchema } from '../../schemas/DirectMessage.schema';
 import { DirectMessageUser } from '../../model/DirectMessageUser.model';
-import { useSendDirectMessageMutation } from '../../../../common/api/DirectMessagesApi.js';
+import {
+  useSendDirectMessageMutation,
+  useUpdateDirectMessageMutation,
+} from '../../../../common/api/DirectMessagesApi.js';
 
 type Props = {
   activeRoomId: string;
   users: DirectMessageUser[];
+  isEditing: boolean;
+  editMessageDetails: {
+    message: string;
+    messageId: string;
+  };
+  clearEditMessage: () => void;
 };
 
 export default function SendDirectMessageToRoom({
   activeRoomId,
   users,
+  isEditing,
+  editMessageDetails,
+  clearEditMessage,
 }: Props) {
+  console.log(isEditing);
   const { id } = UseGetUserFromStore();
   const [sendDirectMessage] = useSendDirectMessageMutation();
+  const [updateDirectMessage] = useUpdateDirectMessageMutation();
   const otherUsers = users
     .filter((user) => user._id !== id)
     .map((user) => user._id);
   const formik = useFormik({
     initialValues: {
-      roomDirectMessage: '',
+      roomDirectMessage: editMessageDetails.message,
       currentRoomId: activeRoomId,
       currentRoomRecipients: otherUsers,
     },
@@ -38,8 +52,18 @@ export default function SendDirectMessageToRoom({
           recipients: values.currentRoomRecipients,
           roomId: values.currentRoomId,
         };
-        await sendDirectMessage(payload).unwrap();
-        resetForm();
+        if (isEditing) {
+          await updateDirectMessage({
+            message: values.roomDirectMessage,
+            id: editMessageDetails.messageId,
+            roomId: values.currentRoomId,
+          }).unwrap();
+          clearEditMessage();
+          resetForm();
+        } else {
+          await sendDirectMessage(payload).unwrap();
+          resetForm();
+        }
       } catch (error) {
         if (error instanceof Error) {
           toast.error(error.message);
