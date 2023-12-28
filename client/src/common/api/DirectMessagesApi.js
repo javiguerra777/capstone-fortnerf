@@ -110,6 +110,7 @@ const DirectMessagesApi = createApi({
               },
             ),
           );
+          socket.emit('directMessage/updateDirectMessage', data);
         } catch {
           if (patchResultRoomMessages) {
             patchResultRoomMessages.undo();
@@ -133,7 +134,7 @@ const DirectMessagesApi = createApi({
         let patchResultRoomMessages;
         let patchDirectMessages;
         try {
-          await queryFulfilled;
+          const { data } = await queryFulfilled;
           patchResultRoomMessages = dispatch(
             DirectMessagesApi.util.updateQueryData(
               'getDirectMessagesByRoomId',
@@ -156,6 +157,7 @@ const DirectMessagesApi = createApi({
               },
             ),
           );
+          socket.emit('directMessage/deleteDirectMessage', data);
         } catch {
           if (patchResultRoomMessages) {
             patchResultRoomMessages.undo();

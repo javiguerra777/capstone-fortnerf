@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BiUser } from 'react-icons/bi';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { RootState } from '../../../store';
-import { logout } from '../../../store/UserSlice';
+import { logout, resetStore } from '../../../store/UserSlice';
 import { UserInfoWrapper } from '../styles/UserInfo.style';
 import ChangeName from '../components/ChangeName';
 
@@ -15,6 +15,7 @@ function UserInfo() {
   const [componentActive, setComponentActive] = useState(false);
   const signOut = () => {
     dispatch(logout());
+    dispatch(resetStore());
   };
   const toggleActiveComponent = () => {
     setComponentActive(!componentActive);

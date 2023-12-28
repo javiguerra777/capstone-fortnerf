@@ -49,25 +49,24 @@ app.use(routes);
 io.on('connection', (socket) => {
   socket.emit('myId', socket.id);
   socket.on('joinMyRoom', (userId) => {
-    console.log('joined room', userId);
     socket.join(userId);
   })
+  // new direct message
   socket.on('directMessage/newDirectMessage', (data) => {
-    console.log(data.sender._id);
     data.recipients.forEach((recipient: string) => {
-      console.log(recipient);
       socket.to(recipient).emit('directMessage/newDirectMessage', { data });
     });
-    console.log('sending data');
     socket.to(data.sender._id).emit('directMessage/newDirectMessage', { data });
   });
+  // update direct message
   socket.on('directMessage/updateDirectMessage', (data) => {
     data.recipients.forEach((recipient: string) => {
       socket.to(recipient).emit('directMessage/updateDirectMessage', { data });
     });
     socket.to(data.sender).emit('directMessage/updateDirectMessage', { data });
   });
-  socket.on('directMessage/newDirectMessage', (data) => {
+  // delete direct message
+  socket.on('directMessage/deleteDirectMessage', (data) => {
     data.recipients.forEach((recipient: string) => {
       socket.to(recipient).emit('directMessage/deleteDirectMessage', { data });
     });
@@ -95,6 +94,13 @@ io.on('connection', (socket) => {
   // handing end game scene
   socketGame.endGame();
   socketGame.gameOver(io);
+  socket.on('logout', () => {
+    socket.rooms.forEach((room) => {
+      if (room !== socket.id) {
+        socket.leave(room);
+      }
+    });
+  });
 });
 
 server.listen(port, () =>
